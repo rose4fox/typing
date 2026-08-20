@@ -28,7 +28,7 @@
       position: relative;
     }
 
-    /* 선생님 설정 버튼 (우측 상단 톱니바퀴) */
+    /* 우측 상단 관리자 톱니바퀴 */
     .admin-gear-btn {
       position: absolute;
       top: 16px;
@@ -71,11 +71,47 @@
       box-shadow: 0 2px 0 #0891b2;
     }
 
+    .btn-save {
+      background: #22c55e;
+      color: white;
+      border: none;
+      font-size: 17px;
+      font-weight: 800;
+      padding: 14px 0;
+      border-radius: 14px;
+      width: 100%;
+      cursor: pointer;
+      margin-top: 16px;
+      box-shadow: 0 4px 0 #16a34a;
+    }
+    .btn-save:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #16a34a;
+    }
+
+    .btn-copy {
+      background: #0284c7;
+      color: white;
+      border: none;
+      font-size: 17px;
+      font-weight: 800;
+      padding: 14px 0;
+      border-radius: 14px;
+      width: 100%;
+      cursor: pointer;
+      margin-top: 10px;
+      box-shadow: 0 4px 0 #0369a1;
+    }
+    .btn-copy:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #0369a1;
+    }
+
     .btn-secondary {
       background: #f1f5f9;
       color: #475569;
       border: 2px solid #cbd5e1;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: bold;
       padding: 12px 0;
       border-radius: 14px;
@@ -112,7 +148,7 @@
       margin-bottom: 8px;
     }
 
-    /* 연습 화면 */
+    /* 연습 화면 글자 및 입력창 */
     .target-word {
       font-size: clamp(40px, 12vw, 56px);
       font-weight: 900;
@@ -175,7 +211,7 @@
     .screen { display: none; }
     .screen.active { display: block; }
 
-    /* 모달 (비밀번호 / 선생님 설정) */
+    /* 모달 공통 */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -194,10 +230,12 @@
       width: 100%;
       max-width: 440px;
       border-radius: 28px;
-      padding: 26px;
+      padding: 24px;
       text-align: left;
       box-shadow: 0 20px 40px rgba(0,0,0,0.2);
       border: 3px solid #bbf7d0;
+      max-height: 90vh;
+      overflow-y: auto;
     }
     .modal-content h2 {
       margin-top: 0;
@@ -218,31 +256,33 @@
       margin-top: 6px;
       border-radius: 12px;
       border: 2px solid #cbd5e1;
-      font-size: 16px;
+      font-size: 15px;
       outline: none;
     }
     .modal-content input:focus, .modal-content textarea:focus {
       border-color: #22c55e;
     }
     .modal-content textarea {
-      height: 120px;
+      height: 110px;
       resize: vertical;
       line-height: 1.5;
     }
 
-    .share-link-box {
-      margin-top: 16px;
+    .alert-box {
+      margin-top: 12px;
       background: #f0fdf4;
       border: 2px dashed #86efac;
-      border-radius: 16px;
-      padding: 14px;
+      border-radius: 14px;
+      padding: 12px;
+      display: none;
+      text-align: center;
     }
   </style>
 </head>
 <body>
 
   <div class="app-container">
-    <!-- 우측 상단 선생님 관리자 버튼 -->
+    <!-- 우측 상단 선생님 설정 버튼 -->
     <button class="admin-gear-btn" onclick="openPasswordModal()" title="선생님 설정">⚙️</button>
 
     <!-- [화면 1] 학생 시작 화면 -->
@@ -264,7 +304,7 @@
     <div id="screenGame" class="screen">
       <div class="progress-bar-bg"><div class="progress-bar" id="timerBar"></div></div>
       <div class="badge" id="stepCounter">1 / 5</div>
-      <div class="target-word" id="targetWord">사과</div>
+      <div class="target-word" id="targetWord">단어</div>
       
       <input type="text" 
              id="userInput" 
@@ -297,23 +337,23 @@
     </div>
   </div>
 
-  <!-- [모달 1] 선생님 비밀번호 입력 모달 -->
+  <!-- [모달 1] 선생님 비밀번호 입력창 -->
   <div id="passwordModal" class="modal-overlay">
-    <div class="modal-content" style="max-width: 360px;">
+    <div class="modal-content" style="max-width: 340px;">
       <h2>🔒 선생님 확인</h2>
       <p style="font-size: 14px; color: #64748b; text-align: center; margin: 0 0 16px;">
-        비밀번호를 입력해주세요.<br><small style="color:#94a3b8;">(기본 비밀번호: 1234)</small>
+        관리자 비밀번호를 입력해주세요.
       </p>
-      <input type="password" id="adminPasswordInput" placeholder="비밀번호 4자리">
-      <button class="btn-main" style="background:#22c55e; box-shadow:0 5px 0 #16a34a; padding:14px; font-size:18px;" onclick="checkPassword()">확인</button>
+      <input type="password" id="adminPasswordInput" placeholder="비밀번호 입력" onkeydown="if(event.key==='Enter') checkPassword()">
+      <button class="btn-save" onclick="checkPassword()">확인</button>
       <button class="btn-secondary" onclick="closeModals()">닫기</button>
     </div>
   </div>
 
-  <!-- [모달 2] 선생님 설정 모달 -->
+  <!-- [모달 2] 선생님 문제 설정창 -->
   <div id="settingsModal" class="modal-overlay">
     <div class="modal-content">
-      <h2>✏️ 선생님 문제 설정</h2>
+      <h2>✏️ 단어 및 시간 설정</h2>
       
       <label for="inputTimeLimit">단어당 제한 시간 (초)</label>
       <input type="number" id="inputTimeLimit" value="7" min="3" max="60">
@@ -321,12 +361,14 @@
       <label for="inputWordList">연습할 단어 (줄바꿈 또는 쉼표로 구분)</label>
       <textarea id="inputWordList" placeholder="사과&#10;바나나&#10;호랑이&#10;대한민국"></textarea>
 
-      <button class="btn-main" style="background:#22c55e; box-shadow:0 5px 0 #16a34a; padding:14px; font-size:18px;" onclick="applyAndCopyLink()">🔗 학생용 연습 링크 복사하기</button>
+      <label for="inputNewPassword">비밀번호 변경 (선택)</label>
+      <input type="password" id="inputNewPassword" placeholder="변경할 비밀번호를 입력하세요">
 
-      <div class="share-link-box" id="linkSuccessNotice" style="display:none;">
-        <p style="margin:0; font-size:14px; color:#15803d; font-weight:bold; text-align:center;">
-          ✨ 링크가 복사되었습니다!<br><span style="font-size:12px; color:#166534; font-weight:normal;">학생들에게 전달해주시면 바로 이 문제들로 시작됩니다.</span>
-        </p>
+      <button class="btn-save" onclick="saveSettingsOnly()">💾 1. 이 컴퓨터에 설정 저장</button>
+      <button class="btn-copy" onclick="generateAndCopyLink()">🔗 2. 학생용 배포 링크 복사</button>
+
+      <div class="alert-box" id="modalAlertBox">
+        <p id="modalAlertMsg" style="margin:0; font-size:13px; color:#15803d; font-weight:bold;"></p>
       </div>
 
       <button class="btn-secondary" onclick="closeModals()">닫기</button>
@@ -336,10 +378,11 @@
   <script>
     const DEFAULT_WORDS = ["사과", "바나나", "호랑이", "대한민국", "선생님", "학교"];
     const DEFAULT_TIME = 7;
-    const ADMIN_PW = "1234";
+    const DEFAULT_PW = "1234";
 
     let words = [...DEFAULT_WORDS];
     let timeLimit = DEFAULT_TIME;
+    let currentPassword = DEFAULT_PW;
     
     let currentIndex = 0;
     let correct = 0;
@@ -347,31 +390,40 @@
     let timerInterval = null;
     let timeLeft = 0;
 
-    // URL 해시(#) 또는 로컬에서 데이터 파싱
-    function loadConfigFromUrl() {
+    // URL 해시값 또는 로컬 스토리지에서 문제 불러오기
+    function initData() {
+      // 1. 저장된 비밀번호 불러오기
+      const savedPw = localStorage.getItem('typing_admin_pw');
+      if (savedPw) currentPassword = savedPw;
+
+      // 2. URL 해시(#)로 전달된 학생용 단어 데이터 우선 파싱
       try {
         const hash = window.location.hash.substring(1);
         if (hash) {
-          const decoded = JSON.parse(decodeURIComponent(escape(atob(hash))));
-          if (decoded.w && decoded.w.length > 0) {
-            words = decoded.w;
-            timeLimit = decoded.t || DEFAULT_TIME;
+          const jsonStr = decodeURIComponent(atob(hash));
+          const parsed = JSON.parse(jsonStr);
+          if (parsed.w && parsed.w.length > 0) {
+            words = parsed.w;
+            timeLimit = parsed.t || DEFAULT_TIME;
+            updateStartDisplay();
             return;
           }
         }
       } catch (e) {
-        console.log("No hash or decoding error, fallback to default/saved.");
+        console.log("URL 데이터 없음/일반 로드");
       }
 
-      // 해시가 없을 경우 기존 저장값 확인
-      const saved = localStorage.getItem('typing_app_admin_config');
-      if (saved) {
+      // 3. 해시가 없는 경우 로컬에 저장된 문제 불러오기
+      const savedConfig = localStorage.getItem('typing_app_config');
+      if (savedConfig) {
         try {
-          const parsed = JSON.parse(saved);
+          const parsed = JSON.parse(savedConfig);
           words = parsed.w || DEFAULT_WORDS;
           timeLimit = parsed.t || DEFAULT_TIME;
         } catch(e) {}
       }
+
+      updateStartDisplay();
     }
 
     function updateStartDisplay() {
@@ -380,8 +432,7 @@
     }
 
     window.onload = function() {
-      loadConfigFromUrl();
-      updateStartDisplay();
+      initData();
 
       const input = document.getElementById('userInput');
       input.addEventListener('keydown', function(e) {
@@ -394,9 +445,6 @@
 
     function showScreen(screenId) {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-      document.getElementById('screenStart').classList.remove('active');
-      document.getElementById('screenGame').classList.remove('active');
-      document.getElementById('screenResult').classList.remove('active');
       document.getElementById(screenId).classList.add('active');
     }
 
@@ -409,16 +457,16 @@
     function closeModals() {
       document.getElementById('passwordModal').classList.remove('active');
       document.getElementById('settingsModal').classList.remove('active');
-      document.getElementById('linkSuccessNotice').style.display = 'none';
+      document.getElementById('modalAlertBox').style.display = 'none';
     }
 
     function checkPassword() {
       const pwd = document.getElementById('adminPasswordInput').value;
-      if (pwd === ADMIN_PW) {
+      if (pwd === currentPassword) {
         document.getElementById('passwordModal').classList.remove('active');
         openSettingsModal();
       } else {
-        alert("비밀번호가 일치하지 않습니다!");
+        alert("비밀번호가 올바르지 않습니다.");
         document.getElementById('adminPasswordInput').value = '';
       }
     }
@@ -426,43 +474,82 @@
     function openSettingsModal() {
       document.getElementById('inputTimeLimit').value = timeLimit;
       document.getElementById('inputWordList').value = words.join('\n');
+      document.getElementById('inputNewPassword').value = '';
+      document.getElementById('modalAlertBox').style.display = 'none';
       document.getElementById('settingsModal').classList.add('active');
     }
 
-    // 설정 적용 및 학생용 링크 클립보드 복사
-    function applyAndCopyLink() {
+    // 단어 파싱 유틸
+    function getParsedFormValues() {
       const timeVal = parseInt(document.getElementById('inputTimeLimit').value) || DEFAULT_TIME;
       const rawWords = document.getElementById('inputWordList').value.trim();
-
       if (!rawWords) {
         alert("최소 1개 이상의 단어를 입력해주세요!");
-        return;
+        return null;
+      }
+      const parsedWords = rawWords.split(/[\n,]+/).map(w => w.trim()).filter(w => w.length > 0);
+      const newPw = document.getElementById('inputNewPassword').value.trim();
+
+      return { timeVal, parsedWords, newPw };
+    }
+
+    // 1. 컴퓨터에 저장 버튼
+    function saveSettingsOnly() {
+      const form = getParsedFormValues();
+      if (!form) return;
+
+      words = form.parsedWords;
+      timeLimit = form.timeVal;
+      if (form.newPw) {
+        currentPassword = form.newPw;
+        localStorage.setItem('typing_admin_pw', currentPassword);
       }
 
-      const parsedWords = rawWords.split(/[\n,]+/).map(w => w.trim()).filter(w => w.length > 0);
-      words = parsedWords;
-      timeLimit = timeVal;
+      localStorage.setItem('typing_app_config', JSON.stringify({ w: words, t: timeLimit }));
+      updateStartDisplay();
 
-      // 선생님 브라우저에도 저장
-      localStorage.setItem('typing_app_admin_config', JSON.stringify({ w: words, t: timeLimit }));
+      const alertBox = document.getElementById('modalAlertBox');
+      const alertMsg = document.getElementById('modalAlertMsg');
+      alertMsg.innerText = "💾 설정이 이 브라우저에 저장되었습니다!";
+      alertBox.style.display = 'block';
+    }
 
-      // 데이터를 Base64로 압축 인코딩
+    // 2. 학생용 배포 링크 복사 버튼
+    function generateAndCopyLink() {
+      const form = getParsedFormValues();
+      if (!form) return;
+
+      words = form.parsedWords;
+      timeLimit = form.timeVal;
+      if (form.newPw) {
+        currentPassword = form.newPw;
+        localStorage.setItem('typing_admin_pw', currentPassword);
+      }
+
+      localStorage.setItem('typing_app_config', JSON.stringify({ w: words, t: timeLimit }));
+      updateStartDisplay();
+
+      // 한글 안전 Base64 인코딩
       const payload = { w: words, t: timeLimit };
-      const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
-      
-      const baseUrl = window.location.href.split('#')[0];
-      const studentShareUrl = `${baseUrl}#${encoded}`;
+      const jsonStr = JSON.stringify(payload);
+      const encodedHash = btoa(encodeURIComponent(jsonStr));
 
-      // URL 해시 갱신 및 클립보드 복사
-      window.location.hash = encoded;
-      navigator.clipboard.writeText(studentShareUrl).then(() => {
-        document.getElementById('linkSuccessNotice').style.display = 'block';
-        updateStartDisplay();
+      const baseUrl = window.location.href.split('#')[0];
+      const fullShareUrl = `${baseUrl}#${encodedHash}`;
+
+      window.location.hash = encodedHash;
+
+      navigator.clipboard.writeText(fullShareUrl).then(() => {
+        const alertBox = document.getElementById('modalAlertBox');
+        const alertMsg = document.getElementById('modalAlertMsg');
+        alertMsg.innerHTML = "✨ 학생용 링크가 복사되었습니다!<br>학생들에게 붙여넣기(Ctrl+V)로 공유하세요.";
+        alertBox.style.display = 'block';
       }).catch(() => {
-        prompt("아래 링크를 복사하여 학생들에게 전달하세요:", studentShareUrl);
+        prompt("아래 링크를 복사하여 학생들에게 전달하세요:", fullShareUrl);
       });
     }
 
+    // 타자 게임 루프
     function startGame() {
       currentIndex = 0;
       correct = 0;
