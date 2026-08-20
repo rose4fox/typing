@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>신나는 타자 연습!</title>
+  <style>
+    * { box-sizing: border-box; font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+    body {
+      background-color: #ecfeff;
+      margin: 0;
+      padding: 16px;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .app-container {
+      background: white;
+      width: 100%;
+      max-width: 500px;
+      border-radius: 32px;
+      padding: 24px;
+      box-shadow: 0 16px 36px rgba(0,0,0,0.08);
+      text-align: center;
+      border: 4px solid #a5f3fc;
+      position: relative;
+    }
+
+    /* 선생님 설정 버튼 (우측 상단 톱니바퀴) */
+    .admin-gear-btn {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: #f1f5f9;
+      border: 2px solid #cbd5e1;
+      border-radius: 50%;
+      width: 42px;
+      height: 42px;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #64748b;
+      transition: all 0.2s;
+    }
+    .admin-gear-btn:hover {
+      background: #e2e8f0;
+      color: #334155;
+    }
+
+    /* 버튼 스타일 공통 */
+    .btn-main {
+      background: #06b6d4;
+      color: white;
+      border: none;
+      font-size: 24px;
+      font-weight: 800;
+      padding: 18px 0;
+      border-radius: 20px;
+      width: 100%;
+      cursor: pointer;
+      margin-top: 20px;
+      box-shadow: 0 6px 0 #0891b2;
+      transition: transform 0.1s, box-shadow 0.1s;
+    }
+    .btn-main:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 #0891b2;
+    }
+
+    .btn-secondary {
+      background: #f1f5f9;
+      color: #475569;
+      border: 2px solid #cbd5e1;
+      font-size: 16px;
+      font-weight: bold;
+      padding: 12px 0;
+      border-radius: 14px;
+      width: 100%;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    /* 진행 바 */
+    .progress-bar-bg {
+      width: 100%;
+      height: 18px;
+      background: #e2e8f0;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 20px;
+      border: 2px solid #cbd5e1;
+    }
+    .progress-bar {
+      width: 100%;
+      height: 100%;
+      background: #f59e0b;
+      transition: width 0.1s linear;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #e0f2fe;
+      color: #0369a1;
+      padding: 6px 18px;
+      border-radius: 20px;
+      font-weight: 800;
+      font-size: 17px;
+      margin-bottom: 8px;
+    }
+
+    /* 연습 화면 */
+    .target-word {
+      font-size: clamp(40px, 12vw, 56px);
+      font-weight: 900;
+      color: #0f172a;
+      margin: 16px 0;
+      word-break: keep-all;
+      letter-spacing: 2px;
+    }
+
+    .typing-input {
+      width: 100%;
+      font-size: 30px;
+      text-align: center;
+      padding: 16px;
+      border-radius: 20px;
+      border: 3px solid #67e8f9;
+      outline: none;
+      font-weight: 800;
+      background: #f8fafc;
+      color: #0f172a;
+      transition: all 0.2s;
+    }
+    .typing-input:focus {
+      border-color: #06b6d4;
+      background: white;
+      box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.2);
+    }
+
+    /* 결과 카드 */
+    .score-board {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      margin: 24px 0;
+    }
+    .score-card {
+      background: #f8fafc;
+      border-radius: 20px;
+      padding: 16px;
+      flex: 1;
+      border: 2px solid #e2e8f0;
+    }
+    .score-card.correct {
+      border-color: #86efac;
+      background: #f0fdf4;
+    }
+    .score-card.wrong {
+      border-color: #fca5a5;
+      background: #fef2f2;
+    }
+    .score-num {
+      font-size: 40px;
+      font-weight: 900;
+      margin-top: 6px;
+    }
+    .correct .score-num { color: #16a34a; }
+    .wrong .score-num { color: #dc2626; }
+
+    /* 화면 전환용 클래스 */
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* 모달 (비밀번호 / 선생님 설정) */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 999;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-overlay.active { display: flex; }
+
+    .modal-content {
+      background: white;
+      width: 100%;
+      max-width: 440px;
+      border-radius: 28px;
+      padding: 26px;
+      text-align: left;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+      border: 3px solid #bbf7d0;
+    }
+    .modal-content h2 {
+      margin-top: 0;
+      color: #15803d;
+      font-size: 22px;
+      text-align: center;
+    }
+    .modal-content label {
+      display: block;
+      font-weight: bold;
+      margin-top: 14px;
+      color: #166534;
+      font-size: 14px;
+    }
+    .modal-content input, .modal-content textarea {
+      width: 100%;
+      padding: 12px 14px;
+      margin-top: 6px;
+      border-radius: 12px;
+      border: 2px solid #cbd5e1;
+      font-size: 16px;
+      outline: none;
+    }
+    .modal-content input:focus, .modal-content textarea:focus {
+      border-color: #22c55e;
+    }
+    .modal-content textarea {
+      height: 120px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- 우측 상단 선생님 관리자 버튼 -->
+    <button class="admin-gear-btn" onclick="openPasswordModal()" title="선생님 설정">⚙️</button>
+
+    <!-- [화면 1] 학생 시작 화면 -->
+    <div id="screenStart" class="screen active">
+      <div style="font-size: 56px; margin: 10px 0 6px;">⌨️</div>
+      <h1 style="color: #0891b2; font-size: 30px; margin: 0 0 10px;">신나는 타자 연습!</h1>
+      <p style="color: #64748b; font-size: 17px; margin-bottom: 24px;">준비가 되면 시작 버튼을 눌러요!</p>
+      
+      <div style="background: #f8fafc; border-radius: 16px; padding: 14px; margin-bottom: 16px; border: 1px dashed #cbd5e1;">
+        <span style="color: #475569; font-weight: bold; font-size: 15px;">
+          총 <span id="totalWordCountDisplay" style="color: #0891b2;">0</span>문제 · 단어당 <span id="timeLimitDisplay" style="color: #f59e0b;">0</span>초
+        </span>
+      </div>
+
+      <button class="btn-main" onclick="startGame()">시작하기</button>
+    </div>
+
+    <!-- [화면 2] 학생 타자 연습 화면 -->
+    <div id="screenGame" class="screen">
+      <div class="progress-bar-bg"><div class="progress-bar" id="timerBar"></div></div>
+      <div class="badge" id="stepCounter">1 / 5</div>
+      <div class="target-word" id="targetWord">사과</div>
+      
+      <input type="text" 
+             id="userInput" 
+             class="typing-input" 
+             placeholder="여기에 입력!" 
+             autocomplete="off" 
+             autocorrect="off" 
+             autocapitalize="off" 
+             spellcheck="false">
+    </div>
+
+    <!-- [화면 3] 연습 완료 결과 화면 -->
+    <div id="screenResult" class="screen">
+      <div style="font-size: 54px; margin: 10px 0 6px;">🎉</div>
+      <h1 style="font-size: 28px; margin: 0 0 10px; color: #0f172a;">참 잘했어요!</h1>
+      <p style="color: #64748b; font-size: 16px; margin-bottom: 20px;">타자 연습 결과를 확인해보세요.</p>
+
+      <div class="score-board">
+        <div class="score-card correct">
+          <div style="font-size: 15px; font-weight: bold; color: #166534;">맞은 개수 ⭕</div>
+          <div class="score-num" id="correctCount">0</div>
+        </div>
+        <div class="score-card wrong">
+          <div style="font-size: 15px; font-weight: bold; color: #991b1b;">틀린 개수 ❌</div>
+          <div class="score-num" id="wrongCount">0</div>
+        </div>
+      </div>
+
+      <button class="btn-main" onclick="resetToStart()">다시 연습하기</button>
+    </div>
+  </div>
+
+  <!-- [모달 1] 선생님 비밀번호 입력 모달 -->
+  <div id="passwordModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 360px;">
+      <h2>🔒 선생님 확인</h2>
+      <p style="font-size: 14px; color: #64748b; text-align: center; margin: 0 0 16px;">
+        비밀번호를 입력해주세요.<br><small style="color:#94a3b8;">(기본 비밀번호: 1234)</small>
+      </p>
+      <input type="password" id="adminPasswordInput" placeholder="비밀번호 4자리">
+      <button class="btn-main" style="background:#22c55e; box-shadow:0 5px 0 #16a34a; padding:14px; font-size:18px;" onclick="checkPassword()">확인</button>
+      <button class="btn-secondary" onclick="closeModals()">닫기</button>
+    </div>
+  </div>
+
+  <!-- [모달 2] 선생님 설정 모달 -->
+  <div id="settingsModal" class="modal-overlay">
+    <div class="modal-content">
+      <h2>✏️ 선생님 문제 설정</h2>
+      
+      <label for="inputTimeLimit">단어당 제한 시간 (초)</label>
+      <input type="number" id="inputTimeLimit" value="7" min="3" max="60">
+
+      <label for="inputWordList">연습할 단어 (줄바꿈 또는 쉼표로 구분)</label>
+      <textarea id="inputWordList" placeholder="사과&#10;바나나&#10;호랑이&#10;대한민국"></textarea>
+
+      <label for="inputNewPassword">관리자 비밀번호 변경 (선택)</label>
+      <input type="password" id="inputNewPassword" placeholder="변경할 비밀번호 (미입력시 유지)">
+
+      <button class="btn-main" style="background:#22c55e; box-shadow:0 5px 0 #16a34a; padding:14px; font-size:18px;" onclick="saveSettings()">설정 저장하기</button>
+      <button class="btn-secondary" onclick="closeModals()">닫기</button>
+    </div>
+  </div>
+
+  <script>
+    // 기본 데이터 세팅
+    const DEFAULT_CONFIG = {
+      password: "1234",
+      timeLimit: 7,
+      words: ["사과", "바나나", "호랑이", "대한민국", "선생님", "학교"]
+    };
+
+    let config = { ...DEFAULT_CONFIG };
+    let currentIndex = 0;
+    let correct = 0;
+    let wrong = 0;
+    let timerInterval = null;
+    let timeLeft = 0;
+
+    // 로컬 스토리지에서 설정 불러오기
+    function loadConfig() {
+      const saved = localStorage.getItem('typing_app_config');
+      if (saved) {
+        try {
+          config = JSON.parse(saved);
+        } catch (e) {
+          config = { ...DEFAULT_CONFIG };
+        }
+      }
+      updateStartDisplay();
+    }
+
+    function updateStartDisplay() {
+      document.getElementById('totalWordCountDisplay').innerText = config.words.length;
+      document.getElementById('timeLimitDisplay').innerText = config.timeLimit;
+    }
+
+    window.onload = function() {
+      loadConfig();
+
+      // 한글 입력 및 엔터 처리
+      const input = document.getElementById('userInput');
+      input.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          // 한글 조합 중 엔터 2회 호출 방지
+          if (e.isComposing) return;
+          submitWord();
+        }
+      });
+    };
+
+    // 화면 전환
+    function showScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(screenId).classList.add('active');
+    }
+
+    // 모달 관리
+    function openPasswordModal() {
+      document.getElementById('adminPasswordInput').value = '';
+      document.getElementById('passwordModal').classList.add('active');
+      document.getElementById('adminPasswordInput').focus();
+    }
+
+    function closeModals() {
+      document.getElementById('passwordModal').classList.remove('active');
+      document.getElementById('settingsModal').classList.remove('active');
+    }
+
+    function checkPassword() {
+      const pwd = document.getElementById('adminPasswordInput').value;
+      if (pwd === (config.password || "1234")) {
+        document.getElementById('passwordModal').classList.remove('active');
+        openSettingsModal();
+      } else {
+        alert("비밀번호가 일치하지 않습니다!");
+        document.getElementById('adminPasswordInput').value = '';
+      }
+    }
+
+    function openSettingsModal() {
+      document.getElementById('inputTimeLimit').value = config.timeLimit;
+      document.getElementById('inputWordList').value = config.words.join('\n');
+      document.getElementById('inputNewPassword').value = '';
+      document.getElementById('settingsModal').classList.add('active');
+    }
+
+    function saveSettings() {
+      const timeVal = parseInt(document.getElementById('inputTimeLimit').value) || 7;
+      const rawWords = document.getElementById('inputWordList').value.trim();
+      const newPwd = document.getElementById('inputNewPassword').value.trim();
+
+      if (!rawWords) {
+        alert("최소 1개 이상의 단어를 입력해주세요!");
+        return;
+      }
+
+      const words = rawWords.split(/[\n,]+/).map(w => w.trim()).filter(w => w.length > 0);
+
+      config.timeLimit = timeVal;
+      config.words = words;
+      if (newPwd) {
+        config.password = newPwd;
+      }
+
+      localStorage.setItem('typing_app_config', JSON.stringify(config));
+      alert("설정이 안전하게 저장되었습니다!");
+      closeModals();
+      updateStartDisplay();
+    }
+
+    // 연습 시작
+    function startGame() {
+      currentIndex = 0;
+      correct = 0;
+      wrong = 0;
+      showScreen('screenGame');
+      loadWord();
+    }
+
+    function loadWord() {
+      if (currentIndex >= config.words.length) {
+        finishGame();
+        return;
+      }
+
+      document.getElementById('stepCounter').innerText = `${currentIndex + 1} / ${config.words.length}`;
+      document.getElementById('targetWord').innerText = config.words[currentIndex];
+
+      const input = document.getElementById('userInput');
+      input.value = '';
+      input.focus();
+
+      // 타이머 시작
+      clearInterval(timerInterval);
+      timeLeft = config.timeLimit * 1000;
+      const totalTime = timeLeft;
+      const timerBar = document.getElementById('timerBar');
+      timerBar.style.width = '100%';
+
+      const step = 100;
+      timerInterval = setInterval(() => {
+        timeLeft -= step;
+        const percentage = Math.max(0, (timeLeft / totalTime) * 100);
+        timerBar.style.width = percentage + '%';
+
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          wrong++;
+          currentIndex++;
+          loadWord();
+        }
+      }, step);
+    }
+
+    function submitWord() {
+      const input = document.getElementById('userInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      clearInterval(timerInterval);
+
+      if (text === config.words[currentIndex]) {
+        correct++;
+      } else {
+        wrong++;
+      }
+
+      currentIndex++;
+      loadWord();
+    }
+
+    function finishGame() {
+      clearInterval(timerInterval);
+      showScreen('screenResult');
+      document.getElementById('correctCount').innerText = correct;
+      document.getElementById('wrongCount').innerText = wrong;
+    }
+
+    function resetToStart() {
+      showScreen('screenStart');
+      updateStartDisplay();
+    }
+  </script>
+</body>
+</html>
