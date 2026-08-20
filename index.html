@@ -229,6 +229,14 @@
       resize: vertical;
       line-height: 1.5;
     }
+
+    .share-link-box {
+      margin-top: 16px;
+      background: #f0fdf4;
+      border: 2px dashed #86efac;
+      border-radius: 16px;
+      padding: 14px;
+    }
   </style>
 </head>
 <body>
@@ -313,68 +321,85 @@
       <label for="inputWordList">연습할 단어 (줄바꿈 또는 쉼표로 구분)</label>
       <textarea id="inputWordList" placeholder="사과&#10;바나나&#10;호랑이&#10;대한민국"></textarea>
 
-      <label for="inputNewPassword">관리자 비밀번호 변경 (선택)</label>
-      <input type="password" id="inputNewPassword" placeholder="변경할 비밀번호 (미입력시 유지)">
+      <button class="btn-main" style="background:#22c55e; box-shadow:0 5px 0 #16a34a; padding:14px; font-size:18px;" onclick="applyAndCopyLink()">🔗 학생용 연습 링크 복사하기</button>
 
-      <button class="btn-main" style="background:#22c55e; box-shadow:0 5px 0 #16a34a; padding:14px; font-size:18px;" onclick="saveSettings()">설정 저장하기</button>
+      <div class="share-link-box" id="linkSuccessNotice" style="display:none;">
+        <p style="margin:0; font-size:14px; color:#15803d; font-weight:bold; text-align:center;">
+          ✨ 링크가 복사되었습니다!<br><span style="font-size:12px; color:#166534; font-weight:normal;">학생들에게 전달해주시면 바로 이 문제들로 시작됩니다.</span>
+        </p>
+      </div>
+
       <button class="btn-secondary" onclick="closeModals()">닫기</button>
     </div>
   </div>
 
   <script>
-    // 기본 데이터 세팅
-    const DEFAULT_CONFIG = {
-      password: "1234",
-      timeLimit: 7,
-      words: ["사과", "바나나", "호랑이", "대한민국", "선생님", "학교"]
-    };
+    const DEFAULT_WORDS = ["사과", "바나나", "호랑이", "대한민국", "선생님", "학교"];
+    const DEFAULT_TIME = 7;
+    const ADMIN_PW = "1234";
 
-    let config = { ...DEFAULT_CONFIG };
+    let words = [...DEFAULT_WORDS];
+    let timeLimit = DEFAULT_TIME;
+    
     let currentIndex = 0;
     let correct = 0;
     let wrong = 0;
     let timerInterval = null;
     let timeLeft = 0;
 
-    // 로컬 스토리지에서 설정 불러오기
-    function loadConfig() {
-      const saved = localStorage.getItem('typing_app_config');
+    // URL 해시(#) 또는 로컬에서 데이터 파싱
+    function loadConfigFromUrl() {
+      try {
+        const hash = window.location.hash.substring(1);
+        if (hash) {
+          const decoded = JSON.parse(decodeURIComponent(escape(atob(hash))));
+          if (decoded.w && decoded.w.length > 0) {
+            words = decoded.w;
+            timeLimit = decoded.t || DEFAULT_TIME;
+            return;
+          }
+        }
+      } catch (e) {
+        console.log("No hash or decoding error, fallback to default/saved.");
+      }
+
+      // 해시가 없을 경우 기존 저장값 확인
+      const saved = localStorage.getItem('typing_app_admin_config');
       if (saved) {
         try {
-          config = JSON.parse(saved);
-        } catch (e) {
-          config = { ...DEFAULT_CONFIG };
-        }
+          const parsed = JSON.parse(saved);
+          words = parsed.w || DEFAULT_WORDS;
+          timeLimit = parsed.t || DEFAULT_TIME;
+        } catch(e) {}
       }
-      updateStartDisplay();
     }
 
     function updateStartDisplay() {
-      document.getElementById('totalWordCountDisplay').innerText = config.words.length;
-      document.getElementById('timeLimitDisplay').innerText = config.timeLimit;
+      document.getElementById('totalWordCountDisplay').innerText = words.length;
+      document.getElementById('timeLimitDisplay').innerText = timeLimit;
     }
 
     window.onload = function() {
-      loadConfig();
+      loadConfigFromUrl();
+      updateStartDisplay();
 
-      // 한글 입력 및 엔터 처리
       const input = document.getElementById('userInput');
       input.addEventListener('keydown', function(e) {
         if (e.key === 'Enter') {
-          // 한글 조합 중 엔터 2회 호출 방지
           if (e.isComposing) return;
           submitWord();
         }
       });
     };
 
-    // 화면 전환
     function showScreen(screenId) {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById('screenStart').classList.remove('active');
+      document.getElementById('screenGame').classList.remove('active');
+      document.getElementById('screenResult').classList.remove('active');
       document.getElementById(screenId).classList.add('active');
     }
 
-    // 모달 관리
     function openPasswordModal() {
       document.getElementById('adminPasswordInput').value = '';
       document.getElementById('passwordModal').classList.add('active');
@@ -384,11 +409,12 @@
     function closeModals() {
       document.getElementById('passwordModal').classList.remove('active');
       document.getElementById('settingsModal').classList.remove('active');
+      document.getElementById('linkSuccessNotice').style.display = 'none';
     }
 
     function checkPassword() {
       const pwd = document.getElementById('adminPasswordInput').value;
-      if (pwd === (config.password || "1234")) {
+      if (pwd === ADMIN_PW) {
         document.getElementById('passwordModal').classList.remove('active');
         openSettingsModal();
       } else {
@@ -398,37 +424,45 @@
     }
 
     function openSettingsModal() {
-      document.getElementById('inputTimeLimit').value = config.timeLimit;
-      document.getElementById('inputWordList').value = config.words.join('\n');
-      document.getElementById('inputNewPassword').value = '';
+      document.getElementById('inputTimeLimit').value = timeLimit;
+      document.getElementById('inputWordList').value = words.join('\n');
       document.getElementById('settingsModal').classList.add('active');
     }
 
-    function saveSettings() {
-      const timeVal = parseInt(document.getElementById('inputTimeLimit').value) || 7;
+    // 설정 적용 및 학생용 링크 클립보드 복사
+    function applyAndCopyLink() {
+      const timeVal = parseInt(document.getElementById('inputTimeLimit').value) || DEFAULT_TIME;
       const rawWords = document.getElementById('inputWordList').value.trim();
-      const newPwd = document.getElementById('inputNewPassword').value.trim();
 
       if (!rawWords) {
         alert("최소 1개 이상의 단어를 입력해주세요!");
         return;
       }
 
-      const words = rawWords.split(/[\n,]+/).map(w => w.trim()).filter(w => w.length > 0);
+      const parsedWords = rawWords.split(/[\n,]+/).map(w => w.trim()).filter(w => w.length > 0);
+      words = parsedWords;
+      timeLimit = timeVal;
 
-      config.timeLimit = timeVal;
-      config.words = words;
-      if (newPwd) {
-        config.password = newPwd;
-      }
+      // 선생님 브라우저에도 저장
+      localStorage.setItem('typing_app_admin_config', JSON.stringify({ w: words, t: timeLimit }));
 
-      localStorage.setItem('typing_app_config', JSON.stringify(config));
-      alert("설정이 안전하게 저장되었습니다!");
-      closeModals();
-      updateStartDisplay();
+      // 데이터를 Base64로 압축 인코딩
+      const payload = { w: words, t: timeLimit };
+      const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+      
+      const baseUrl = window.location.href.split('#')[0];
+      const studentShareUrl = `${baseUrl}#${encoded}`;
+
+      // URL 해시 갱신 및 클립보드 복사
+      window.location.hash = encoded;
+      navigator.clipboard.writeText(studentShareUrl).then(() => {
+        document.getElementById('linkSuccessNotice').style.display = 'block';
+        updateStartDisplay();
+      }).catch(() => {
+        prompt("아래 링크를 복사하여 학생들에게 전달하세요:", studentShareUrl);
+      });
     }
 
-    // 연습 시작
     function startGame() {
       currentIndex = 0;
       correct = 0;
@@ -438,21 +472,20 @@
     }
 
     function loadWord() {
-      if (currentIndex >= config.words.length) {
+      if (currentIndex >= words.length) {
         finishGame();
         return;
       }
 
-      document.getElementById('stepCounter').innerText = `${currentIndex + 1} / ${config.words.length}`;
-      document.getElementById('targetWord').innerText = config.words[currentIndex];
+      document.getElementById('stepCounter').innerText = `${currentIndex + 1} / ${words.length}`;
+      document.getElementById('targetWord').innerText = words[currentIndex];
 
       const input = document.getElementById('userInput');
       input.value = '';
       input.focus();
 
-      // 타이머 시작
       clearInterval(timerInterval);
-      timeLeft = config.timeLimit * 1000;
+      timeLeft = timeLimit * 1000;
       const totalTime = timeLeft;
       const timerBar = document.getElementById('timerBar');
       timerBar.style.width = '100%';
@@ -479,7 +512,7 @@
 
       clearInterval(timerInterval);
 
-      if (text === config.words[currentIndex]) {
+      if (text === words[currentIndex]) {
         correct++;
       } else {
         wrong++;
