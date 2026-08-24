@@ -11,7 +11,7 @@
         body, html {
             height: 100%; margin: 0;
             display: flex; justify-content: center; align-items: center;
-            background: #fff0f6;
+            background: #e6fcf5; /* 상큼한 민트 파스텔 배경 */
             font-family: 'Jua', sans-serif;
             overflow: hidden; user-select: none;
         }
@@ -19,10 +19,10 @@
         #game-container {
             text-align: center; background: white;
             padding: 20px 40px; border-radius: 50px;
-            box-shadow: 0 15px 0 #fcc2d7;
+            box-shadow: 0 15px 0 #c3fae8;
             position: relative; 
             width: 85vw; max-width: 1000px; max-height: 88vh;
-            border: 8px solid #faa2c1;
+            border: 8px solid #63e6be;
             box-sizing: border-box;
             display: flex; flex-direction: column; justify-content: center;
             z-index: 5;
@@ -36,36 +36,35 @@
             display: none;
         }
 
-        h1 { color: #f06595; font-size: clamp(30px, 4vw, 50px); margin: 10px 0; }
+        h1 { color: #0ca678; font-size: clamp(30px, 4vw, 50px); margin: 10px 0; }
         .result-msg { font-size: clamp(20px, 2.5vw, 28px); margin-bottom: 20px; color: #495057; }
 
         .fancy-btn {
             font-family: 'Jua', sans-serif;
             padding: 15px 40px; font-size: 30px; color: white;
-            background: #ff6b8b; border: none; border-radius: 100px; cursor: pointer;
-            box-shadow: 0 8px 0 #e64980; transition: 0.1s;
+            background: #20c997; border: none; border-radius: 100px; cursor: pointer;
+            box-shadow: 0 8px 0 #099268; transition: 0.1s;
         }
-        .fancy-btn:active { transform: translateY(4px); box-shadow: 0 4px 0 #e64980; }
+        .fancy-btn:active { transform: translateY(4px); box-shadow: 0 4px 0 #099268; }
 
         /* 🔄 게임 중 다시 시작 버튼 스타일 */
         #reset-btn {
             position: absolute; bottom: 20px; right: 30px;
-            padding: 8px 15px; font-size: 18px; color: #e64980;
-            background: #fff0f6; border: 3px solid #faa2c1; border-radius: 20px;
+            padding: 8px 15px; font-size: 18px; color: #0ca678;
+            background: #e6fcf5; border: 3px solid #63e6be; border-radius: 20px;
             cursor: pointer; font-family: 'Jua', sans-serif;
             transition: 0.2s; z-index: 10;
         }
-        #reset-btn:hover { background: #faa2c1; color: white; }
+        #reset-btn:hover { background: #63e6be; color: white; }
         #reset-btn:active { transform: scale(0.95); }
 
         #stats { font-size: clamp(24px, 3vw, 32px); margin-bottom: 15px; color: #495057; position: relative; }
         #time-bonus-msg {
             position: absolute; right: 10%; top: -15px;
-            color: #37b24d; font-size: 30px; font-weight: bold; opacity: 0; transition: 0.5s;
+            color: #0ca678; font-size: 30px; font-weight: bold; opacity: 0; transition: 0.5s;
         }
         .show-bonus { opacity: 1 !important; transform: translateY(-25px); }
 
-        /* 큼직한 솜사탕 컨테이너 */
         .candy-container {
             width: clamp(105px, 13vw, 150px); height: clamp(105px, 13vw, 150px);
             position: relative; display: inline-block; cursor: pointer;
@@ -77,19 +76,19 @@
             filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15)); 
         }
 
-        /* 3D 솜사탕 색상별 그래디언트 */
-        .red .candy-puff { fill: url(#grad-candy-red); }
-        .yellow .candy-puff { fill: url(#grad-candy-yellow); }
-        .green .candy-puff { fill: url(#grad-candy-green); }
-        .blue .candy-puff { fill: url(#grad-candy-blue); }
+        /* 3D 솜사탕 신규 4종 색상 매핑 (핑크/오렌지/네이비/퍼플) */
+        .pink .candy-puff { fill: url(#grad-candy-pink); }
+        .orange .candy-puff { fill: url(#grad-candy-orange); }
+        .navy .candy-puff { fill: url(#grad-candy-navy); }
+        .purple .candy-puff { fill: url(#grad-candy-purple); }
 
         .candy-container:active { transform: translateY(6px) scale(0.95); filter: none; }
 
         .target-section {
-            background: #fff0f6; border-radius: 35px;
-            padding: 15px; margin-bottom: 15px; border: 4px dashed #faa2c1;
+            background: #e6fcf5; border-radius: 35px;
+            padding: 15px; margin-bottom: 15px; border: 4px dashed #63e6be;
         }
-        .instruction { font-size: clamp(18px, 2vw, 24px); color: #e64980; margin-bottom: 8px; }
+        .instruction { font-size: clamp(18px, 2vw, 24px); color: #0ca678; margin-bottom: 8px; }
 
         #button-area { display: flex; justify-content: space-around; padding: 10px 0; align-items: center; }
 
@@ -102,45 +101,44 @@
         }
         .show-ouch { opacity: 1; transform: translateX(-50%) translateY(-45px) rotate(-5deg); }
 
-        #message-hint { margin-top: 15px; font-size: clamp(22px, 2.5vw, 28px); color: #e64980; height: 35px; }
+        #message-hint { margin-top: 15px; font-size: clamp(22px, 2.5vw, 28px); color: #0ca678; height: 35px; }
         .confetti { position: absolute; width: 12px; height: 12px; z-index: 150; pointer-events: none; }
     </style>
 </head>
 <body>
 
-    <!-- 🌟 100% 투명 배경 + 왕솜사탕 & 짧은 스틱 그래픽 정의 -->
+    <!-- 🌟 100% 투명 배경 + 신규 4종 색상(핑크, 오렌지, 네이비, 퍼플) 그래디언트 정의 -->
     <svg width="0" height="0" style="position:absolute;">
         <defs>
-            <!-- 솜사탕 짧은 막대 그래디언트 -->
             <linearGradient id="grad-stick" x1="0%" y1="0%" x2="100%" y2="0%">
                 <stop offset="0%" stop-color="#e9ecef" />
                 <stop offset="50%" stop-color="#ffffff" />
                 <stop offset="100%" stop-color="#ced4da" />
             </linearGradient>
 
-            <!-- 딸기 솜사탕 (빨강/핑크) -->
-            <radialGradient id="grad-candy-red" cx="35%" cy="30%" r="75%">
-                <stop offset="0%" stop-color="#ff8787" />
-                <stop offset="50%" stop-color="#fa5252" />
-                <stop offset="100%" stop-color="#c92a2a" />
+            <!-- 1. 핑크 솜사탕 -->
+            <radialGradient id="grad-candy-pink" cx="35%" cy="30%" r="75%">
+                <stop offset="0%" stop-color="#ffc9db" />
+                <stop offset="45%" stop-color="#f783ac" />
+                <stop offset="100%" stop-color="#c2255c" />
             </radialGradient>
-            <!-- 바나나 솜사탕 (노랑) -->
-            <radialGradient id="grad-candy-yellow" cx="35%" cy="30%" r="75%">
-                <stop offset="0%" stop-color="#fff3bf" />
-                <stop offset="45%" stop-color="#ffd43b" />
-                <stop offset="100%" stop-color="#f08c00" />
+            <!-- 2. 오렌지 솜사탕 -->
+            <radialGradient id="grad-candy-orange" cx="35%" cy="30%" r="75%">
+                <stop offset="0%" stop-color="#ffe8cc" />
+                <stop offset="45%" stop-color="#ff922b" />
+                <stop offset="100%" stop-color="#d9480f" />
             </radialGradient>
-            <!-- 메론 솜사탕 (초록) -->
-            <radialGradient id="grad-candy-green" cx="35%" cy="30%" r="75%">
-                <stop offset="0%" stop-color="#b2f2bb" />
-                <stop offset="45%" stop-color="#40c057" />
-                <stop offset="100%" stop-color="#237032" />
+            <!-- 3. 네이비 솜사탕 -->
+            <radialGradient id="grad-candy-navy" cx="35%" cy="30%" r="75%">
+                <stop offset="0%" stop-color="#748ffc" />
+                <stop offset="45%" stop-color="#364fc7" />
+                <stop offset="100%" stop-color="#182463" />
             </radialGradient>
-            <!-- 소다 솜사탕 (파랑) -->
-            <radialGradient id="grad-candy-blue" cx="35%" cy="30%" r="75%">
-                <stop offset="0%" stop-color="#d0ebff" />
-                <stop offset="45%" stop-color="#339af0" />
-                <stop offset="100%" stop-color="#1864ab" />
+            <!-- 4. 퍼플 솜사탕 -->
+            <radialGradient id="grad-candy-purple" cx="35%" cy="30%" r="75%">
+                <stop offset="0%" stop-color="#eebefa" />
+                <stop offset="45%" stop-color="#ae3ec9" />
+                <stop offset="100%" stop-color="#5f1875" />
             </radialGradient>
         </defs>
     </svg>
@@ -165,13 +163,10 @@
 
         <div class="target-section">
             <div class="instruction">이 솜사탕과 똑같은 색을 아래에서 찾으세요!</div>
-            <div id="target-display" class="candy-container red" style="cursor: default;">
+            <div id="target-display" class="candy-container pink" style="cursor: default;">
                 <svg class="candy-svg" viewBox="0 0 100 100">
-                    <!-- 짧고 귀여운 하단 손잡이 막대 -->
                     <rect x="45" y="70" width="10" height="26" rx="5" fill="url(#grad-stick)" stroke="#adb5bd" stroke-width="1.5" />
-                    <!-- 화면을 가득 채우는 크고 풍성한 솜사탕 덩어리 -->
                     <path class="candy-puff" d="M 50 6 C 68 6 84 18 86 34 C 98 40 98 64 85 75 C 73 84 27 84 15 75 C 2 64 2 40 14 34 C 16 18 32 6 50 6 Z" />
-                    <!-- 솜사탕 입체 볼륨 광택 하이라이트 -->
                     <ellipse cx="38" cy="22" rx="16" ry="8" transform="rotate(-20 38 22)" fill="white" fill-opacity="0.65" />
                     <ellipse cx="72" cy="38" rx="10" ry="5" transform="rotate(20 72 38)" fill="white" fill-opacity="0.45" />
                     <circle cx="56" cy="46" r="4.5" fill="white" fill-opacity="0.35" />
@@ -179,48 +174,8 @@
             </div>
         </div>
 
-        <div id="button-area">
-            <div class="candy-container red" onclick="checkAnswer('red', this)">
-                <svg class="candy-svg" viewBox="0 0 100 100">
-                    <rect x="45" y="70" width="10" height="26" rx="5" fill="url(#grad-stick)" stroke="#adb5bd" stroke-width="1.5" />
-                    <path class="candy-puff" d="M 50 6 C 68 6 84 18 86 34 C 98 40 98 64 85 75 C 73 84 27 84 15 75 C 2 64 2 40 14 34 C 16 18 32 6 50 6 Z" />
-                    <ellipse cx="38" cy="22" rx="16" ry="8" transform="rotate(-20 38 22)" fill="white" fill-opacity="0.65" />
-                    <ellipse cx="72" cy="38" rx="10" ry="5" transform="rotate(20 72 38)" fill="white" fill-opacity="0.45" />
-                    <circle cx="56" cy="46" r="4.5" fill="white" fill-opacity="0.35" />
-                </svg>
-                <span class="ouch-emoji">아야!</span>
-            </div>
-            <div class="candy-container yellow" onclick="checkAnswer('yellow', this)">
-                <svg class="candy-svg" viewBox="0 0 100 100">
-                    <rect x="45" y="70" width="10" height="26" rx="5" fill="url(#grad-stick)" stroke="#adb5bd" stroke-width="1.5" />
-                    <path class="candy-puff" d="M 50 6 C 68 6 84 18 86 34 C 98 40 98 64 85 75 C 73 84 27 84 15 75 C 2 64 2 40 14 34 C 16 18 32 6 50 6 Z" />
-                    <ellipse cx="38" cy="22" rx="16" ry="8" transform="rotate(-20 38 22)" fill="white" fill-opacity="0.65" />
-                    <ellipse cx="72" cy="38" rx="10" ry="5" transform="rotate(20 72 38)" fill="white" fill-opacity="0.45" />
-                    <circle cx="56" cy="46" r="4.5" fill="white" fill-opacity="0.35" />
-                </svg>
-                <span class="ouch-emoji">아야!</span>
-            </div>
-            <div class="candy-container green" onclick="checkAnswer('green', this)">
-                <svg class="candy-svg" viewBox="0 0 100 100">
-                    <rect x="45" y="70" width="10" height="26" rx="5" fill="url(#grad-stick)" stroke="#adb5bd" stroke-width="1.5" />
-                    <path class="candy-puff" d="M 50 6 C 68 6 84 18 86 34 C 98 40 98 64 85 75 C 73 84 27 84 15 75 C 2 64 2 40 14 34 C 16 18 32 6 50 6 Z" />
-                    <ellipse cx="38" cy="22" rx="16" ry="8" transform="rotate(-20 38 22)" fill="white" fill-opacity="0.65" />
-                    <ellipse cx="72" cy="38" rx="10" ry="5" transform="rotate(20 72 38)" fill="white" fill-opacity="0.45" />
-                    <circle cx="56" cy="46" r="4.5" fill="white" fill-opacity="0.35" />
-                </svg>
-                <span class="ouch-emoji">아야!</span>
-            </div>
-            <div class="candy-container blue" onclick="checkAnswer('blue', this)">
-                <svg class="candy-svg" viewBox="0 0 100 100">
-                    <rect x="45" y="70" width="10" height="26" rx="5" fill="url(#grad-stick)" stroke="#adb5bd" stroke-width="1.5" />
-                    <path class="candy-puff" d="M 50 6 C 68 6 84 18 86 34 C 98 40 98 64 85 75 C 73 84 27 84 15 75 C 2 64 2 40 14 34 C 16 18 32 6 50 6 Z" />
-                    <ellipse cx="38" cy="22" rx="16" ry="8" transform="rotate(-20 38 22)" fill="white" fill-opacity="0.65" />
-                    <ellipse cx="72" cy="38" rx="10" ry="5" transform="rotate(20 72 38)" fill="white" fill-opacity="0.45" />
-                    <circle cx="56" cy="46" r="4.5" fill="white" fill-opacity="0.35" />
-                </svg>
-                <span class="ouch-emoji">아야!</span>
-            </div>
-        </div>
+        <!-- 매 문제마다 랜덤 순서로 섞이는 보기 영역 -->
+        <div id="button-area"></div>
 
         <div id="message-hint">어떤 솜사탕이 똑같을까~?</div>
 
@@ -229,7 +184,8 @@
 
     <script>
         let timeLeft = 30, problemCount = 0, targetColor = "", timerInterval, isClickable = true;
-        const colors = ['red', 'yellow', 'green', 'blue'];
+        // 새로운 색상 팔레트
+        const colors = ['pink', 'orange', 'navy', 'purple'];
 
         function startGame() {
             document.querySelectorAll('.overlay').forEach(el => el.style.display = 'none');
@@ -237,7 +193,6 @@
             updateStats(); nextProblem(); startTimer();
         }
 
-        // 🔄 게임 중간에 초기화하는 함수
         function resetGame() {
             if(confirm("정말 처음부터 다시 시작할까요?")) {
                 clearInterval(timerInterval);
@@ -258,6 +213,31 @@
             }, 1000);
         }
 
+        // 보기 4개를 무작위 순서로 렌더링
+        function renderButtons() {
+            const btnArea = document.getElementById('button-area');
+            btnArea.innerHTML = '';
+            
+            const shuffledColors = [...colors].sort(() => Math.random() - 0.5);
+
+            shuffledColors.forEach(color => {
+                const btn = document.createElement('div');
+                btn.className = `candy-container ${color}`;
+                btn.onclick = () => checkAnswer(color, btn);
+                btn.innerHTML = `
+                    <svg class="candy-svg" viewBox="0 0 100 100">
+                        <rect x="45" y="70" width="10" height="26" rx="5" fill="url(#grad-stick)" stroke="#adb5bd" stroke-width="1.5" />
+                        <path class="candy-puff" d="M 50 6 C 68 6 84 18 86 34 C 98 40 98 64 85 75 C 73 84 27 84 15 75 C 2 64 2 40 14 34 C 16 18 32 6 50 6 Z" />
+                        <ellipse cx="38" cy="22" rx="16" ry="8" transform="rotate(-20 38 22)" fill="white" fill-opacity="0.65" />
+                        <ellipse cx="72" cy="38" rx="10" ry="5" transform="rotate(20 72 38)" fill="white" fill-opacity="0.45" />
+                        <circle cx="56" cy="46" r="4.5" fill="white" fill-opacity="0.35" />
+                    </svg>
+                    <span class="ouch-emoji">아야!</span>
+                `;
+                btnArea.appendChild(btn);
+            });
+        }
+
         function nextProblem() {
             if (problemCount >= 30) { endGame(); return; }
             let newColor;
@@ -267,13 +247,14 @@
             
             targetColor = newColor;
             document.getElementById('target-display').className = 'candy-container ' + targetColor;
+            renderButtons();
         }
 
         function checkAnswer(color, btn) {
             if (timeLeft <= 0 || !isClickable) return;
             if (color === targetColor) {
                 isClickable = false;
-                btn.style.filter = 'brightness(1.25) drop-shadow(0 0 18px #ff6b8b)';
+                btn.style.filter = 'brightness(1.25) drop-shadow(0 0 18px #20c997)';
                 document.getElementById('message-hint').innerText = "와! 달콤한 정답이야! 🍭";
                 setTimeout(() => {
                     btn.style.filter = 'drop-shadow(0 10px 0 rgba(0,0,0,0.08))';
@@ -299,11 +280,11 @@
         }
 
         function fireConfetti() {
-            const colors = ['#ff8787', '#fab005', '#37b24d', '#1c7ed6', '#f06595'];
+            const confettiColors = ['#f783ac', '#ff922b', '#748ffc', '#ae3ec9', '#20c997'];
             for (let i = 0; i < 80; i++) {
                 const confetti = document.createElement('div');
                 confetti.className = 'confetti';
-                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.backgroundColor = confettiColors[Math.floor(Math.random() * confettiColors.length)];
                 confetti.style.left = Math.random() * 100 + 'vw';
                 confetti.style.top = '-20px';
                 document.body.appendChild(confetti);
