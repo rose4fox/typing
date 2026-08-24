@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>팡팡! 클릭 선수!</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Jua&display=swap');
+
+        * {
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            user-select: none;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0; padding: 0; overflow: hidden;
+            background-color: #fff9db;
+            font-family: 'Jua', sans-serif;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 100vh; width: 100vw;
+        }
+
+        #game-title {
+            font-size: clamp(30px, 8vw, 55px);
+            margin-top: 5px; margin-bottom: 2vh;
+            color: #ff6b6b;
+            text-shadow: 2px 2px 0px #fff, 4px 4px 0px rgba(0,0,0,0.05);
+            animation: bounceTitle 2s infinite;
+            flex-shrink: 0;
+        }
+
+        @keyframes bounceTitle {
+            0%, 100% { transform: translateY(0) rotate(-1deg); }
+            50% { transform: translateY(-8px) rotate(1deg); }
+        }
+
+        #info-board {
+            display: none; align-items: center; justify-content: space-around;
+            width: 92vw; max-width: 650px; background: white;
+            padding: clamp(10px, 1.8vh, 18px) 20px;
+            border-radius: 40px; box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            margin-bottom: 2vh; z-index: 10; flex-shrink: 0;
+        }
+
+        .stat-group {
+            display: flex; align-items: center; gap: 6px;
+            font-size: clamp(16px, 2.5vh, 23px); color: #444;
+        }
+
+        .top-retry-btn {
+            padding: 10px 28px; border-radius: 30px; border: none;
+            background: linear-gradient(145deg, #4dabf7, #3b82f6);
+            color: white; font-family: 'Jua'; cursor: pointer;
+            font-size: clamp(18px, 2.5vh, 24px); 
+            box-shadow: 0 6px 0 #2563eb, 0 8px 15px rgba(59, 130, 246, 0.4), inset 0 2px 3px rgba(255, 255, 255, 0.3);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            transition: all 0.15s ease;
+        }
+
+        .top-retry-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #2563eb; }
+
+        #monitor-frame {
+            width: 88vw; max-width: 850px; height: 55vh;
+            border: clamp(10px, 2vw, 16px) solid #333;
+            border-radius: clamp(20px, 4vw, 35px);
+            position: relative; background-color: #ffffff;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.15);
+            overflow: hidden; touch-action: none;
+            /* 배경색만 부드럽게 유지, 테두리(border-color)는 즉각 깜빡임을 위해 전환 효과 제외 혹은 매우 짧게 설정 */
+            transition: background-color 0.5s ease, border-color 0.1s ease; 
+        }
+
+        #monitor-stand {
+            width: clamp(80px, 15vw, 130px); height: 18px;
+            background: #555; clip-path: polygon(15% 0%, 85% 0%, 100% 100%, 0% 100%);
+            margin-top: -2px; margin-bottom: 3vh; flex-shrink: 0;
+        }
+
+        .balloon-container { position: absolute; display: flex; flex-direction: column; align-items: center; animation: appearUp 0.5s ease-out forwards; }
+        .balloon-body { border-radius: 50% 50% 50% 50% / 45% 45% 55% 55%; box-shadow: inset 8px -10px 20px rgba(0,0,0,0.15), inset -4px 6px 12px rgba(255,255,255,0.7); }
+        .balloon-knot { width: 10px; height: 7px; background-color: inherit; border-radius: 50%; margin-top: -3px; }
+        .balloon-string { width: 1.2px; height: 35px; background: rgba(0,0,0,0.08); }
+        @keyframes appearUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .popped { transform: scale(2.8) !important; opacity: 0 !important; pointer-events: none; transition: all 0.15s; }
+        
+        .overlay-layer { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.92); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 1000; text-align: center; padding: 20px; }
+        .ready-text { color: white; font-size: clamp(35px, 6vw, 50px); margin-bottom: 40px; text-shadow: 0 0 15px rgba(255,255,255,0.3); }
+        .giant-start-btn { font-family: 'Jua', sans-serif; font-size: clamp(40px, 10vw, 65px); padding: 22px 65px; color: white; background: linear-gradient(145deg, #ffeb3b, #f57f17); border: none; border-radius: 70px; box-shadow: 0 12px 0 #b5651d; cursor: pointer; }
+        .result-msg { font-size: clamp(35px, 8vw, 65px); line-height: 1.3; margin-bottom: 35px; }
+        .result-retry-btn { font-family: 'Jua', sans-serif; font-size: clamp(26px, 6vw, 36px); padding: 20px 65px; border-radius: 50px; border: none; background: linear-gradient(145deg, #ff4081, #e91e63); color: white; cursor: pointer; box-shadow: 0 10px 0 #c2185b; }
+        .firework { position: absolute; width: 4px; height: 4px; border-radius: 50%; pointer-events: none; }
+    </style>
+</head>
+<body>
+
+    <div id="game-title">풍선 팡팡! 클릭 선수</div>
+
+    <div id="info-board">
+        <div class="stat-group">
+            <span>🎈</span> 남은 풍선: <span id="balloons-left" style="color: #2b8a3e; font-weight:bold;">50</span>개
+        </div>
+        <div class="stat-group">
+            <span>⏱</span> 남은 시간: <span id="timer" style="color: #e03131; font-weight:bold;">30</span>초
+        </div>
+        <button class="top-retry-btn" onclick="location.reload()">다시 시작</button>
+    </div>
+
+    <div id="monitor-frame"></div>
+    <div id="monitor-stand"></div>
+
+    <div id="start-layer" class="overlay-layer">
+        <div class="ready-text">준비됐나요?</div>
+        <button class="giant-start-btn" onclick="startGameProcess()">게임 시작!</button>
+    </div>
+
+    <div id="result-layer" class="overlay-layer" style="display: none;">
+        <div id="result-text" class="result-msg"></div>
+        <button class="result-retry-btn" onclick="location.reload()">다시 도전하기!</button>
+    </div>
+
+<script>
+    const TOTAL_GOAL = 50;  
+    const VIEW_LIMIT = 5;   
+    const GAME_TIME = 30;   
+
+    let poppedCount = 0;      
+    let createdCount = 0;     
+    let timeLeft = GAME_TIME;
+    let gameActive = false;
+    let timerInterval;
+    let currentBaseBorderColor = '#333'; // 현재 설정된 기본 테두리 색상 저장용
+
+    const frame = document.getElementById('monitor-frame');
+    const timerDisplay = document.getElementById('timer');
+    const leftDisplay = document.getElementById('balloons-left');
+    const infoBoard = document.getElementById('info-board');
+    const startLayer = document.getElementById('start-layer');
+    const resultLayer = document.getElementById('result-layer');
+    const resultText = document.getElementById('result-text');
+
+    const monitorBgColors = ['#ffffff', '#f8f9fa', '#e3faf2', '#fff4e6', '#e7f5ff', '#f3f0ff', '#f1f3f5', '#ebfbee'];
+    const monitorBorderColors = ['#333333', '#495057', '#1864ab', '#087f5b', '#d9480f', '#5f3dc4', '#c2255c', '#212529'];
+
+    const colors = [
+        { b: '#FF5252', l: '#ff9999' }, { b: '#FF4081', l: '#ff88bb' },
+        { b: '#E040FB', l: '#ef88ff' }, { b: '#7C4DFF', l: '#aa88ff' },
+        { b: '#536DFE', l: '#8899ff' }, { b: '#448AFF', l: '#88b5ff' },
+        { b: '#40C4FF', l: '#88deff' }, { b: '#FFD740', l: '#ffeb99' },
+        { b: '#FF6E40', l: '#ffaa88' }, { b: '#69F0AE', l: '#aaffdd' }
+    ];
+
+    function changeMonitorColor() {
+        const bg = monitorBgColors[Math.floor(Math.random() * monitorBgColors.length)];
+        currentBaseBorderColor = monitorBorderColors[Math.floor(Math.random() * monitorBorderColors.length)];
+        frame.style.backgroundColor = bg;
+        frame.style.borderColor = currentBaseBorderColor;
+    }
+
+    // ★ 테두리 깜빡임 함수
+    function flashBorder(color) {
+        frame.style.borderColor = color; // 풍선 색으로 변경
+        setTimeout(() => {
+            if(gameActive) frame.style.borderColor = currentBaseBorderColor; // 다시 원래 색으로
+        }, 150);
+    }
+
+    function startGameProcess() {
+        startLayer.style.display = 'none';
+        infoBoard.style.display = 'flex';
+        gameActive = true;
+        changeMonitorColor();
+        for (let i = 0; i < VIEW_LIMIT; i++) {
+            setTimeout(() => createBalloon(), i * 200);
+        }
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            timerDisplay.innerText = timeLeft;
+            if (timeLeft <= 0) {
+                if (poppedCount < TOTAL_GOAL) endGame(false);
+                else endGame(true);
+            }
+        }, 1000);
+    }
+
+    function createBalloon() {
+        if (createdCount >= TOTAL_GOAL || !gameActive) return;
+        createdCount++;
+        const container = document.createElement('div');
+        container.className = 'balloon-container';
+        
+        const baseSize = Math.min(frame.clientWidth, frame.clientHeight) * 0.18;
+        const scale = Math.random() * (1.1 - 0.7) + 0.7; 
+        const w = baseSize * scale;
+        const h = w * 1.3;
+        
+        const body = document.createElement('div');
+        body.className = 'balloon-body';
+        body.style.width = w + 'px';
+        body.style.height = h + 'px';
+        
+        const c = colors[Math.floor(Math.random() * colors.length)];
+        body.style.backgroundColor = c.b;
+        body.style.background = `radial-gradient(circle at 30% 30%, ${c.l}, ${c.b} 65%, rgba(0,0,0,0.12) 150%)`;
+
+        const knot = document.createElement('div');
+        knot.className = 'balloon-knot';
+        knot.style.backgroundColor = c.b;
+        knot.style.width = (w * 0.22) + 'px';
+        knot.style.height = (w * 0.12) + 'px';
+
+        const str = document.createElement('div');
+        str.className = 'balloon-string';
+        str.style.height = (h * 0.45) + 'px';
+
+        container.appendChild(body);
+        container.appendChild(knot);
+        container.appendChild(str);
+
+        const x = Math.random() * (frame.clientWidth - w - 20) + 10;
+        const y = Math.random() * (frame.clientHeight - h - (h*0.45) - 10) + 10;
+        
+        container.style.left = x + 'px';
+        container.style.top = y + 'px';
+        
+        const handlePop = (e) => {
+            e.preventDefault();
+            if (!gameActive || container.classList.contains('popped')) return;
+            
+            // ★ 깜빡임 효과 실행 (풍선의 배경색 c.b 사용)
+            flashBorder(c.b);
+
+            poppedCount++;
+            leftDisplay.innerText = TOTAL_GOAL - poppedCount;
+            container.classList.add('popped');
+            setTimeout(() => {
+                container.remove();
+                if (createdCount < TOTAL_GOAL) createBalloon();
+                if (poppedCount === TOTAL_GOAL) endGame(true);
+            }, 150);
+        };
+
+        container.addEventListener('touchstart', handlePop, {passive: false});
+        container.addEventListener('mousedown', handlePop);
+        frame.appendChild(container);
+    }
+
+    function endGame(isWin) {
+        if (!gameActive) return;
+        gameActive = false;
+        clearInterval(timerInterval);
+        resultLayer.style.display = 'flex';
+        // 게임 종료 시 테두리를 다시 어둡게 고정
+        frame.style.borderColor = '#333';
+        if (isWin) {
+            resultText.innerHTML = "<span style='color:#ffeb3b;'>와아~! 🎉</span><br><span style='color:white; font-size:0.8em;'>완벽한 클릭 선수로군요!</span>";
+            createFireworkEffect();
+        } else {
+            resultText.innerHTML = "<span style='color:#4dabf7;'>아쉬워요! 😢</span><br><span style='color:white; font-size:0.7em;'>조금만 더 빨리 터뜨려볼까요?<br>다시 시작해보세요! 💪</span>";
+        }
+    }
+
+    function createFireworkEffect() {
+        for (let i = 0; i < 35; i++) {
+            setTimeout(() => {
+                const fw = document.createElement('div');
+                fw.className = 'firework';
+                fw.style.left = Math.random() * 100 + 'vw';
+                fw.style.top = Math.random() * 100 + 'vh';
+                const color = colors[Math.floor(Math.random() * colors.length)].b;
+                fw.style.backgroundColor = color;
+                resultLayer.appendChild(fw);
+                const anim = fw.animate([
+                    { transform: 'translate(0,0) scale(1)', opacity: 1 },
+                    { transform: `translate(${(Math.random()-0.5)*120}px, ${(Math.random()-0.5)*120}px) scale(15)`, opacity: 0 }
+                ], { duration: 800 });
+                anim.onfinish = () => fw.remove();
+            }, i * 50);
+        }
+    }
+</script>
+
+</body>
+</html>
