@@ -28,7 +28,6 @@
       position: relative;
     }
 
-    /* 우측 상단 관리자 톱니바퀴 */
     .admin-gear-btn {
       position: absolute;
       top: 16px;
@@ -46,67 +45,66 @@
       color: #64748b;
       transition: all 0.2s;
     }
-    .admin-gear-btn:hover {
-      background: #e2e8f0;
-      color: #334155;
-    }
+    .admin-gear-btn:hover { background: #e2e8f0; color: #334155; }
 
-    /* 버튼 스타일 공통 */
     .btn-main {
       background: #06b6d4;
       color: white;
       border: none;
-      font-size: 24px;
+      font-size: 22px;
       font-weight: 800;
-      padding: 18px 0;
+      padding: 16px 0;
       border-radius: 20px;
       width: 100%;
       cursor: pointer;
-      margin-top: 20px;
+      margin-top: 14px;
       box-shadow: 0 6px 0 #0891b2;
       transition: transform 0.1s, box-shadow 0.1s;
     }
-    .btn-main:active {
-      transform: translateY(4px);
-      box-shadow: 0 2px 0 #0891b2;
+    .btn-main:active { transform: translateY(4px); box-shadow: 0 2px 0 #0891b2; }
+
+    .btn-submit {
+      background: #10b981;
+      color: white;
+      border: none;
+      font-size: 20px;
+      font-weight: 800;
+      padding: 16px 0;
+      border-radius: 20px;
+      width: 100%;
+      cursor: pointer;
+      margin-top: 14px;
+      box-shadow: 0 6px 0 #059669;
+      transition: transform 0.1s, box-shadow 0.1s;
     }
+    .btn-submit:active { transform: translateY(4px); box-shadow: 0 2px 0 #059669; }
 
     .btn-save {
       background: #22c55e;
       color: white;
       border: none;
-      font-size: 17px;
+      font-size: 16px;
       font-weight: 800;
-      padding: 14px 0;
+      padding: 12px 0;
       border-radius: 14px;
       width: 100%;
       cursor: pointer;
-      margin-top: 16px;
+      margin-top: 14px;
       box-shadow: 0 4px 0 #16a34a;
     }
-    .btn-save:active {
-      transform: translateY(3px);
-      box-shadow: 0 1px 0 #16a34a;
-    }
-
     .btn-copy {
       background: #0284c7;
       color: white;
       border: none;
-      font-size: 17px;
+      font-size: 16px;
       font-weight: 800;
-      padding: 14px 0;
+      padding: 12px 0;
       border-radius: 14px;
       width: 100%;
       cursor: pointer;
       margin-top: 10px;
       box-shadow: 0 4px 0 #0369a1;
     }
-    .btn-copy:active {
-      transform: translateY(3px);
-      box-shadow: 0 1px 0 #0369a1;
-    }
-
     .btn-secondary {
       background: #f1f5f9;
       color: #475569;
@@ -120,7 +118,61 @@
       margin-top: 10px;
     }
 
-    /* 진행 바 */
+    /* 학생 정보 입력 카드 */
+    .student-info-box {
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 20px;
+      padding: 16px 12px;
+      margin-bottom: 14px;
+    }
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+    .info-group {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      background: white;
+      border: 2px solid #cbd5e1;
+      border-radius: 14px;
+      padding: 6px 8px;
+    }
+    .info-group:focus-within { border-color: #06b6d4; }
+    .info-input {
+      width: 100%;
+      border: none;
+      outline: none;
+      font-size: 18px;
+      font-weight: 800;
+      text-align: center;
+      color: #0f172a;
+      background: transparent;
+    }
+    .info-label {
+      font-size: 14px;
+      font-weight: bold;
+      color: #64748b;
+      margin-left: 2px;
+      white-space: nowrap;
+    }
+    .name-input-full {
+      width: 100%;
+      font-size: 20px;
+      text-align: center;
+      padding: 12px;
+      border-radius: 14px;
+      border: 2px solid #cbd5e1;
+      outline: none;
+      font-weight: 800;
+      background: white;
+      color: #0f172a;
+    }
+    .name-input-full:focus { border-color: #06b6d4; }
+
     .progress-bar-bg {
       width: 100%;
       height: 18px;
@@ -130,12 +182,7 @@
       margin-bottom: 20px;
       border: 2px solid #cbd5e1;
     }
-    .progress-bar {
-      width: 100%;
-      height: 100%;
-      background: #f59e0b;
-      transition: width 0.1s linear;
-    }
+    .progress-bar { width: 100%; height: 100%; background: #f59e0b; transition: width 0.1s linear; }
 
     .badge {
       display: inline-block;
@@ -148,7 +195,6 @@
       margin-bottom: 8px;
     }
 
-    /* 연습 화면 글자 및 입력창 */
     .target-word {
       font-size: clamp(40px, 12vw, 56px);
       font-weight: 900;
@@ -169,61 +215,30 @@
       font-weight: 800;
       background: #f8fafc;
       color: #0f172a;
-      transition: all 0.2s;
     }
-    .typing-input:focus {
-      border-color: #06b6d4;
-      background: white;
-      box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.2);
-    }
+    .typing-input:focus { border-color: #06b6d4; background: white; }
 
-    /* 완료 화면 단어 목록 카드 */
-    .word-review-card {
-      background: #f0fdf4;
-      border-radius: 24px;
-      padding: 20px 16px;
-      border: 2px solid #bbf7d0;
-      margin: 20px 0;
-      text-align: center;
+    .result-section {
+      border-radius: 18px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      text-align: left;
     }
-    .word-review-title {
-      font-size: 16px;
-      font-weight: 800;
-      color: #15803d;
-      margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-    }
-    .word-chip-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      justify-content: center;
-      max-height: 200px;
-      overflow-y: auto;
-      padding: 4px;
-    }
-    .word-chip {
-      background: white;
-      color: #0f172a;
-      font-size: 20px;
-      font-weight: 800;
-      padding: 10px 18px;
-      border-radius: 16px;
-      border: 2px solid #86efac;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.04);
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
+    .result-section.correct { background: #f0fdf4; border: 2px solid #bbf7d0; }
+    .result-section.retry { background: #fffbeb; border: 2px solid #fde68a; }
+    .section-title { font-size: 15px; font-weight: 800; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+    .correct .section-title { color: #166534; }
+    .retry .section-title { color: #b45309; }
 
-    /* 화면 전환용 클래스 */
+    .chip-container { display: flex; flex-wrap: wrap; gap: 6px; max-height: 110px; overflow-y: auto; padding: 2px; }
+    .chip { background: white; font-size: 15px; font-weight: 800; padding: 6px 12px; border-radius: 12px; }
+    .correct .chip { color: #15803d; border: 1.5px solid #86efac; }
+    .retry .chip { color: #b45309; border: 1.5px solid #fcd34d; }
+    .empty-msg { font-size: 13px; color: #94a3b8; font-weight: bold; }
+
     .screen { display: none; }
     .screen.active { display: block; }
 
-    /* 모달 공통 */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -240,44 +255,31 @@
     .modal-content {
       background: white;
       width: 100%;
-      max-width: 440px;
+      max-width: 460px;
       border-radius: 28px;
       padding: 24px;
       text-align: left;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
       border: 3px solid #bbf7d0;
       max-height: 90vh;
       overflow-y: auto;
     }
-    .modal-content h2 {
-      margin-top: 0;
-      color: #15803d;
-      font-size: 22px;
-      text-align: center;
-    }
-    .modal-content label {
-      display: block;
-      font-weight: bold;
-      margin-top: 14px;
-      color: #166534;
-      font-size: 14px;
-    }
+    .modal-content h2 { margin-top: 0; color: #15803d; font-size: 20px; text-align: center; }
+    .modal-content label { display: block; font-weight: bold; margin-top: 10px; color: #166534; font-size: 13px; }
     .modal-content input, .modal-content textarea {
       width: 100%;
-      padding: 12px 14px;
-      margin-top: 6px;
-      border-radius: 12px;
+      padding: 9px 12px;
+      margin-top: 4px;
+      border-radius: 10px;
       border: 2px solid #cbd5e1;
-      font-size: 15px;
+      font-size: 14px;
       outline: none;
     }
-    .modal-content input:focus, .modal-content textarea:focus {
-      border-color: #22c55e;
-    }
-    .modal-content textarea {
-      height: 110px;
-      resize: vertical;
-      line-height: 1.5;
+    .modal-content textarea { height: 80px; resize: vertical; }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
     }
 
     .alert-box {
@@ -285,7 +287,7 @@
       background: #f0fdf4;
       border: 2px dashed #86efac;
       border-radius: 14px;
-      padding: 12px;
+      padding: 10px;
       display: none;
       text-align: center;
     }
@@ -294,17 +296,33 @@
 <body>
 
   <div class="app-container">
-    <!-- 우측 상단 선생님 설정 버튼 -->
     <button class="admin-gear-btn" onclick="openPasswordModal()" title="선생님 설정">⚙️</button>
 
-    <!-- [화면 1] 학생 시작 화면 -->
+    <!-- [화면 1] 학생 시작 화면 (학년 1 기본값 설정) -->
     <div id="screenStart" class="screen active">
-      <div style="font-size: 56px; margin: 10px 0 6px;">⌨️</div>
-      <h1 style="color: #0891b2; font-size: 30px; margin: 0 0 10px;">신나는 타자 연습!</h1>
-      <p style="color: #64748b; font-size: 17px; margin-bottom: 24px;">준비가 되면 시작 버튼을 눌러요!</p>
+      <div style="font-size: 48px; margin: 4px 0 2px;">⌨️</div>
+      <h1 style="color: #0891b2; font-size: 26px; margin: 0 0 12px;">신나는 타자 연습!</h1>
       
-      <div style="background: #f8fafc; border-radius: 16px; padding: 14px; margin-bottom: 16px; border: 1px dashed #cbd5e1;">
-        <span style="color: #475569; font-weight: bold; font-size: 15px;">
+      <div class="student-info-box">
+        <div class="info-row">
+          <div class="info-group">
+            <input type="number" id="inputGrade" class="info-input" value="1" min="1" max="6">
+            <span class="info-label">학년</span>
+          </div>
+          <div class="info-group">
+            <input type="number" id="inputClass" class="info-input" placeholder="1" min="1" max="20">
+            <span class="info-label">반</span>
+          </div>
+          <div class="info-group">
+            <input type="number" id="inputNumber" class="info-input" placeholder="1" min="1" max="40">
+            <span class="info-label">번</span>
+          </div>
+        </div>
+        <input type="text" id="inputName" class="name-input-full" placeholder="이름 (예: 홍길동)" autocomplete="off">
+      </div>
+
+      <div style="background: #f8fafc; border-radius: 14px; padding: 10px; margin-bottom: 10px; border: 1px dashed #cbd5e1;">
+        <span style="color: #475569; font-weight: bold; font-size: 14px;">
           총 <span id="totalWordCountDisplay" style="color: #0891b2;">0</span>문제 · 단어당 <span id="timeLimitDisplay" style="color: #f59e0b;">0</span>초
         </span>
       </div>
@@ -312,67 +330,91 @@
       <button class="btn-main" onclick="startGame()">시작하기</button>
     </div>
 
-    <!-- [화면 2] 학생 타자 연습 화면 -->
+    <!-- [화면 2] 타자 연습 화면 -->
     <div id="screenGame" class="screen">
       <div class="progress-bar-bg"><div class="progress-bar" id="timerBar"></div></div>
       <div class="badge" id="stepCounter">1 / 5</div>
       <div class="target-word" id="targetWord">단어</div>
       
-      <input type="text" 
-             id="userInput" 
-             class="typing-input" 
-             placeholder="여기에 입력!" 
-             autocomplete="off" 
-             autocorrect="off" 
-             autocapitalize="off" 
-             spellcheck="false">
+      <input type="text" id="userInput" class="typing-input" placeholder="여기에 입력!" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
     </div>
 
-    <!-- [화면 3] 연습 완료 화면 (틀린 개수 제거 및 단어 목록 표시) -->
+    <!-- [화면 3] 연습 완료 화면 -->
     <div id="screenResult" class="screen">
-      <div style="font-size: 58px; margin: 8px 0 4px;">🌟</div>
-      <h1 style="font-size: 28px; margin: 0 0 8px; color: #0f172a;">오늘의 타자 연습 완료!</h1>
-      <p style="color: #15803d; font-size: 17px; font-weight: bold; margin: 0 0 16px;">
-        끝까지 멋지게 연습했어요! 👏
+      <div style="font-size: 46px; margin: 2px 0;">🎉</div>
+      <h1 style="font-size: 24px; margin: 0 0 2px; color: #0f172a;">타자 연습 완료!</h1>
+      <p style="color: #059669; font-size: 15px; font-weight: bold; margin: 0 0 12px;">
+        끝까지 정말 잘했어요! 👏
       </p>
 
-      <div class="word-review-card">
-        <div class="word-review-title">
-          <span>✨ 오늘 연습한 단어 친구들</span>
-        </div>
-        <div class="word-chip-container" id="completedWordChips"></div>
+      <div class="result-section correct">
+        <div class="section-title"><span>✨ 내가 맞힌 단어</span></div>
+        <div class="chip-container" id="correctChips"></div>
       </div>
 
-      <button class="btn-main" onclick="resetToStart()">한 번 더 연습하기</button>
+      <div class="result-section retry">
+        <div class="section-title"><span>🌱 다시 도전해 볼 단어</span></div>
+        <div class="chip-container" id="retryChips"></div>
+      </div>
+
+      <button class="btn-submit" id="btnSubmitForm" onclick="submitToGoogleForm()">📤 선생님께 결과 보내기</button>
+      <button class="btn-secondary" onclick="resetToStart()">다시 연습하기</button>
     </div>
   </div>
 
-  <!-- [모달 1] 선생님 비밀번호 입력창 -->
+  <!-- [모달 1] 비밀번호 입력창 -->
   <div id="passwordModal" class="modal-overlay">
-    <div class="modal-content" style="max-width: 340px;">
+    <div class="modal-content" style="max-width: 320px;">
       <h2>🔒 선생님 확인</h2>
-      <p style="font-size: 14px; color: #64748b; text-align: center; margin: 0 0 16px;">
-        관리자 비밀번호를 입력해주세요.
-      </p>
       <input type="password" id="adminPasswordInput" placeholder="비밀번호 입력" onkeydown="if(event.key==='Enter') checkPassword()">
       <button class="btn-save" onclick="checkPassword()">확인</button>
       <button class="btn-secondary" onclick="closeModals()">닫기</button>
     </div>
   </div>
 
-  <!-- [모달 2] 선생님 문제 설정창 -->
+  <!-- [모달 2] 문제 & 6개 구글폼 Entry 설정창 -->
   <div id="settingsModal" class="modal-overlay">
     <div class="modal-content">
-      <h2>✏️ 단어 및 시간 설정</h2>
+      <h2>✏️ 통계용 구글 폼 & 문제 설정</h2>
       
       <label for="inputTimeLimit">단어당 제한 시간 (초)</label>
       <input type="number" id="inputTimeLimit" value="7" min="3" max="60">
 
-      <label for="inputWordList">연습할 단어 (줄바꿈 또는 쉼표로 구분)</label>
-      <textarea id="inputWordList" placeholder="사과&#10;바나나&#10;호랑이&#10;대한민국"></textarea>
+      <label for="inputWordList">연습할 단어 (줄바꿈 또는 쉼표 구분)</label>
+      <textarea id="inputWordList"></textarea>
+
+      <hr style="border:none; border-top:1px dashed #cbd5e1; margin:14px 0 6px;">
+
+      <label style="color:#0369a1;">📊 구글 설문지 Form URL (formResponse 주소)</label>
+      <input type="text" id="inputFormUrl" placeholder="https://docs.google.com/forms/d/e/.../formResponse">
+
+      <div class="form-grid">
+        <div>
+          <label style="color:#0369a1;">1. 학년 Entry</label>
+          <input type="text" id="inputEntryGrade" placeholder="entry.111111">
+        </div>
+        <div>
+          <label style="color:#0369a1;">2. 반 Entry</label>
+          <input type="text" id="inputEntryClass" placeholder="entry.222222">
+        </div>
+        <div>
+          <label style="color:#0369a1;">3. 번호 Entry</label>
+          <input type="text" id="inputEntryNumber" placeholder="entry.333333">
+        </div>
+        <div>
+          <label style="color:#0369a1;">4. 이름 Entry</label>
+          <input type="text" id="inputEntryName" placeholder="entry.444444">
+        </div>
+      </div>
+
+      <label style="color:#0369a1;">5. 맞힌 단어 Entry</label>
+      <input type="text" id="inputEntryCorrect" placeholder="entry.555555">
+
+      <label style="color:#0369a1;">6. 다시 볼 단어 Entry</label>
+      <input type="text" id="inputEntryRetry" placeholder="entry.666666">
 
       <label for="inputNewPassword">비밀번호 변경 (선택)</label>
-      <input type="password" id="inputNewPassword" placeholder="변경할 비밀번호를 입력하세요">
+      <input type="password" id="inputNewPassword" placeholder="새 비밀번호">
 
       <button class="btn-save" onclick="saveSettingsOnly()">💾 1. 이 컴퓨터에 설정 저장</button>
       <button class="btn-copy" onclick="generateAndCopyLink()">🔗 2. 학생용 배포 링크 복사</button>
@@ -393,10 +435,24 @@
     let words = [...DEFAULT_WORDS];
     let timeLimit = DEFAULT_TIME;
     let currentPassword = DEFAULT_PW;
+
+    let formConfig = {
+      url: "",
+      gradeEntry: "",
+      classEntry: "",
+      numberEntry: "",
+      nameEntry: "",
+      correctEntry: "",
+      retryEntry: ""
+    };
     
+    let studentData = { grade: "1", ban: "", num: "", name: "" };
     let currentIndex = 0;
     let timerInterval = null;
     let timeLeft = 0;
+
+    let correctList = [];
+    let retryList = [];
 
     function initData() {
       const savedPw = localStorage.getItem('typing_admin_pw');
@@ -410,13 +466,12 @@
           if (parsed.w && parsed.w.length > 0) {
             words = parsed.w;
             timeLimit = parsed.t || DEFAULT_TIME;
+            if (parsed.f) formConfig = parsed.f;
             updateStartDisplay();
             return;
           }
         }
-      } catch (e) {
-        console.log("URL 데이터 없음/일반 로드");
-      }
+      } catch (e) {}
 
       const savedConfig = localStorage.getItem('typing_app_config');
       if (savedConfig) {
@@ -424,6 +479,7 @@
           const parsed = JSON.parse(savedConfig);
           words = parsed.w || DEFAULT_WORDS;
           timeLimit = parsed.t || DEFAULT_TIME;
+          if (parsed.f) formConfig = parsed.f;
         } catch(e) {}
       }
 
@@ -478,6 +534,13 @@
     function openSettingsModal() {
       document.getElementById('inputTimeLimit').value = timeLimit;
       document.getElementById('inputWordList').value = words.join('\n');
+      document.getElementById('inputFormUrl').value = formConfig.url || '';
+      document.getElementById('inputEntryGrade').value = formConfig.gradeEntry || '';
+      document.getElementById('inputEntryClass').value = formConfig.classEntry || '';
+      document.getElementById('inputEntryNumber').value = formConfig.numberEntry || '';
+      document.getElementById('inputEntryName').value = formConfig.nameEntry || '';
+      document.getElementById('inputEntryCorrect').value = formConfig.correctEntry || '';
+      document.getElementById('inputEntryRetry').value = formConfig.retryEntry || '';
       document.getElementById('inputNewPassword').value = '';
       document.getElementById('modalAlertBox').style.display = 'none';
       document.getElementById('settingsModal').classList.add('active');
@@ -493,7 +556,17 @@
       const parsedWords = rawWords.split(/[\n,]+/).map(w => w.trim()).filter(w => w.length > 0);
       const newPw = document.getElementById('inputNewPassword').value.trim();
 
-      return { timeVal, parsedWords, newPw };
+      const newFormConfig = {
+        url: document.getElementById('inputFormUrl').value.trim(),
+        gradeEntry: document.getElementById('inputEntryGrade').value.trim(),
+        classEntry: document.getElementById('inputEntryClass').value.trim(),
+        numberEntry: document.getElementById('inputEntryNumber').value.trim(),
+        nameEntry: document.getElementById('inputEntryName').value.trim(),
+        correctEntry: document.getElementById('inputEntryCorrect').value.trim(),
+        retryEntry: document.getElementById('inputEntryRetry').value.trim()
+      };
+
+      return { timeVal, parsedWords, newPw, newFormConfig };
     }
 
     function saveSettingsOnly() {
@@ -502,12 +575,13 @@
 
       words = form.parsedWords;
       timeLimit = form.timeVal;
+      formConfig = form.newFormConfig;
       if (form.newPw) {
         currentPassword = form.newPw;
         localStorage.setItem('typing_admin_pw', currentPassword);
       }
 
-      localStorage.setItem('typing_app_config', JSON.stringify({ w: words, t: timeLimit }));
+      localStorage.setItem('typing_app_config', JSON.stringify({ w: words, t: timeLimit, f: formConfig }));
       updateStartDisplay();
 
       const alertBox = document.getElementById('modalAlertBox');
@@ -522,15 +596,16 @@
 
       words = form.parsedWords;
       timeLimit = form.timeVal;
+      formConfig = form.newFormConfig;
       if (form.newPw) {
         currentPassword = form.newPw;
         localStorage.setItem('typing_admin_pw', currentPassword);
       }
 
-      localStorage.setItem('typing_app_config', JSON.stringify({ w: words, t: timeLimit }));
+      localStorage.setItem('typing_app_config', JSON.stringify({ w: words, t: timeLimit, f: formConfig }));
       updateStartDisplay();
 
-      const payload = { w: words, t: timeLimit };
+      const payload = { w: words, t: timeLimit, f: formConfig };
       const jsonStr = JSON.stringify(payload);
       const encodedHash = btoa(encodeURIComponent(jsonStr));
 
@@ -542,7 +617,7 @@
       navigator.clipboard.writeText(fullShareUrl).then(() => {
         const alertBox = document.getElementById('modalAlertBox');
         const alertMsg = document.getElementById('modalAlertMsg');
-        alertMsg.innerHTML = "✨ 학생용 링크가 복사되었습니다!<br>학생들에게 붙여넣기(Ctrl+V)로 공유하세요.";
+        alertMsg.innerHTML = "✨ 배포 링크가 복사되었습니다!<br>학생들에게 붙여넣기(Ctrl+V)로 공유하세요.";
         alertBox.style.display = 'block';
       }).catch(() => {
         prompt("아래 링크를 복사하여 학생들에게 전달하세요:", fullShareUrl);
@@ -550,7 +625,21 @@
     }
 
     function startGame() {
+      const grade = document.getElementById('inputGrade').value.trim();
+      const ban = document.getElementById('inputClass').value.trim();
+      const num = document.getElementById('inputNumber').value.trim();
+      const name = document.getElementById('inputName').value.trim();
+
+      if (!grade || !ban || !num || !name) {
+        alert("학년, 반, 번호, 이름을 모두 입력해주세요!");
+        return;
+      }
+
+      studentData = { grade, ban, num, name };
+
       currentIndex = 0;
+      correctList = [];
+      retryList = [];
       showScreen('screenGame');
       loadWord();
     }
@@ -582,6 +671,7 @@
 
         if (timeLeft <= 0) {
           clearInterval(timerInterval);
+          retryList.push(words[currentIndex]);
           currentIndex++;
           loadWord();
         }
@@ -594,6 +684,13 @@
       if (!text) return;
 
       clearInterval(timerInterval);
+
+      if (text === words[currentIndex]) {
+        correctList.push(words[currentIndex]);
+      } else {
+        retryList.push(words[currentIndex]);
+      }
+
       currentIndex++;
       loadWord();
     }
@@ -601,17 +698,75 @@
     function finishGame() {
       clearInterval(timerInterval);
       
-      const chipContainer = document.getElementById('completedWordChips');
-      chipContainer.innerHTML = '';
-      
-      words.forEach(w => {
-        const chip = document.createElement('div');
-        chip.className = 'word-chip';
-        chip.innerHTML = `<span>🌱</span> ${w}`;
-        chipContainer.appendChild(chip);
-      });
+      const correctBox = document.getElementById('correctChips');
+      correctBox.innerHTML = '';
+      if (correctList.length > 0) {
+        correctList.forEach(w => {
+          const chip = document.createElement('div');
+          chip.className = 'chip';
+          chip.innerText = `👏 ${w}`;
+          correctBox.appendChild(chip);
+        });
+      } else {
+        correctBox.innerHTML = '<div class="empty-msg">다음엔 더 많이 맞힐 수 있어요! 💪</div>';
+      }
+
+      const retryBox = document.getElementById('retryChips');
+      retryBox.innerHTML = '';
+      if (retryList.length > 0) {
+        retryList.forEach(w => {
+          const chip = document.createElement('div');
+          chip.className = 'chip';
+          chip.innerText = `🌱 ${w}`;
+          retryBox.appendChild(chip);
+        });
+      } else {
+        retryBox.innerHTML = '<div class="empty-msg">모든 단어를 다 맞혔어요! 💯</div>';
+      }
+
+      const submitBtn = document.getElementById('btnSubmitForm');
+      if (!formConfig.url) {
+        submitBtn.style.display = 'none';
+      } else {
+        submitBtn.style.display = 'block';
+        submitBtn.disabled = false;
+        submitBtn.innerText = "📤 선생님께 결과 보내기";
+      }
 
       showScreen('screenResult');
+    }
+
+    function submitToGoogleForm() {
+      if (!formConfig.url) {
+        alert("선생님이 구글 설문지 링크를 설정하지 않았습니다.");
+        return;
+      }
+
+      const btn = document.getElementById('btnSubmitForm');
+      btn.disabled = true;
+      btn.innerText = "전송 중... ⏳";
+
+      const formData = new FormData();
+      if (formConfig.gradeEntry) formData.append(formConfig.gradeEntry, studentData.grade);
+      if (formConfig.classEntry) formData.append(formConfig.classEntry, studentData.ban);
+      if (formConfig.numberEntry) formData.append(formConfig.numberEntry, studentData.num);
+      if (formConfig.nameEntry) formData.append(formConfig.nameEntry, studentData.name);
+      if (formConfig.correctEntry) formData.append(formConfig.correctEntry, correctList.join(', ') || '없음');
+      if (formConfig.retryEntry) formData.append(formConfig.retryEntry, retryList.join(', ') || '없음');
+
+      fetch(formConfig.url, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: formData
+      }).then(() => {
+        btn.innerText = "✅ 선생님께 전송 완료!";
+        btn.style.background = "#059669";
+        alert("선생님께 결과가 성공적으로 전송되었습니다! 참 잘했어요!");
+      }).catch(err => {
+        btn.disabled = false;
+        btn.innerText = "📤 다시 보내기";
+        alert("전송 중 오류가 발생했습니다. 다시 시도해 주세요.");
+      });
     }
 
     function resetToStart() {
