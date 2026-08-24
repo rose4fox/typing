@@ -371,7 +371,7 @@
     </div>
   </div>
 
-  <!-- [모달 2] 설정창 -->
+  <!-- [모달 2] 설정창 (점수 Entry 포함 총 7개) -->
   <div id="settingsModal" class="modal-overlay">
     <div class="modal-content">
       <h2>✏️ 통계용 구글 폼 & 문제 설정</h2>
@@ -412,6 +412,9 @@
       <label style="color:#0369a1;">6. 다시 볼 단어 Entry</label>
       <input type="text" id="inputEntryRetry" placeholder="entry.666666">
 
+      <label style="color:#0369a1;">7. 점수(맞힌 개수) Entry ⭐</label>
+      <input type="text" id="inputEntryScore" placeholder="entry.777777">
+
       <label for="inputNewPassword">비밀번호 변경 (선택)</label>
       <input type="password" id="inputNewPassword" placeholder="새 비밀번호">
 
@@ -442,7 +445,8 @@
       numberEntry: "",
       nameEntry: "",
       correctEntry: "",
-      retryEntry: ""
+      retryEntry: "",
+      scoreEntry: ""
     };
     
     let studentData = { grade: "1", ban: "", num: "", name: "" };
@@ -544,6 +548,7 @@
       document.getElementById('inputEntryName').value = formConfig.nameEntry || '';
       document.getElementById('inputEntryCorrect').value = formConfig.correctEntry || '';
       document.getElementById('inputEntryRetry').value = formConfig.retryEntry || '';
+      document.getElementById('inputEntryScore').value = formConfig.scoreEntry || '';
       document.getElementById('inputNewPassword').value = '';
       document.getElementById('modalAlertBox').style.display = 'none';
       document.getElementById('settingsModal').classList.add('active');
@@ -566,7 +571,8 @@
         numberEntry: document.getElementById('inputEntryNumber').value.trim(),
         nameEntry: document.getElementById('inputEntryName').value.trim(),
         correctEntry: document.getElementById('inputEntryCorrect').value.trim(),
-        retryEntry: document.getElementById('inputEntryRetry').value.trim()
+        retryEntry: document.getElementById('inputEntryRetry').value.trim(),
+        scoreEntry: document.getElementById('inputEntryScore').value.trim()
       };
 
       return { timeVal, parsedWords, newPw, newFormConfig };
@@ -727,7 +733,6 @@
         retryBox.innerHTML = '<div class="empty-msg">모든 단어를 다 맞혔어요! 💯</div>';
       }
 
-      // 항상 전송 버튼을 노출하되, URL 설정 여부에 따라 알림 분기
       const submitBtn = document.getElementById('btnSubmitForm');
       submitBtn.style.display = 'block';
       submitBtn.disabled = false;
@@ -747,6 +752,12 @@
       btn.disabled = true;
       btn.innerText = "전송 중... ⏳";
 
+      // 점수 계산 (예: 5/6개 (83점))
+      const totalWords = words.length;
+      const correctCount = correctList.length;
+      const scorePercentage = Math.round((correctCount / totalWords) * 100);
+      const scoreSummary = `${correctCount}개 / ${totalWords}개 (${scorePercentage}점)`;
+
       const formData = new FormData();
       if (formConfig.gradeEntry) formData.append(formConfig.gradeEntry, studentData.grade);
       if (formConfig.classEntry) formData.append(formConfig.classEntry, studentData.ban);
@@ -754,6 +765,7 @@
       if (formConfig.nameEntry) formData.append(formConfig.nameEntry, studentData.name);
       if (formConfig.correctEntry) formData.append(formConfig.correctEntry, correctList.join(', ') || '없음');
       if (formConfig.retryEntry) formData.append(formConfig.retryEntry, retryList.join(', ') || '없음');
+      if (formConfig.scoreEntry) formData.append(formConfig.scoreEntry, scoreSummary);
 
       fetch(formConfig.url, {
         method: 'POST',
