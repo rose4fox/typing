@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>알록달록 솜사탕 팡팡</title>
+    <meta property="og:title" content="🍭 알록달록 솜사탕 팡팡">
+    <meta property="og:description" content="초등 저학년 마우스 클릭 연습 게임">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Jua&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Dongle:wght@700&display=swap');
@@ -11,7 +13,7 @@
         body, html {
             height: 100%; margin: 0;
             display: flex; justify-content: center; align-items: center;
-            background: #fff4e6; /* 🍊 따뜻하고 화사한 오렌지 파스텔 배경 */
+            background: #fff4e6;
             font-family: 'Jua', sans-serif;
             overflow: hidden; user-select: none;
         }
@@ -47,7 +49,6 @@
         }
         .fancy-btn:active { transform: translateY(4px); box-shadow: 0 4px 0 #d9480f; }
 
-        /* 🔄 게임 중 다시 시작 버튼 스타일 */
         #reset-btn {
             position: absolute; bottom: 20px; right: 30px;
             padding: 8px 15px; font-size: 18px; color: #f76707;
@@ -68,7 +69,7 @@
         .candy-container {
             width: clamp(105px, 13vw, 150px); height: clamp(105px, 13vw, 150px);
             position: relative; display: inline-block; cursor: pointer;
-            transition: transform 0.1s; filter: drop-shadow(0 10px 0 rgba(0,0,0,0.08));
+            filter: drop-shadow(0 10px 0 rgba(0,0,0,0.08));
         }
 
         .candy-svg { 
@@ -76,13 +77,33 @@
             filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15)); 
         }
 
-        /* 3D 솜사탕 신규 4종 색상 (핑크/오렌지/네이비/퍼플) */
+        /* 🎈 솜사탕 둥실둥실 흔들림 애니메이션 */
+        .float-1 { animation: floating1 2.2s infinite ease-in-out alternate; }
+        .float-2 { animation: floating2 2.6s infinite ease-in-out alternate; }
+        .float-3 { animation: floating3 2.0s infinite ease-in-out alternate; }
+        .float-4 { animation: floating4 2.4s infinite ease-in-out alternate; }
+
+        @keyframes floating1 {
+            0% { transform: translateY(0px) rotate(0deg); }
+            100% { transform: translateY(-14px) translateX(6px) rotate(3deg); }
+        }
+        @keyframes floating2 {
+            0% { transform: translateY(-10px) translateX(-5px) rotate(-3deg); }
+            100% { transform: translateY(8px) translateX(5px) rotate(2deg); }
+        }
+        @keyframes floating3 {
+            0% { transform: translateY(6px) translateX(6px) rotate(2deg); }
+            100% { transform: translateY(-12px) translateX(-6px) rotate(-3deg); }
+        }
+        @keyframes floating4 {
+            0% { transform: translateY(0px) translateX(-6px) rotate(-2deg); }
+            100% { transform: translateY(-15px) translateX(4px) rotate(3deg); }
+        }
+
         .pink .candy-puff { fill: url(#grad-candy-pink); }
         .orange .candy-puff { fill: url(#grad-candy-orange); }
         .navy .candy-puff { fill: url(#grad-candy-navy); }
         .purple .candy-puff { fill: url(#grad-candy-purple); }
-
-        .candy-container:active { transform: translateY(6px) scale(0.95); filter: none; }
 
         .target-section {
             background: #fff4e6; border-radius: 35px;
@@ -90,7 +111,11 @@
         }
         .instruction { font-size: clamp(18px, 2vw, 24px); color: #f76707; margin-bottom: 8px; }
 
-        #button-area { display: flex; justify-content: space-around; padding: 10px 0; align-items: center; }
+        #button-area { 
+            display: flex; justify-content: space-around; 
+            padding: 15px 0; align-items: center; 
+            min-height: 170px; /* 흔들릴 공간 확보 */
+        }
 
         .ouch-emoji {
             position: absolute; top: -10px; left: 50%; transform: translateX(-50%); 
@@ -101,13 +126,12 @@
         }
         .show-ouch { opacity: 1; transform: translateX(-50%) translateY(-45px) rotate(-5deg); }
 
-        #message-hint { margin-top: 15px; font-size: clamp(22px, 2.5vw, 28px); color: #f76707; height: 35px; }
+        #message-hint { margin-top: 10px; font-size: clamp(22px, 2.5vw, 28px); color: #f76707; height: 35px; }
         .confetti { position: absolute; width: 12px; height: 12px; z-index: 150; pointer-events: none; }
     </style>
 </head>
 <body>
 
-    <!-- 🌟 100% 투명 배경 + 4종 색상 그래디언트 정의 -->
     <svg width="0" height="0" style="position:absolute;">
         <defs>
             <linearGradient id="grad-stick" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -116,25 +140,21 @@
                 <stop offset="100%" stop-color="#ced4da" />
             </linearGradient>
 
-            <!-- 1. 핑크 솜사탕 -->
             <radialGradient id="grad-candy-pink" cx="35%" cy="30%" r="75%">
                 <stop offset="0%" stop-color="#ffc9db" />
                 <stop offset="45%" stop-color="#f783ac" />
                 <stop offset="100%" stop-color="#c2255c" />
             </radialGradient>
-            <!-- 2. 오렌지 솜사탕 -->
             <radialGradient id="grad-candy-orange" cx="35%" cy="30%" r="75%">
                 <stop offset="0%" stop-color="#ffe8cc" />
                 <stop offset="45%" stop-color="#ff922b" />
                 <stop offset="100%" stop-color="#d9480f" />
             </radialGradient>
-            <!-- 3. 네이비 솜사탕 -->
             <radialGradient id="grad-candy-navy" cx="35%" cy="30%" r="75%">
                 <stop offset="0%" stop-color="#748ffc" />
                 <stop offset="45%" stop-color="#364fc7" />
                 <stop offset="100%" stop-color="#182463" />
             </radialGradient>
-            <!-- 4. 퍼플 솜사탕 -->
             <radialGradient id="grad-candy-purple" cx="35%" cy="30%" r="75%">
                 <stop offset="0%" stop-color="#eebefa" />
                 <stop offset="45%" stop-color="#ae3ec9" />
@@ -146,7 +166,7 @@
     <div id="game-container">
         <div id="start-layer" class="overlay" style="display: flex;">
             <h1>🍭 알록달록 솜사탕 팡팡</h1>
-            <p class="result-msg">똑같은 색깔의 솜사탕을 고르세요!<br>10개를 맞히면 시간이 늘어나요!</p>
+            <p class="result-msg">흔들리는 솜사탕 중 똑같은 색을 고르세요!<br>10개를 맞히면 시간이 늘어나요!</p>
             <button class="fancy-btn" onclick="startGame()">솜사탕 여행 시작!</button>
         </div>
 
@@ -184,6 +204,7 @@
     <script>
         let timeLeft = 30, problemCount = 0, targetColor = "", timerInterval, isClickable = true;
         const colors = ['pink', 'orange', 'navy', 'purple'];
+        const floatClasses = ['float-1', 'float-2', 'float-3', 'float-4'];
 
         function startGame() {
             document.querySelectorAll('.overlay').forEach(el => el.style.display = 'none');
@@ -211,15 +232,17 @@
             }, 1000);
         }
 
+        // 보기 솜사탕 4개의 순서를 섞고 개별 흔들림 클래스 부여
         function renderButtons() {
             const btnArea = document.getElementById('button-area');
             btnArea.innerHTML = '';
             
             const shuffledColors = [...colors].sort(() => Math.random() - 0.5);
+            const shuffledFloats = [...floatClasses].sort(() => Math.random() - 0.5);
 
-            shuffledColors.forEach(color => {
+            shuffledColors.forEach((color, idx) => {
                 const btn = document.createElement('div');
-                btn.className = `candy-container ${color}`;
+                btn.className = `candy-container ${color} ${shuffledFloats[idx]}`;
                 btn.onclick = () => checkAnswer(color, btn);
                 btn.innerHTML = `
                     <svg class="candy-svg" viewBox="0 0 100 100">
