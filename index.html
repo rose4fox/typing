@@ -168,7 +168,7 @@
     }
     .name-input-full:focus { border-color: #06b6d4; }
 
-    /* ★ 안내 예시 글자(Placeholder)를 연한 회색과 얇은 글씨로 확실하게 변경 ★ */
+    /* 연한 회색 placeholder 강제 스타일 */
     .info-input::placeholder,
     .name-input-full::placeholder {
       color: #cbd5e1 !important;
@@ -320,7 +320,7 @@
   <div class="app-container">
     <button class="admin-gear-btn" onclick="openPasswordModal()" title="선생님 설정">⚙️</button>
 
-    <!-- [화면 1] 학생 시작 화면 (연한 회색 안내 문구 적용) -->
+    <!-- [화면 1] 학생 시작 화면 -->
     <div id="screenStart" class="screen active">
       <div style="font-size: 48px; margin: 4px 0 2px;">⌨️</div>
       <h1 style="color: #0891b2; font-size: 26px; margin: 0 0 12px;">신나는 타자 연습!</h1>
@@ -394,7 +394,7 @@
     </div>
   </div>
 
-  <!-- [모달 2] 설정창 -->
+  <!-- [모달 2] 설정창 (총 8개 항목) -->
   <div id="settingsModal" class="modal-overlay">
     <div class="modal-content">
       <h2>✏️ 통계용 구글 폼 & 문제 설정</h2>
@@ -435,8 +435,16 @@
       <label style="color:#0369a1;">6. 다시 볼 단어 Entry</label>
       <input type="text" id="inputEntryRetry" placeholder="entry.666666">
 
-      <label style="color:#0369a1;">7. 점수(맞힌 개수) Entry</label>
-      <input type="text" id="inputEntryScore" placeholder="entry.777777">
+      <div class="form-grid">
+        <div>
+          <label style="color:#0369a1;">7. 맞힌 개수 Entry ⭐</label>
+          <input type="text" id="inputEntryCorrectCount" placeholder="entry.777777">
+        </div>
+        <div>
+          <label style="color:#0369a1;">8. 점수 Entry ⭐</label>
+          <input type="text" id="inputEntryScore" placeholder="entry.888888">
+        </div>
+      </div>
 
       <label for="inputNewPassword">비밀번호 변경 (선택)</label>
       <input type="password" id="inputNewPassword" placeholder="새 비밀번호">
@@ -461,6 +469,7 @@
     let timeLimit = DEFAULT_TIME;
     let currentPassword = DEFAULT_PW;
 
+    // 분리된 8개 구글 폼 설정 객체
     let formConfig = {
       url: "",
       gradeEntry: "",
@@ -469,6 +478,7 @@
       nameEntry: "",
       correctEntry: "",
       retryEntry: "",
+      correctCountEntry: "",
       scoreEntry: ""
     };
     
@@ -571,6 +581,7 @@
       document.getElementById('inputEntryName').value = formConfig.nameEntry || '';
       document.getElementById('inputEntryCorrect').value = formConfig.correctEntry || '';
       document.getElementById('inputEntryRetry').value = formConfig.retryEntry || '';
+      document.getElementById('inputEntryCorrectCount').value = formConfig.correctCountEntry || '';
       document.getElementById('inputEntryScore').value = formConfig.scoreEntry || '';
       document.getElementById('inputNewPassword').value = '';
       document.getElementById('modalAlertBox').style.display = 'none';
@@ -595,6 +606,7 @@
         nameEntry: document.getElementById('inputEntryName').value.trim(),
         correctEntry: document.getElementById('inputEntryCorrect').value.trim(),
         retryEntry: document.getElementById('inputEntryRetry').value.trim(),
+        correctCountEntry: document.getElementById('inputEntryCorrectCount').value.trim(),
         scoreEntry: document.getElementById('inputEntryScore').value.trim()
       };
 
@@ -775,10 +787,12 @@
       btn.disabled = true;
       btn.innerText = "전송 중... ⏳";
 
-      const totalWords = words.length;
+      // 1. 맞힌 개수 (순수 숫자: 예: 5)
       const correctCount = correctList.length;
+      
+      // 2. 백분율 환산 점수 (순수 숫자: 예: 83)
+      const totalWords = words.length;
       const scorePercentage = Math.round((correctCount / totalWords) * 100);
-      const scoreSummary = `${correctCount}개 / ${totalWords}개 (${scorePercentage}점)`;
 
       const formData = new FormData();
       if (formConfig.gradeEntry) formData.append(formConfig.gradeEntry, studentData.grade);
@@ -787,7 +801,8 @@
       if (formConfig.nameEntry) formData.append(formConfig.nameEntry, studentData.name);
       if (formConfig.correctEntry) formData.append(formConfig.correctEntry, correctList.join(', ') || '없음');
       if (formConfig.retryEntry) formData.append(formConfig.retryEntry, retryList.join(', ') || '없음');
-      if (formConfig.scoreEntry) formData.append(formConfig.scoreEntry, scoreSummary);
+      if (formConfig.correctCountEntry) formData.append(formConfig.correctCountEntry, correctCount);
+      if (formConfig.scoreEntry) formData.append(formConfig.scoreEntry, scorePercentage);
 
       fetch(formConfig.url, {
         method: 'POST',
