@@ -118,7 +118,7 @@
       margin-top: 10px;
     }
 
-    /* 학생 정보 입력 카드 */
+    /* 학생 정보 입력 영역 */
     .student-info-box {
       background: #f8fafc;
       border: 2px solid #e2e8f0;
@@ -142,6 +142,7 @@
       padding: 6px 8px;
     }
     .info-group:focus-within { border-color: #06b6d4; }
+    
     .info-input {
       width: 100%;
       border: none;
@@ -152,25 +153,10 @@
       color: #0f172a;
       background: transparent;
     }
-    
-    /* placeholder(예시 글자) 연한 회색 스타일 적용 */
-    .info-input::placeholder,
-    .name-input-full::placeholder {
-      color: #94a3b8;
-      opacity: 0.7;
-      font-weight: 600;
-    }
 
-    .info-label {
-      font-size: 14px;
-      font-weight: bold;
-      color: #64748b;
-      margin-left: 2px;
-      white-space: nowrap;
-    }
     .name-input-full {
       width: 100%;
-      font-size: 20px;
+      font-size: 19px;
       text-align: center;
       padding: 12px;
       border-radius: 14px;
@@ -181,6 +167,33 @@
       color: #0f172a;
     }
     .name-input-full:focus { border-color: #06b6d4; }
+
+    /* ★ 안내 예시 글자(Placeholder)를 연한 회색과 얇은 글씨로 확실하게 변경 ★ */
+    .info-input::placeholder,
+    .name-input-full::placeholder {
+      color: #cbd5e1 !important;
+      font-weight: 500 !important;
+      opacity: 1 !important;
+    }
+    .info-input::-webkit-input-placeholder,
+    .name-input-full::-webkit-input-placeholder {
+      color: #cbd5e1 !important;
+      font-weight: 500 !important;
+    }
+    .info-input::-moz-placeholder,
+    .name-input-full::-moz-placeholder {
+      color: #cbd5e1 !important;
+      font-weight: 500 !important;
+      opacity: 1 !important;
+    }
+
+    .info-label {
+      font-size: 14px;
+      font-weight: bold;
+      color: #64748b;
+      margin-left: 2px;
+      white-space: nowrap;
+    }
 
     .progress-bar-bg {
       width: 100%;
@@ -307,7 +320,7 @@
   <div class="app-container">
     <button class="admin-gear-btn" onclick="openPasswordModal()" title="선생님 설정">⚙️</button>
 
-    <!-- [화면 1] 학생 시작 화면 (안내 글자 연한 회색 적용) -->
+    <!-- [화면 1] 학생 시작 화면 (연한 회색 안내 문구 적용) -->
     <div id="screenStart" class="screen active">
       <div style="font-size: 48px; margin: 4px 0 2px;">⌨️</div>
       <h1 style="color: #0891b2; font-size: 26px; margin: 0 0 12px;">신나는 타자 연습!</h1>
@@ -319,15 +332,15 @@
             <span class="info-label">학년</span>
           </div>
           <div class="info-group">
-            <input type="number" id="inputClass" class="info-input" placeholder="1" min="1" max="20">
+            <input type="number" id="inputClass" class="info-input" placeholder="몇" min="1" max="20">
             <span class="info-label">반</span>
           </div>
           <div class="info-group">
-            <input type="number" id="inputNumber" class="info-input" placeholder="1" min="1" max="40">
+            <input type="number" id="inputNumber" class="info-input" placeholder="몇" min="1" max="40">
             <span class="info-label">번</span>
           </div>
         </div>
-        <input type="text" id="inputName" class="name-input-full" placeholder="이름 (예: 홍길동)" autocomplete="off">
+        <input type="text" id="inputName" class="name-input-full" placeholder="이름을 적어주세요" autocomplete="off">
       </div>
 
       <div style="background: #f8fafc; border-radius: 14px; padding: 10px; margin-bottom: 10px; border: 1px dashed #cbd5e1;">
@@ -381,7 +394,7 @@
     </div>
   </div>
 
-  <!-- [모달 2] 통계용 설정창 -->
+  <!-- [모달 2] 설정창 -->
   <div id="settingsModal" class="modal-overlay">
     <div class="modal-content">
       <h2>✏️ 통계용 구글 폼 & 문제 설정</h2>
