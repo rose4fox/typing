@@ -118,7 +118,6 @@
       margin-top: 10px;
     }
 
-    /* 학생 정보 입력 카드 */
     .student-info-box {
       background: #f8fafc;
       border: 2px solid #e2e8f0;
@@ -298,7 +297,7 @@
   <div class="app-container">
     <button class="admin-gear-btn" onclick="openPasswordModal()" title="선생님 설정">⚙️</button>
 
-    <!-- [화면 1] 학생 시작 화면 (학년 1 기본값 설정) -->
+    <!-- [화면 1] 학생 시작 화면 -->
     <div id="screenStart" class="screen active">
       <div style="font-size: 48px; margin: 4px 0 2px;">⌨️</div>
       <h1 style="color: #0891b2; font-size: 26px; margin: 0 0 12px;">신나는 타자 연습!</h1>
@@ -372,7 +371,7 @@
     </div>
   </div>
 
-  <!-- [모달 2] 문제 & 6개 구글폼 Entry 설정창 -->
+  <!-- [모달 2] 설정창 -->
   <div id="settingsModal" class="modal-overlay">
     <div class="modal-content">
       <h2>✏️ 통계용 구글 폼 & 문제 설정</h2>
@@ -458,6 +457,7 @@
       const savedPw = localStorage.getItem('typing_admin_pw');
       if (savedPw) currentPassword = savedPw;
 
+      let loadedFromHash = false;
       try {
         const hash = window.location.hash.substring(1);
         if (hash) {
@@ -467,20 +467,23 @@
             words = parsed.w;
             timeLimit = parsed.t || DEFAULT_TIME;
             if (parsed.f) formConfig = parsed.f;
-            updateStartDisplay();
-            return;
+            loadedFromHash = true;
           }
         }
-      } catch (e) {}
+      } catch (e) {
+        console.warn("URL Hash decoding error:", e);
+      }
 
-      const savedConfig = localStorage.getItem('typing_app_config');
-      if (savedConfig) {
-        try {
-          const parsed = JSON.parse(savedConfig);
-          words = parsed.w || DEFAULT_WORDS;
-          timeLimit = parsed.t || DEFAULT_TIME;
-          if (parsed.f) formConfig = parsed.f;
-        } catch(e) {}
+      if (!loadedFromHash) {
+        const savedConfig = localStorage.getItem('typing_app_config');
+        if (savedConfig) {
+          try {
+            const parsed = JSON.parse(savedConfig);
+            words = parsed.w || DEFAULT_WORDS;
+            timeLimit = parsed.t || DEFAULT_TIME;
+            if (parsed.f) formConfig = parsed.f;
+          } catch(e) {}
+        }
       }
 
       updateStartDisplay();
@@ -724,21 +727,19 @@
         retryBox.innerHTML = '<div class="empty-msg">모든 단어를 다 맞혔어요! 💯</div>';
       }
 
+      // 항상 전송 버튼을 노출하되, URL 설정 여부에 따라 알림 분기
       const submitBtn = document.getElementById('btnSubmitForm');
-      if (!formConfig.url) {
-        submitBtn.style.display = 'none';
-      } else {
-        submitBtn.style.display = 'block';
-        submitBtn.disabled = false;
-        submitBtn.innerText = "📤 선생님께 결과 보내기";
-      }
+      submitBtn.style.display = 'block';
+      submitBtn.disabled = false;
+      submitBtn.innerText = "📤 선생님께 결과 보내기";
+      submitBtn.style.background = "#10b981";
 
       showScreen('screenResult');
     }
 
     function submitToGoogleForm() {
-      if (!formConfig.url) {
-        alert("선생님이 구글 설문지 링크를 설정하지 않았습니다.");
+      if (!formConfig.url || formConfig.url.trim() === '') {
+        alert("선생님이 구글 설문지 링크를 아직 설정하지 않았습니다.\n(⚙️ 설정에서 구글 폼 URL을 등록하고 다시 배포 링크를 복사해주세요.)");
         return;
       }
 
@@ -765,6 +766,7 @@
       }).catch(err => {
         btn.disabled = false;
         btn.innerText = "📤 다시 보내기";
+        btn.style.background = "#10b981";
         alert("전송 중 오류가 발생했습니다. 다시 시도해 주세요.");
       });
     }
