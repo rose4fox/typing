@@ -118,7 +118,6 @@
       margin-top: 10px;
     }
 
-    /* 학생 정보 입력 영역 */
     .student-info-box {
       background: #f8fafc;
       border: 2px solid #e2e8f0;
@@ -142,6 +141,11 @@
       padding: 6px 8px;
     }
     .info-group:focus-within { border-color: #06b6d4; }
+    .info-group.fixed-badge {
+      background: #e0f2fe;
+      border-color: #7dd3fc;
+      justify-content: center;
+    }
     
     .info-input {
       width: 100%;
@@ -168,7 +172,6 @@
     }
     .name-input-full:focus { border-color: #06b6d4; }
 
-    /* 연한 회색 placeholder 강제 스타일 */
     .info-input::placeholder,
     .name-input-full::placeholder {
       color: #cbd5e1 !important;
@@ -261,7 +264,6 @@
     .screen { display: none; }
     .screen.active { display: block; }
 
-    /* 화면 중앙 모달 공통 */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -316,7 +318,6 @@
       text-align: center;
     }
 
-    /* 화면 중앙 예쁜 알림 모달 전용 스타일 */
     .custom-alert-box {
       background: white;
       width: 100%;
@@ -339,19 +340,18 @@
   <div class="app-container">
     <button class="admin-gear-btn" onclick="openPasswordModal()" title="선생님 설정">⚙️</button>
 
-    <!-- [화면 1] 학생 시작 화면 -->
+    <!-- [화면 1] 학생 시작 화면 (1학년 고정, 1~5반, 1~30번) -->
     <div id="screenStart" class="screen active">
       <div style="font-size: 48px; margin: 4px 0 2px;">⌨️</div>
       <h1 style="color: #0891b2; font-size: 26px; margin: 0 0 12px;">신나는 키보드 연습!</h1>
       
       <div class="student-info-box">
         <div class="info-row">
-          <div class="info-group">
-            <input type="number" id="inputGrade" class="info-input" value="1" min="1" max="1">
-            <span class="info-label">학년</span>
+          <div class="info-group fixed-badge">
+            <span style="font-size: 18px; font-weight: 900; color: #0369a1;">1학년</span>
           </div>
           <div class="info-group">
-            <input type="number" id="inputClass" class="info-input" placeholder="몇" min="1" max="4">
+            <input type="number" id="inputClass" class="info-input" placeholder="몇" min="1" max="5">
             <span class="info-label">반</span>
           </div>
           <div class="info-group">
@@ -456,11 +456,11 @@
 
       <div class="form-grid">
         <div>
-          <label style="color:#0369a1;">7. 맞힌 문제수 Entry ⭐</label>
+          <label style="color:#0369a1;">7. 맞힌 문제수 Entry</label>
           <input type="text" id="inputEntryCorrectCount" placeholder="entry.777777">
         </div>
         <div>
-          <label style="color:#0369a1;">8. 점수 Entry ⭐</label>
+          <label style="color:#0369a1;">8. 점수 Entry</label>
           <input type="text" id="inputEntryScore" placeholder="entry.888888">
         </div>
       </div>
@@ -498,7 +498,6 @@
     let timeLimit = DEFAULT_TIME;
     let currentPassword = DEFAULT_PW;
 
-    // 분리된 8개 구글 폼 설정 객체
     let formConfig = {
       url: "",
       gradeEntry: "",
@@ -519,7 +518,6 @@
     let correctList = [];
     let retryList = [];
 
-    // 화면 중앙 커스텀 알림 표시 함수
     function showCustomAlert(icon, title, message) {
       document.getElementById('customAlertIcon').innerText = icon;
       document.getElementById('customAlertTitle').innerText = title;
@@ -709,18 +707,36 @@
       });
     }
 
+    // 학생 정보 유효성 검사 (1학년 고정, 1~5반, 1~30번)
     function startGame() {
-      const grade = document.getElementById('inputGrade').value.trim();
-      const ban = document.getElementById('inputClass').value.trim();
-      const num = document.getElementById('inputNumber').value.trim();
+      const banStr = document.getElementById('inputClass').value.trim();
+      const numStr = document.getElementById('inputNumber').value.trim();
       const name = document.getElementById('inputName').value.trim();
 
-      if (!grade || !ban || !num || !name) {
-        showCustomAlert("✏️", "정보 입력", "학년, 반, 번호, 이름을 모두 입력해주세요!");
+      // 1. 빈 칸 여부 체크
+      if (!banStr || !numStr || !name) {
+        showCustomAlert("✏️", "정보 입력", "반, 번호, 이름을 모두 적어주세요!");
         return;
       }
 
-      studentData = { grade, ban, num, name };
+      const ban = parseInt(banStr, 10);
+      const num = parseInt(numStr, 10);
+
+      // 2. 반 범위 체크 (1~5반)
+      if (isNaN(ban) || ban < 1 || ban > 5) {
+        showCustomAlert("⚠️", "반 확인", "반은 <b>1반부터 5반까지</b>만 입력할 수 있어요!");
+        document.getElementById('inputClass').focus();
+        return;
+      }
+
+      // 3. 번호 범위 체크 (1~30번)
+      if (isNaN(num) || num < 1 || num > 30) {
+        showCustomAlert("⚠️", "번호 확인", "번호는 <b>1번부터 30번까지</b>만 입력할 수 있어요!");
+        document.getElementById('inputNumber').focus();
+        return;
+      }
+
+      studentData = { grade: "1", ban: ban.toString(), num: num.toString(), name };
 
       currentIndex = 0;
       correctList = [];
