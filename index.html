@@ -261,6 +261,7 @@
     .screen { display: none; }
     .screen.active { display: block; }
 
+    /* 화면 중앙 모달 공통 */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -284,6 +285,7 @@
       border: 3px solid #bbf7d0;
       max-height: 90vh;
       overflow-y: auto;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
     }
     .modal-content h2 { margin-top: 0; color: #15803d; font-size: 20px; text-align: center; }
     .modal-content label { display: block; font-weight: bold; margin-top: 10px; color: #166534; font-size: 13px; }
@@ -312,6 +314,23 @@
       padding: 10px;
       display: none;
       text-align: center;
+    }
+
+    /* 화면 중앙 예쁜 알림 모달 전용 스타일 */
+    .custom-alert-box {
+      background: white;
+      width: 100%;
+      max-width: 360px;
+      border-radius: 28px;
+      padding: 28px 20px;
+      text-align: center;
+      border: 3px solid #a5f3fc;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+      animation: alertPop 0.2s ease-out;
+    }
+    @keyframes alertPop {
+      0% { transform: scale(0.9); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
     }
   </style>
 </head>
@@ -394,7 +413,7 @@
     </div>
   </div>
 
-  <!-- [모달 2] 설정창 (총 8개 항목) -->
+  <!-- [모달 2] 설정창 -->
   <div id="settingsModal" class="modal-overlay">
     <div class="modal-content">
       <h2>✏️ 통계용 구글 폼 & 문제 설정</h2>
@@ -460,6 +479,16 @@
     </div>
   </div>
 
+  <!-- [모달 3] ★ 화면 중앙 예쁜 알림 모달 ★ -->
+  <div id="customAlertModal" class="modal-overlay">
+    <div class="custom-alert-box">
+      <div id="customAlertIcon" style="font-size: 52px; margin-bottom: 8px;">🎉</div>
+      <h2 id="customAlertTitle" style="color: #0f172a; font-size: 22px; margin: 0 0 10px;">알림</h2>
+      <p id="customAlertMessage" style="font-size: 16px; color: #475569; margin: 0 0 20px; line-height: 1.5; word-break: keep-all;"></p>
+      <button class="btn-main" style="margin-top: 0; padding: 14px 0; font-size: 18px;" onclick="closeCustomAlert()">확인</button>
+    </div>
+  </div>
+
   <script>
     const DEFAULT_WORDS = ["사과", "바나나", "호랑이", "대한민국", "선생님", "학교"];
     const DEFAULT_TIME = 7;
@@ -469,7 +498,6 @@
     let timeLimit = DEFAULT_TIME;
     let currentPassword = DEFAULT_PW;
 
-    // 분리된 8개 구글 폼 설정 객체
     let formConfig = {
       url: "",
       gradeEntry: "",
@@ -489,6 +517,18 @@
 
     let correctList = [];
     let retryList = [];
+
+    // 화면 중앙 커스텀 알림 표시 함수
+    function showCustomAlert(icon, title, message) {
+      document.getElementById('customAlertIcon').innerText = icon;
+      document.getElementById('customAlertTitle').innerText = title;
+      document.getElementById('customAlertMessage').innerHTML = message;
+      document.getElementById('customAlertModal').classList.add('active');
+    }
+
+    function closeCustomAlert() {
+      document.getElementById('customAlertModal').classList.remove('active');
+    }
 
     function initData() {
       const savedPw = localStorage.getItem('typing_admin_pw');
@@ -566,7 +606,7 @@
         document.getElementById('passwordModal').classList.remove('active');
         openSettingsModal();
       } else {
-        alert("비밀번호가 올바르지 않습니다.");
+        showCustomAlert("🔒", "비밀번호 오류", "비밀번호가 올바르지 않습니다.");
         document.getElementById('adminPasswordInput').value = '';
       }
     }
@@ -592,7 +632,7 @@
       const timeVal = parseInt(document.getElementById('inputTimeLimit').value) || DEFAULT_TIME;
       const rawWords = document.getElementById('inputWordList').value.trim();
       if (!rawWords) {
-        alert("최소 1개 이상의 단어를 입력해주세요!");
+        showCustomAlert("✏️", "단어 입력", "최소 1개 이상의 단어를 입력해주세요!");
         return null;
       }
       const parsedWords = rawWords.split(/[\n,]+/).map(w => w.trim()).filter(w => w.length > 0);
@@ -675,7 +715,7 @@
       const name = document.getElementById('inputName').value.trim();
 
       if (!grade || !ban || !num || !name) {
-        alert("학년, 반, 번호, 이름을 모두 입력해주세요!");
+        showCustomAlert("✏️", "정보 입력", "학년, 반, 번호, 이름을 모두 입력해주세요!");
         return;
       }
 
@@ -779,7 +819,7 @@
 
     function submitToGoogleForm() {
       if (!formConfig.url || formConfig.url.trim() === '') {
-        alert("선생님이 구글 설문지 링크를 아직 설정하지 않았습니다.\n(⚙️ 설정에서 구글 폼 URL을 등록하고 다시 배포 링크를 복사해주세요.)");
+        showCustomAlert("⚠️", "설정 필요", "선생님이 구글 설문지 링크를 아직 설정하지 않았습니다.<br>(⚙️ 설정에서 구글 폼 URL을 등록하고 다시 배포 링크를 복사해주세요.)");
         return;
       }
 
@@ -787,10 +827,7 @@
       btn.disabled = true;
       btn.innerText = "전송 중... ⏳";
 
-      // 1. 맞힌 개수 (순수 숫자: 예: 5)
       const correctCount = correctList.length;
-      
-      // 2. 백분율 환산 점수 (순수 숫자: 예: 83)
       const totalWords = words.length;
       const scorePercentage = Math.round((correctCount / totalWords) * 100);
 
@@ -811,12 +848,12 @@
       }).then(() => {
         btn.innerText = "✅ 선생님께 전송 완료!";
         btn.style.background = "#059669";
-        alert("선생님께 결과가 성공적으로 전송되었습니다! 참 잘했어요!");
+        showCustomAlert("🎉", "전송 완료!", "선생님께 결과가 성공적으로 전송되었습니다!<br>오늘 타자 연습 참 잘했어요! 👏");
       }).catch(err => {
         btn.disabled = false;
         btn.innerText = "📤 다시 보내기";
         btn.style.background = "#10b981";
-        alert("전송 중 오류가 발생했습니다. 다시 시도해 주세요.");
+        showCustomAlert("⚠️", "전송 실패", "전송 중 오류가 발생했습니다.<br>다시 시도해 주세요.");
       });
     }
 
