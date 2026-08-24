@@ -21,24 +21,25 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center; /* 화면 수직 중앙 정렬로 상단 쏠림 방지 */
       min-height: 100vh;
-      padding: 50px 20px;
+      padding: 24px 20px;
     }
 
     header {
       text-align: center;
-      margin-bottom: 36px;
+      margin-bottom: 24px;
     }
 
     header h1 {
-      font-size: 2.5rem;
+      font-size: 2.3rem;
       color: #2c3e50;
-      margin-bottom: 10px;
+      margin-bottom: 6px;
       text-shadow: 1px 1px 0 #fff;
     }
 
     header p {
-      font-size: 1.25rem;
+      font-size: 1.15rem;
       color: #64748b;
     }
 
@@ -47,23 +48,23 @@
       max-width: 960px;
       display: flex;
       flex-direction: column;
-      gap: 32px;
+      gap: 22px;
     }
 
     .section-title {
-      font-size: 1.5rem;
+      font-size: 1.4rem;
       color: #34495e;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
     }
 
-    /* 마우스 연습: 가로형 카드 2x2 그리드 */
+    /* 마우스 연습 2열 그리드 */
     .grid-mouse {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 20px;
+      gap: 16px;
     }
 
     @media (max-width: 768px) {
@@ -72,79 +73,80 @@
       }
     }
 
-    /* 모든 카드의 공통 가로형(Horizontal) 레이아웃 */
+    /* 카드: 답답하지 않은 알맞은 높이와 두께감 */
     .card {
       background: #ffffff;
       border: 2px solid #e2e8f0;
-      border-radius: 24px;
-      padding: 22px 26px;
+      border-radius: 20px;
+      padding: 16px 22px; /* 상하 16px로 적당한 볼륨감 유지 */
       text-decoration: none;
       color: inherit;
       display: flex;
       flex-direction: row;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
+      gap: 14px;
       transition: all 0.2s ease;
-      box-shadow: 0 5px 12px rgba(0, 0, 0, 0.04);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
     }
 
     .card:hover {
-      transform: translateY(-4px);
+      transform: translateY(-3px);
       border-color: #3b82f6;
-      box-shadow: 0 12px 24px rgba(59, 130, 246, 0.15);
+      box-shadow: 0 10px 20px rgba(59, 130, 246, 0.12);
     }
 
-    /* 좌측: 아이콘 + 텍스트 영역 */
+    /* 좌측: 아이콘 + 텍스트 */
     .card-left {
       display: flex;
       align-items: center;
-      gap: 18px;
+      gap: 16px;
       min-width: 0;
     }
 
     .card-text {
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 3px;
     }
 
     .icon-badge {
-      width: 56px;
-      height: 56px;
-      border-radius: 16px;
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.8rem;
+      font-size: 1.6rem;
       flex-shrink: 0;
     }
 
     .mouse-badge { background-color: #eaf2fd; }
     .dblclick-badge { background-color: #fef9e7; }
+    .drag-badge { background-color: #ecfdf5; }
     .keyboard-badge { background-color: #fef3e6; }
 
     .card h3 {
-      font-size: 1.35rem;
+      font-size: 1.25rem;
       color: #2c3e50;
       white-space: nowrap;
     }
 
     .card p {
-      font-size: 1.05rem;
+      font-size: 1rem;
       color: #64748b;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
-    /* 우측 끝 버튼 태그 */
+    /* 우측 버튼 태그 */
     .btn-tag {
-      font-size: 1.05rem;
+      font-size: 1rem;
       color: #2563eb;
       background-color: #eff6ff;
-      padding: 9px 18px;
-      border-radius: 20px;
+      padding: 7px 16px;
+      border-radius: 18px;
       white-space: nowrap;
       flex-shrink: 0;
       transition: all 0.2s;
@@ -177,7 +179,7 @@
           <div class="card-left">
             <div class="icon-badge mouse-badge">🎈</div>
             <div class="card-text">
-              <h3>마우스 연습 1</h3>
+              <h3>클릭 1</h3>
               <p>풍선 클릭!</p>
             </div>
           </div>
@@ -189,7 +191,7 @@
           <div class="card-left">
             <div class="icon-badge mouse-badge">💖</div>
             <div class="card-text">
-              <h3>마우스 연습 2</h3>
+              <h3>클릭 2</h3>
               <p>하트 팡팡!</p>
             </div>
           </div>
@@ -201,7 +203,7 @@
           <div class="card-left">
             <div class="icon-badge mouse-badge">🍭</div>
             <div class="card-text">
-              <h3>마우스 연습 3</h3>
+              <h3>클릭 3</h3>
               <p>솜사탕 팡팡!</p>
             </div>
           </div>
@@ -213,8 +215,20 @@
           <div class="card-left">
             <div class="icon-badge dblclick-badge">⭐</div>
             <div class="card-text">
-              <h3>더블클릭 연습</h3>
+              <h3>더블클릭</h3>
               <p>반짝반짝 별 잡기!</p>
+            </div>
+          </div>
+          <span class="btn-tag">시작하기 →</span>
+        </a>
+
+        <!-- 5. 마우스 드래그 -->
+        <a href="https://rose4fox.github.io/typing/mouse_drag.html" target="_blank" class="card">
+          <div class="card-left">
+            <div class="icon-badge drag-badge">🎯</div>
+            <div class="card-text">
+              <h3>마우스 드래그</h3>
+              <p>쏙쏙 상자에 넣기!</p>
             </div>
           </div>
           <span class="btn-tag">시작하기 →</span>
