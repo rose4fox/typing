@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>신나는 마우스 드래그 챌린지</title>
   
   <!-- 구글 폰트 Jua (주아체) -->
@@ -18,7 +18,7 @@
       margin: 0;
       padding: 0;
       font-family: 'Jua', sans-serif;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.3px;
     }
 
     body {
@@ -27,92 +27,97 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 20px;
+      padding: 12px 10px;
       color: #f8fafc;
       overflow-x: hidden;
+      touch-action: manipulation;
     }
 
     header {
       text-align: center;
-      margin-bottom: 16px;
+      margin-bottom: 10px;
     }
 
     h1 {
-      font-size: 38px;
+      font-size: clamp(22px, 5vw, 36px);
       color: #38bdf8;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
+      gap: 8px;
       text-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
     }
 
     .subtitle {
-      font-size: 17px;
+      font-size: clamp(13px, 3.2vw, 16px);
       color: #94a3b8;
-      margin-top: 4px;
+      margin-top: 2px;
     }
 
     /* 상단 정보 패널 */
     .controls-panel {
       display: flex;
-      gap: 14px;
+      gap: 10px;
       align-items: center;
       background: rgba(30, 41, 59, 0.9);
       border: 1px solid #334155;
-      padding: 10px 24px;
-      border-radius: 50px;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-      margin-bottom: 20px;
+      padding: 8px 16px;
+      border-radius: 40px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+      margin-bottom: 12px;
       flex-wrap: wrap;
       justify-content: center;
       backdrop-filter: blur(8px);
+      width: 100%;
+      max-width: 980px;
     }
 
     .level-badge {
       background: #0284c7;
       color: #ffffff;
-      padding: 6px 18px;
-      border-radius: 20px;
-      font-size: 16px;
-      box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+      padding: 4px 14px;
+      border-radius: 16px;
+      font-size: clamp(13px, 3vw, 15px);
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
       border: 1px solid #38bdf8;
     }
 
     .stats-bar {
       display: flex;
-      gap: 18px;
+      gap: 12px;
       background: #090d16;
       border: 1px solid #1e293b;
       color: #ffffff;
-      padding: 8px 24px;
-      border-radius: 30px;
-      font-size: 15px;
+      padding: 6px 16px;
+      border-radius: 24px;
+      font-size: clamp(12px, 2.8vw, 14px);
       align-items: center;
+      flex-wrap: wrap;
+      justify-content: center;
     }
 
     .stat-item span {
       color: #38bdf8;
-      margin-left: 4px;
+      margin-left: 2px;
     }
 
     .stat-item span.total-time {
       color: #facc15;
     }
 
-    /* 게임 보드 */
+    /* 반응형 게임 보드 */
     .game-container {
       width: 100%;
       max-width: 980px;
-      height: 520px;
+      height: clamp(400px, 68vh, 520px);
       background: #ffffff;
-      border-radius: 24px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+      border-radius: 20px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
       position: relative;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 20px;
+      padding: 12px;
       overflow: hidden;
       border: 3px solid #334155;
     }
@@ -122,21 +127,19 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 14px;
-      min-height: 125px;
+      gap: 8px;
+      min-height: 90px;
       background: #f8fafc;
-      border-radius: 16px;
+      border-radius: 14px;
       border: 2px dashed #cbd5e1;
-      padding: 10px;
+      padding: 8px;
       flex-wrap: wrap;
     }
 
     /* 하단 타깃 영역 */
     .drop-zone-container {
-      display: flex;
-      justify-content: space-around;
-      align-items: flex-end;
-      height: 260px;
+      width: 100%;
+      height: 220px;
       position: relative;
     }
 
@@ -147,9 +150,8 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      border-radius: 16px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      font-size: 30px;
+      border-radius: 12px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
       transition: transform 0.15s ease, box-shadow 0.15s ease;
       touch-action: none;
       z-index: 10;
@@ -157,42 +159,42 @@
 
     .drag-item:active {
       cursor: grabbing;
-      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
     }
 
     .drag-item.dragging {
       position: fixed;
       pointer-events: none;
       z-index: 1000;
-      transform: scale(1.1);
-      opacity: 0.9;
+      transform: scale(1.15);
+      opacity: 0.92;
     }
 
     .item-label {
-      font-size: 13px;
+      font-size: clamp(10px, 2.4vw, 13px);
       color: #ffffff;
-      margin-top: 2px;
+      margin-top: 1px;
       text-shadow: 0 1px 2px rgba(0,0,0,0.4);
     }
 
     /* 드롭 타깃 슬롯 */
     .target-slot {
-      border: 3px dashed #64748b;
+      border: 2px dashed #64748b;
       background: #ffffff;
-      border-radius: 20px;
+      border-radius: 16px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       transition: background-color 0.2s, border-color 0.2s, transform 0.2s;
       position: absolute;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
     }
 
     .target-slot.hovered {
       background: #e0e7ff;
       border-color: #6366f1;
-      transform: scale(1.06);
+      transform: scale(1.05);
     }
 
     .target-slot.completed {
@@ -202,18 +204,15 @@
     }
 
     .target-badge {
-      width: 52px;
-      height: 52px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 2px 5px rgba(0, 0, 0, 0.1);
-      border: 2px solid rgba(0, 0, 0, 0.08);
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1);
+      border: 1.5px solid rgba(0, 0, 0, 0.08);
     }
 
     .target-icon {
-      font-size: 32px;
       filter: drop-shadow(0 0 1px #0f172a) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35));
       display: flex;
       align-items: center;
@@ -221,11 +220,12 @@
     }
 
     .target-title {
-      font-size: 13px;
+      font-size: clamp(9px, 2.2vw, 12px);
       color: #1e293b;
       font-weight: 700;
-      margin-top: 6px;
+      margin-top: 3px;
       text-align: center;
+      white-space: nowrap;
     }
 
     /* 모달 및 오버레이 */
@@ -239,24 +239,24 @@
       background: rgba(11, 15, 25, 0.94);
       backdrop-filter: blur(6px);
       z-index: 2000;
-      border-radius: 20px;
+      border-radius: 18px;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       color: #ffffff;
       text-align: center;
-      padding: 30px;
+      padding: 16px;
     }
 
     .ready-badge {
       background: #ef4444;
       color: #ffffff;
-      font-size: 15px;
-      padding: 6px 16px;
-      border-radius: 20px;
+      font-size: clamp(12px, 2.8vw, 14px);
+      padding: 4px 14px;
+      border-radius: 16px;
       letter-spacing: 1px;
-      margin-bottom: 12px;
-      box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
+      margin-bottom: 10px;
+      box-shadow: 0 0 12px rgba(239, 68, 68, 0.5);
       animation: pulse 1.5s infinite;
     }
 
@@ -266,69 +266,70 @@
     }
 
     .overlay-screen h2 {
-      font-size: 36px;
+      font-size: clamp(22px, 5.5vw, 34px);
       color: #38bdf8;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
       text-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
     }
 
     .overlay-screen p {
-      font-size: 18px;
+      font-size: clamp(14px, 3.4vw, 17px);
       color: #cbd5e1;
-      margin-bottom: 24px;
-      line-height: 1.6;
+      margin-bottom: 18px;
+      line-height: 1.5;
     }
 
-    /* 최종 결과창 전용 소요시간 배지 스타일 */
     .total-result-box {
       background: rgba(15, 23, 42, 0.8);
       border: 2px solid #facc15;
-      padding: 10px 28px;
-      border-radius: 30px;
-      font-size: 22px;
+      padding: 8px 20px;
+      border-radius: 24px;
+      font-size: clamp(16px, 4vw, 20px);
       color: #ffffff;
-      margin-top: 14px;
-      margin-bottom: 26px;
-      box-shadow: 0 0 20px rgba(250, 204, 21, 0.35);
+      margin-top: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 0 16px rgba(250, 204, 21, 0.35);
       display: inline-block;
     }
 
     .total-result-box span {
       color: #facc15;
-      font-size: 26px;
+      font-size: clamp(18px, 4.8vw, 24px);
       font-weight: bold;
     }
 
     .btn-group {
       display: flex;
-      gap: 16px;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
     }
 
     .action-btn {
       color: #ffffff;
       border: none;
-      padding: 14px 34px;
-      font-size: 20px;
-      border-radius: 50px;
+      padding: 10px 24px;
+      font-size: clamp(15px, 3.8vw, 18px);
+      border-radius: 40px;
       cursor: pointer;
-      box-shadow: 0 0 20px rgba(0,0,0,0.4);
-      transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 0 0 15px rgba(0,0,0,0.4);
+      transition: all 0.2s;
     }
 
     .action-btn:hover {
-      transform: scale(1.06);
+      transform: scale(1.05);
     }
 
     .btn-start {
       background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
       border: 2px solid #f87171;
-      box-shadow: 0 0 25px rgba(239, 68, 68, 0.6);
+      box-shadow: 0 0 20px rgba(239, 68, 68, 0.6);
     }
 
     .btn-next {
       background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
       border: 2px solid #60a5fa;
-      box-shadow: 0 0 25px rgba(59, 130, 246, 0.6);
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.6);
     }
 
     .btn-retry {
@@ -337,9 +338,9 @@
     }
 
     .countdown-number {
-      font-size: 90px;
+      font-size: clamp(60px, 15vw, 84px);
       color: #facc15;
-      text-shadow: 0 0 30px rgba(250, 204, 21, 0.7);
+      text-shadow: 0 0 25px rgba(250, 204, 21, 0.7);
       animation: countZoom 0.9s ease-out infinite;
     }
 
@@ -349,7 +350,6 @@
       100% { transform: scale(1); opacity: 1; }
     }
 
-    /* 폭죽 캔버스 */
     #fireworks-canvas {
       position: absolute;
       top: 0;
@@ -372,43 +372,37 @@
   <div class="controls-panel">
     <div class="level-badge" id="current-level-badge">1단계: 다채로운 색상 맞추기</div>
     <div class="stats-bar">
-      <div class="stat-item">단계 달성도: <span id="streak-display">0 / 3회</span></div>
+      <div class="stat-item">달성도: <span id="streak-display">0 / 3회</span></div>
       <div class="stat-item">남은 개수: <span id="remaining-count">0</span></div>
       <div class="stat-item">이번 경기: <span id="round-timer-display">0초</span></div>
-      <div class="stat-item">전체 누적: <span id="total-timer-display" class="total-time">0초</span></div>
+      <div class="stat-item">누적: <span id="total-timer-display" class="total-time">0초</span></div>
     </div>
   </div>
 
   <div class="game-container" id="game-board">
-    <!-- 폭죽 캔버스 -->
     <canvas id="fireworks-canvas"></canvas>
 
-    <!-- 게임 구역 -->
     <div class="drag-zone" id="drag-source-area"></div>
     <div class="drop-zone-container" id="target-area"></div>
 
-    <!-- 1. 준비 화면 -->
     <div class="overlay-screen" id="ready-screen">
       <div class="ready-badge">MISSION STANDBY</div>
       <h2 id="ready-title">1단계: 다채로운 색상 맞추기</h2>
-      <p id="ready-desc">마우스를 쥐고 손가락에 힘을 주세요!<br>시작 버튼을 누르면 카운트다운 후 미션이 시작됩니다.</p>
+      <p id="ready-desc">시작 버튼을 누르면 카운트다운 후 미션이 시작됩니다.</p>
       <button class="action-btn btn-start" onclick="startCountdown()">도전 시작! 🚀</button>
     </div>
 
-    <!-- 2. 카운트다운 화면 -->
     <div class="overlay-screen" id="countdown-screen" style="display: none;">
       <div class="countdown-number" id="countdown-text">3</div>
-      <p style="margin-top: 15px; font-size: 20px; color: #94a3b8;">마우스 커서를 아이템 위에 올려두세요!</p>
+      <p style="margin-top: 10px; font-size: 16px; color: #94a3b8;">손가락/커서를 아이템 위에 올려두세요!</p>
     </div>
 
-    <!-- 3. 단일 회차 성공 오버레이 -->
     <div class="overlay-screen" id="round-clear-modal" style="display: none;">
       <h2 style="color: #4ade80;">👍 멋져요! 1회 성공!</h2>
       <p id="round-clear-desc">이번 경기: 0초 | 전체 누적: 0초<br>단계 달성도: 1 / 3회</p>
       <button class="action-btn btn-start" onclick="startCountdown()">다음 판 바로하기 🏃</button>
     </div>
 
-    <!-- 4. 3회 달성 후 다음 단계 진급 선택 화면 -->
     <div class="overlay-screen" id="level-up-modal" style="display: none;">
       <h2 style="color: #facc15;">🌟 3회 연속 성공 달성!</h2>
       <p id="level-up-desc">1단계를 완벽하게 마스터했습니다!<br>더 어려워진 다음 단계로 넘어가시겠습니까?</p>
@@ -418,16 +412,12 @@
       </div>
     </div>
 
-    <!-- 5. 최종 3단계 올 클리어 축하 화면 -->
     <div class="overlay-screen" id="all-clear-modal" style="display: none;">
-      <h2 style="font-size: 40px; color: #facc15;">👑 축하합니다! 마우스 드래그 마스터! 👑</h2>
-      <p style="font-size: 18px; margin-bottom: 6px;">모든 고난도 코스를 3회씩 완벽하게 정복했습니다!</p>
-      
-      <!-- 전체 소요 시간만 강조하여 가운데 배치 -->
+      <h2 style="color: #facc15;">👑 드래그 마스터 등극! 👑</h2>
+      <p style="margin-bottom: 4px;">모든 고난도 코스를 완벽하게 정복했습니다!</p>
       <div class="total-result-box">
         전체 소요 시간: <span id="final-total-time">0초</span>
       </div>
-      
       <button class="action-btn btn-start" onclick="resetToFirstLevel()">처음부터 다시 즐기기 🔄</button>
     </div>
   </div>
@@ -436,43 +426,46 @@
     const LEVELS = {
       1: {
         title: "1단계: 다채로운 색상 맞추기 (6가지)",
-        desc: "총 6가지 색상의 과일과 채소를 알맞은 상자로 드래그하세요.<br>기초 조작 감각을 완벽히 다져보세요!",
+        desc: "총 6가지 색상의 과일과 채소를 알맞은 상자로 드래그하세요.",
         items: [
-          { id: 'red', emoji: '🍎', label: '빨강', color: '#ef4444', badgeColor: '#fee2e2', size: 75 },
-          { id: 'orange', emoji: '🥕', label: '주황', color: '#f97316', badgeColor: '#ffedd5', size: 75 },
-          { id: 'yellow', emoji: '⭐', label: '노랑', color: '#eab308', badgeColor: '#fef9c3', size: 75 },
-          { id: 'green', emoji: '🐸', label: '초록', color: '#22c55e', badgeColor: '#dcfce7', size: 75 },
-          { id: 'blue', emoji: '🚙', label: '파랑', color: '#3b82f6', badgeColor: '#dbeafe', size: 75 },
-          { id: 'purple', emoji: '🍆', label: '보라', color: '#8b5cf6', badgeColor: '#f3e8ff', size: 75 }
+          { id: 'red', emoji: '🍎', label: '빨강', color: '#ef4444', badgeColor: '#fee2e2' },
+          { id: 'orange', emoji: '🥕', label: '주황', color: '#f97316', badgeColor: '#ffedd5' },
+          { id: 'yellow', emoji: '⭐', label: '노랑', color: '#eab308', badgeColor: '#fef9c3' },
+          { id: 'green', emoji: '🐸', label: '초록', color: '#22c55e', badgeColor: '#dcfce7' },
+          { id: 'blue', emoji: '🚙', label: '파랑', color: '#3b82f6', badgeColor: '#dbeafe' },
+          { id: 'purple', emoji: '🍆', label: '보라', color: '#8b5cf6', badgeColor: '#f3e8ff' }
         ],
-        targetSize: { width: 115, height: 115 },
+        baseTargetSize: { w: 105, h: 105 },
+        baseItemSize: 68,
         moving: false
       },
       2: {
         title: "2단계: 정밀 쏙 넣기 (5가지 디저트)",
-        desc: "상자가 작아졌습니다! 5가지 디저트를 세밀하게 조준해서<br>놓치지 않고 쏙 골인시켜 보세요.",
+        desc: "상자가 작아졌습니다! 5가지 디저트를 세밀하게 조준하세요.",
         items: [
-          { id: 'cookie', emoji: '🍪', label: '쿠키', color: '#b45309', badgeColor: '#fef3c7', size: 68 },
-          { id: 'candy', emoji: '🍬', label: '사탕', color: '#ec4899', badgeColor: '#fce7f3', size: 68 },
-          { id: 'donut', emoji: '🍩', label: '도넛', color: '#7c3aed', badgeColor: '#ede9fe', size: 68 },
-          { id: 'pizza', emoji: '🍕', label: '피자', color: '#ea580c', badgeColor: '#ffedd5', size: 68 },
-          { id: 'cupcake', emoji: '🧁', label: '컵케이크', color: '#0d9488', badgeColor: '#ccfbf1', size: 68 }
+          { id: 'cookie', emoji: '🍪', label: '쿠키', color: '#b45309', badgeColor: '#fef3c7' },
+          { id: 'candy', emoji: '🍬', label: '사탕', color: '#ec4899', badgeColor: '#fce7f3' },
+          { id: 'donut', emoji: '🍩', label: '도넛', color: '#7c3aed', badgeColor: '#ede9fe' },
+          { id: 'pizza', emoji: '🍕', label: '피자', color: '#ea580c', badgeColor: '#ffedd5' },
+          { id: 'cupcake', emoji: '🧁', label: '컵케이크', color: '#0d9488', badgeColor: '#ccfbf1' }
         ],
-        targetSize: { width: 95, height: 95 },
+        baseTargetSize: { w: 88, h: 88 },
+        baseItemSize: 62,
         moving: false
       },
       3: {
         title: "3단계: 움직이는 타깃 맞추기 (6가지 스포츠)",
-        desc: "총 6개의 바구니가 엇갈리며 좌우로 이동합니다!<br>타이밍을 정밀하게 예측하여 골인시키세요.",
+        desc: "바구니들이 좌우로 이동합니다! 타이밍을 예측하여 넣으세요.",
         items: [
-          { id: 'soccer', emoji: '⚽', label: '축구공', color: '#1e293b', badgeColor: '#cbd5e1', size: 68 },
-          { id: 'basket', emoji: '🏀', label: '농구공', color: '#ea580c', badgeColor: '#ffedd5', size: 68 },
-          { id: 'baseball', emoji: '⚾', label: '야구공', color: '#0369a1', badgeColor: '#bfdbfe', size: 68 },
-          { id: 'volleyball', emoji: '🏐', label: '배구공', color: '#ca8a04', badgeColor: '#fef08a', size: 68 },
-          { id: 'tennis', emoji: '🎾', label: '테니스공', color: '#65a30d', badgeColor: '#d9f99d', size: 68 },
-          { id: 'rugby', emoji: '🏉', label: '럭비공', color: '#991b1b', badgeColor: '#fecaca', size: 68 }
+          { id: 'soccer', emoji: '⚽', label: '축구공', color: '#1e293b', badgeColor: '#cbd5e1' },
+          { id: 'basket', emoji: '🏀', label: '농구공', color: '#ea580c', badgeColor: '#ffedd5' },
+          { id: 'baseball', emoji: '⚾', label: '야구공', color: '#0369a1', badgeColor: '#bfdbfe' },
+          { id: 'volleyball', emoji: '🏐', label: '배구공', color: '#ca8a04', badgeColor: '#fef08a' },
+          { id: 'tennis', emoji: '🎾', label: '테니스공', color: '#65a30d', badgeColor: '#d9f99d' },
+          { id: 'rugby', emoji: '🏉', label: '럭비공', color: '#991b1b', badgeColor: '#fecaca' }
         ],
-        targetSize: { width: 105, height: 110 },
+        baseTargetSize: { w: 96, h: 98 },
+        baseItemSize: 62,
         moving: true
       }
     };
@@ -492,7 +485,6 @@
     let offsetX = 0;
     let offsetY = 0;
 
-    // 사운드 시스템
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     function playBeep(freq, duration, type = 'sine') {
       try {
@@ -533,7 +525,6 @@
       });
     }
 
-    // 상태 초기화 및 준비 화면
     function showReadyScreen(levelNum) {
       isGameRunning = false;
       clearInterval(timerInterval);
@@ -563,7 +554,7 @@
       document.getElementById('all-clear-modal').style.display = 'none';
     }
 
-    // 보드판 구성
+    // 모바일/PC 반응형 크기 계산 및 배치
     function setupBoard(levelNum) {
       const levelData = LEVELS[levelNum];
       const sourceArea = document.getElementById('drag-source-area');
@@ -575,47 +566,58 @@
       remainingItems = levelData.items.length;
       document.getElementById('remaining-count').innerText = remainingItems;
 
+      const containerWidth = targetArea.clientWidth || (document.getElementById('game-board').clientWidth - 24);
+      const count = levelData.items.length;
+      
+      // 화면 너비에 맞춘 비율(Scale Factor) 계산 (기준 너비: 900px)
+      const scaleRatio = Math.min(1, Math.max(0.48, containerWidth / 900));
+      
+      const itemSize = Math.round(levelData.baseItemSize * scaleRatio);
+      const targetW = Math.round(levelData.baseTargetSize.w * scaleRatio);
+      const targetH = Math.round(levelData.baseTargetSize.h * scaleRatio);
+      const badgeSize = Math.round(44 * scaleRatio);
+      const fontSize = Math.max(18, Math.round(26 * scaleRatio));
+
+      // 1. 드래그 아이템 렌더링
       const shuffledItems = [...levelData.items].sort(() => Math.random() - 0.5);
       shuffledItems.forEach(item => {
         const itemEl = document.createElement('div');
         itemEl.classList.add('drag-item');
         itemEl.id = `item-${item.id}`;
         itemEl.dataset.targetId = item.id;
-        itemEl.style.width = `${item.size}px`;
-        itemEl.style.height = `${item.size}px`;
+        itemEl.style.width = `${itemSize}px`;
+        itemEl.style.height = `${itemSize}px`;
         itemEl.style.backgroundColor = item.color;
-        itemEl.innerHTML = `<span>${item.emoji}</span><span class="item-label">${item.label}</span>`;
+        itemEl.innerHTML = `<span style="font-size:${fontSize}px;">${item.emoji}</span><span class="item-label">${item.label}</span>`;
         
         attachDragEvents(itemEl);
         sourceArea.appendChild(itemEl);
       });
 
-      const containerWidth = 940;
-      const count = levelData.items.length;
+      // 2. 타깃 슬롯 렌더링 (균등 분배)
       const step = containerWidth / count;
-
       levelData.items.forEach((item, index) => {
         const slotEl = document.createElement('div');
         slotEl.classList.add('target-slot');
         slotEl.id = `slot-${item.id}`;
         slotEl.dataset.matchId = item.id;
-        slotEl.style.width = `${levelData.targetSize.width}px`;
-        slotEl.style.height = `${levelData.targetSize.height}px`;
+        slotEl.style.width = `${targetW}px`;
+        slotEl.style.height = `${targetH}px`;
 
-        const initialLeft = 10 + index * step + (step - levelData.targetSize.width) / 2;
+        const initialLeft = index * step + (step - targetW) / 2;
         slotEl.style.left = `${initialLeft}px`;
-        slotEl.style.bottom = `15px`;
+        slotEl.style.bottom = `10px`;
 
         slotEl.innerHTML = `
-          <div class="target-badge" style="background-color: ${item.badgeColor || '#f1f5f9'};">
-            <span class="target-icon">${item.emoji}</span>
+          <div class="target-badge" style="width:${badgeSize}px; height:${badgeSize}px; background-color: ${item.badgeColor || '#f1f5f9'};">
+            <span class="target-icon" style="font-size:${fontSize}px;">${item.emoji}</span>
           </div>
           <div class="target-title">${item.label}</div>
         `;
 
         if (levelData.moving) {
           slotEl.dataset.direction = index % 2 === 0 ? '1' : '-1';
-          const speeds = [1.2, 1.8, 1.4, 2.0, 1.5, 1.7];
+          const speeds = [1.1, 1.6, 1.3, 1.8, 1.4, 1.5];
           slotEl.dataset.speed = (speeds[index % speeds.length]).toString();
           slotEl.dataset.currentX = initialLeft.toString();
         }
@@ -624,7 +626,6 @@
       });
     }
 
-    // 카운트다운
     function startCountdown() {
       hideAllModals();
       setupBoard(currentLevelNum);
@@ -653,7 +654,6 @@
       }, 850);
     }
 
-    // 게임 시작
     function startGame() {
       isGameRunning = true;
       roundTimer = 0;
@@ -672,14 +672,18 @@
       }
     }
 
+    // 화면 크기 내에서 부드럽게 반사 이동
     function startMovingTargets() {
       const container = document.getElementById('target-area');
-      const maxRight = container.clientWidth - 115;
 
       function update() {
         if (!isGameRunning) return;
         const slots = document.querySelectorAll('.target-slot');
+        const containerWidth = container.clientWidth;
+
         slots.forEach(slot => {
+          const slotWidth = slot.offsetWidth || 80;
+          const maxRight = containerWidth - slotWidth - 4;
           let x = parseFloat(slot.dataset.currentX || slot.offsetLeft);
           let dir = parseFloat(slot.dataset.direction || 1);
           let speed = parseFloat(slot.dataset.speed || 1.5);
@@ -688,8 +692,8 @@
           if (x > maxRight) {
             x = maxRight;
             dir = -1;
-          } else if (x < 10) {
-            x = 10;
+          } else if (x < 4) {
+            x = 4;
             dir = 1;
           }
 
@@ -703,7 +707,7 @@
       animationFrameId = requestAnimationFrame(update);
     }
 
-    // 마우스 및 터치 드래그
+    // 마우스 및 터치(모바일) 드래그 이벤트
     function attachDragEvents(el) {
       el.addEventListener('mousedown', startDrag);
       el.addEventListener('touchstart', startDrag, { passive: false });
@@ -728,7 +732,7 @@
       dragClone.style.top = `${clientY - offsetY}px`;
       document.body.appendChild(dragClone);
 
-      activeDragEl.style.opacity = '0.3';
+      activeDragEl.style.opacity = '0.25';
 
       window.addEventListener('mousemove', onDragMove);
       window.addEventListener('touchmove', onDragMove, { passive: false });
@@ -809,11 +813,12 @@
       playDropSuccess();
 
       slotEl.classList.add('completed');
+      const itemEmoji = itemEl.querySelector('span').innerText;
       itemEl.remove();
 
       slotEl.innerHTML = `
-        <div style="font-size: 34px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));">${itemEl.querySelector('span').innerText}</div>
-        <div style="color: #15803d; font-size: 15px; font-weight: 700;">성공!</div>
+        <div style="font-size: 26px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));">${itemEmoji}</div>
+        <div style="color: #15803d; font-size: 13px; font-weight: 700;">성공!</div>
       `;
 
       remainingItems--;
@@ -904,13 +909,13 @@
     }
 
     function createFireworkBatch() {
-      const x = Math.random() * (fireworksCanvas.width - 200) + 100;
-      const y = Math.random() * (fireworksCanvas.height - 200) + 100;
+      const x = Math.random() * (fireworksCanvas.width - 100) + 50;
+      const y = Math.random() * (fireworksCanvas.height - 100) + 50;
       const colors = ['#f43f5e', '#3b82f6', '#10b981', '#facc15', '#a855f7', '#fb923c', '#06b6d4', '#84cc16'];
       
-      for (let i = 0; i < 40; i++) {
-        const angle = (Math.PI * 2 / 40) * i;
-        const speed = Math.random() * 5 + 2.5;
+      for (let i = 0; i < 35; i++) {
+        const angle = (Math.PI * 2 / 35) * i;
+        const speed = Math.random() * 4 + 2;
         particles.push({
           x: x,
           y: y,
@@ -919,7 +924,7 @@
           color: colors[Math.floor(Math.random() * colors.length)],
           alpha: 1,
           decay: Math.random() * 0.015 + 0.015,
-          radius: Math.random() * 3.5 + 2
+          radius: Math.random() * 3 + 2
         });
       }
     }
@@ -956,6 +961,13 @@
       fireworksCanvas.style.display = 'none';
       particles = [];
     }
+
+    // 창 크기 변경 시 타깃 위치/크기 자동 재조정
+    window.addEventListener('resize', () => {
+      if (!isGameRunning) {
+        setupBoard(currentLevelNum);
+      }
+    });
 
     window.onload = () => {
       showReadyScreen(1);
