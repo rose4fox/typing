@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>반짝반짝! 더블클릭 별 잡기</title>
+  <title>반짝반짝! 더블클릭 챌린지</title>
   
   <!-- 구글 폰트 Jua -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -36,11 +36,11 @@
 
     header {
       text-align: center;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
 
     h1 {
-      font-size: clamp(24px, 5vw, 38px);
+      font-size: clamp(22px, 5vw, 36px);
       color: #facc15;
       display: flex;
       align-items: center;
@@ -50,29 +50,45 @@
     }
 
     .subtitle {
-      font-size: clamp(13px, 3.2vw, 17px);
+      font-size: clamp(13px, 3.2vw, 16px);
       color: #cbd5e1;
       margin-top: 4px;
     }
 
-    /* 상단 정보창 */
+    /* 상단 대시보드 */
     .dashboard {
       display: flex;
-      gap: 16px;
-      background: rgba(30, 41, 59, 0.85);
+      gap: 12px;
+      background: rgba(30, 41, 59, 0.9);
       border: 1px solid #475569;
-      padding: 8px 24px;
+      padding: 8px 20px;
       border-radius: 40px;
       margin-bottom: 14px;
-      font-size: clamp(14px, 3.4vw, 17px);
+      font-size: clamp(13px, 3vw, 15px);
       backdrop-filter: blur(8px);
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .level-badge {
+      background: #0284c7;
+      color: #ffffff;
+      padding: 4px 14px;
+      border-radius: 16px;
+      font-size: clamp(12px, 2.8vw, 14px);
+      border: 1px solid #38bdf8;
     }
 
     .dash-item span {
       color: #38bdf8;
-      font-size: 1.15em;
-      margin-left: 3px;
+      font-size: 1.1em;
+      margin-left: 2px;
+    }
+
+    .dash-item span.total-time {
+      color: #facc15;
     }
 
     /* 게임 화면 보드 */
@@ -92,7 +108,6 @@
     .star-target {
       position: absolute;
       cursor: pointer;
-      font-size: clamp(38px, 9vw, 56px);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -110,7 +125,7 @@
       100% { transform: scale(1.08); opacity: 1; }
     }
 
-    /* 클릭 시 터지는 이펙트 */
+    /* 클릭 시 팡 터지는 이펙트 */
     .pop-effect {
       position: absolute;
       pointer-events: none;
@@ -123,9 +138,9 @@
       100% { transform: scale(1.6) translateY(-25px); opacity: 0; }
     }
 
-    /* ================= 축하 종료 팝업 (반응형 최적화) ================= */
-    .clear-modal {
-      display: none;
+    /* 공통 오버레이 스타일 */
+    .overlay-modal {
+      display: flex;
       position: absolute;
       top: 0;
       left: 0;
@@ -139,52 +154,114 @@
       align-items: center;
       justify-content: center;
       text-align: center;
-      padding: clamp(14px, 4vw, 30px);
+      padding: clamp(16px, 4vw, 30px);
     }
 
-    .clear-modal-title {
-      font-size: clamp(32px, 8vw, 48px);
+    .ready-badge {
+      background: #ef4444;
+      color: #ffffff;
+      font-size: clamp(12px, 2.8vw, 14px);
+      padding: 4px 14px;
+      border-radius: 16px;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+      box-shadow: 0 0 12px rgba(239, 68, 68, 0.5);
+    }
+
+    .modal-title {
+      font-size: clamp(24px, 6vw, 38px);
       color: #facc15;
       text-shadow: 0 0 20px rgba(250, 204, 21, 0.6);
-      margin-bottom: clamp(10px, 2.5vh, 18px);
+      margin-bottom: clamp(10px, 2.5vh, 16px);
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      flex-wrap: wrap;
     }
 
-    /* 단어가 어색하게 쪼개지지 않고 모바일 화면에 맞게 자동 축소 */
-    .clear-modal-desc {
-      font-size: clamp(16px, 4.3vw, 24px);
-      color: #ffffff;
-      line-height: 1.45;
-      margin-bottom: clamp(18px, 4vh, 32px);
-      word-break: keep-all; /* 한글 단어 단위 줄바꿈 유지 */
+    .modal-desc {
+      font-size: clamp(15px, 3.8vw, 19px);
+      color: #cbd5e1;
+      line-height: 1.6;
+      margin-bottom: clamp(18px, 4vh, 28px);
+      word-break: keep-all;
       max-width: 90%;
-      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
     }
 
-    .clear-modal-desc .highlight {
+    .modal-desc strong {
       color: #38bdf8;
+    }
+
+    .total-result-box {
+      background: rgba(15, 23, 42, 0.8);
+      border: 2px solid #facc15;
+      padding: 8px 24px;
+      border-radius: 24px;
+      font-size: clamp(16px, 4vw, 20px);
+      color: #ffffff;
+      margin-top: 8px;
+      margin-bottom: 22px;
+      box-shadow: 0 0 16px rgba(250, 204, 21, 0.35);
+      display: inline-block;
+    }
+
+    .total-result-box span {
+      color: #facc15;
+      font-size: clamp(18px, 4.5vw, 24px);
       font-weight: bold;
     }
 
-    .restart-btn {
-      background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .action-btn {
       color: #ffffff;
-      border: 2px solid #67e8f9;
-      padding: clamp(10px, 2.5vh, 14px) clamp(26px, 6vw, 40px);
-      font-size: clamp(18px, 4.5vw, 22px);
+      border: none;
+      padding: clamp(11px, 2.5vh, 14px) clamp(26px, 6vw, 40px);
+      font-size: clamp(17px, 4.2vw, 21px);
       border-radius: 50px;
       cursor: pointer;
-      box-shadow: 0 0 25px rgba(6, 182, 212, 0.5);
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.5);
       transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
-    .restart-btn:hover {
+    .action-btn:hover {
       transform: scale(1.06);
-      box-shadow: 0 0 35px rgba(6, 182, 212, 0.8);
+    }
+
+    .btn-start {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      border: 2px solid #f87171;
+      box-shadow: 0 0 20px rgba(239, 68, 68, 0.6);
+    }
+
+    .btn-next {
+      background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+      border: 2px solid #67e8f9;
+      box-shadow: 0 0 20px rgba(6, 182, 212, 0.6);
+    }
+
+    .btn-retry {
+      background: #475569;
+      border: 2px solid #64748b;
+    }
+
+    /* 카운트다운 화면 */
+    .countdown-number {
+      font-size: clamp(65px, 16vw, 90px);
+      color: #facc15;
+      text-shadow: 0 0 25px rgba(250, 204, 21, 0.7);
+      animation: countZoom 0.9s ease-out infinite;
+    }
+
+    @keyframes countZoom {
+      0% { transform: scale(0.6); opacity: 0; }
+      50% { transform: scale(1.15); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
     }
 
     /* 폭죽 캔버스 */
@@ -203,38 +280,97 @@
 <body>
 
   <header>
-    <h1>✨ 반짝반짝! 더블클릭 별 잡기</h1>
-    <p class="subtitle">별이 사라지기 전에 마우스로 <b>따닥!(두 번)</b> 빠르게 눌러보세요!</p>
+    <h1>✨ 반짝반짝! 더블클릭 챌린지</h1>
+    <p class="subtitle">별이 나타나면 마우스로 <b>따닥!(두 번)</b> 빠르게 눌러 잡아보세요!</p>
   </header>
 
   <div class="dashboard">
-    <div class="dash-item">남은 별: <span id="stars-count">10</span>개</div>
-    <div class="dash-item">걸린 시간: <span id="time-count">0</span>초</div>
+    <div class="level-badge" id="level-badge-display">1단계</div>
+    <div class="dash-item">남은 별: <span id="stars-count">8</span>개</div>
+    <div class="dash-item">이번 판: <span id="round-time-count">0</span>초</div>
+    <div class="dash-item">전체 누적: <span id="total-time-count" class="total-time">0</span>초</div>
   </div>
 
   <div class="game-board" id="board">
     <canvas id="fw-canvas"></canvas>
 
-    <!-- 개선된 반응형 종료 축하 화면 -->
-    <div class="clear-modal" id="clear-modal">
-      <div class="clear-modal-title">와아~! ⭐🎉</div>
-      <p class="clear-modal-desc">
-        반짝이는 별을 모두 잡은<br>
-        <span class="highlight">더블클릭 챔피언!</span>
+    <!-- 1. 단계별 준비 안내 화면 -->
+    <div class="overlay-modal" id="ready-screen">
+      <div class="ready-badge">MISSION STANDBY</div>
+      <div class="modal-title" id="ready-title">⭐ 1단계 준비!</div>
+      <p class="modal-desc" id="ready-desc">
+        화면에 나타나는 별을 찾아 마우스를 <strong>따닥!(2번)</strong> 빠르게 누르세요!<br>
+        총 <strong>8개의 별</strong>을 잡으면 1단계 완료입니다.
       </p>
-      <button class="restart-btn" onclick="startGame()">다시 도전하기! 🔄</button>
+      <button class="action-btn btn-start" onclick="startCountdown()">도전 시작! 🚀</button>
+    </div>
+
+    <!-- 2. 카운트다운 화면 -->
+    <div class="overlay-modal" id="countdown-screen" style="display: none;">
+      <div class="countdown-number" id="countdown-text">3</div>
+      <p style="margin-top: 10px; font-size: 16px; color: #94a3b8;">마우스 커서를 화면 중앙에 준비하세요!</p>
+    </div>
+
+    <!-- 3. 단계 성공 후 다음 단계 진급 선택 화면 -->
+    <div class="overlay-modal" id="step-clear-modal" style="display: none;">
+      <div class="modal-title">🎉 단계 클리어!</div>
+      <p class="modal-desc" id="step-clear-desc">
+        이번 판: 0초 | 전체 누적 시간: 0초<br>
+        다음 단계는 <strong>별이 10% 더 작아지고 2개 더 늘어납니다!</strong>
+      </p>
+      <div class="btn-group">
+        <button class="action-btn btn-retry" onclick="showReadyScreen(currentLevel)">이 단계 다시하기</button>
+        <button class="action-btn btn-next" onclick="goToNextLevel()">다음 단계 도전! ⏩</button>
+      </div>
+    </div>
+
+    <!-- 4. 최종 3단계 올 클리어 축하 화면 -->
+    <div class="overlay-modal" id="all-clear-modal" style="display: none;">
+      <div class="modal-title">👑 더블클릭 챔피언 등극! 👑</div>
+      <p class="modal-desc" style="margin-bottom: 4px; color: #ffffff;">
+        점점 작아지는 3단계 별들을 모두 완벽히 잡았습니다!
+      </p>
+      <div class="total-result-box">
+        전체 소요 시간: <span id="final-total-time">0초</span>
+      </div>
+      <button class="action-btn btn-start" onclick="resetToFirstLevel()">처음부터 다시 도전! 🔄</button>
     </div>
   </div>
 
   <script>
-    const TOTAL_STARS = 10;
-    let remainingStars = TOTAL_STARS;
-    let timer = 0;
+    // 3단계 구성 (크기 10%씩 감소, 개수 2개씩 증가)
+    const LEVELS = {
+      1: {
+        title: "⭐ 1단계: 기본 크기 별 잡기",
+        totalStars: 8,
+        starScale: 1.0, // 100%
+        fontSize: 56,
+        desc: "화면에 나타나는 별을 찾아 마우스를 <strong>따닥!(2번)</strong> 빠르게 누르세요!<br>총 <strong>8개의 별</strong>을 잡으면 성공입니다."
+      },
+      2: {
+        title: "⭐ 2단계: 조금 작아진 별 잡기",
+        totalStars: 10,
+        starScale: 0.9, // 90%
+        fontSize: 50,
+        desc: "별이 <strong>10% 더 작아지고 10개</strong>로 늘어났습니다!<br>정밀하게 조준해서 빠르게 <strong>따닥!</strong> 눌러보세요."
+      },
+      3: {
+        title: "⭐ 3단계: 초정밀 마스터 별 잡기",
+        totalStars: 12,
+        starScale: 0.8, // 80%
+        fontSize: 44,
+        desc: "별이 <strong>가장 작아지고 총 12개</strong>가 나타납니다!<br>집중력을 발휘하여 마지막 챔피언에 등극해 보세요."
+      }
+    };
+
+    let currentLevel = 1;
+    let remainingStars = 8;
+    let roundTimer = 0;
+    let totalTimer = 0;
     let timerInterval = null;
-    let starInterval = null;
     let isRunning = false;
 
-    // 사운드 엔진
+    // 사운드 시스템
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     function playBeep(freq, duration, type = 'sine') {
       try {
@@ -252,87 +388,153 @@
       } catch(e) {}
     }
 
+    function playCountdownTick() { playBeep(440, 0.15, 'square'); }
+    function playStartFanfare() { playBeep(880, 0.35, 'triangle'); }
     function playCatchSound() {
-      playBeep(659.25, 0.08); // E5
-      setTimeout(() => playBeep(880, 0.12), 60); // A5
+      playBeep(659.25, 0.08);
+      setTimeout(() => playBeep(880, 0.12), 60);
     }
 
-    function playWinSound() {
-      const melody = [523.25, 659.25, 783.99, 1046.50, 1318.51];
-      melody.forEach((freq, i) => {
-        setTimeout(() => playBeep(freq, 0.2, 'triangle'), i * 110);
+    function playLevelClearFanfare() {
+      const notes = [523.25, 659.25, 783.99, 1046.50];
+      notes.forEach((freq, idx) => {
+        setTimeout(() => playBeep(freq, 0.2, 'triangle'), idx * 120);
       });
     }
 
-    function startGame() {
+    function playFinalGrandFanfare() {
+      const melody = [523.25, 523.25, 523.25, 659.25, 783.99, 1046.50, 1318.51];
+      melody.forEach((freq, idx) => {
+        setTimeout(() => playBeep(freq, 0.25, 'triangle'), idx * 140);
+      });
+    }
+
+    // 준비 화면 표시
+    function showReadyScreen(lvl = currentLevel) {
       stopFireworks();
       clearInterval(timerInterval);
-      clearInterval(starInterval);
+      isRunning = false;
+      currentLevel = lvl;
 
-      // 기존 보드 초기화
-      const board = document.getElementById('board');
+      const levelData = LEVELS[currentLevel];
+      remainingStars = levelData.totalStars;
+
       document.querySelectorAll('.star-target, .pop-effect').forEach(el => el.remove());
-      document.getElementById('clear-modal').style.display = 'none';
+      
+      document.getElementById('level-badge-display').innerText = `${currentLevel}단계`;
+      document.getElementById('stars-count').innerText = remainingStars;
+      document.getElementById('round-time-count').innerText = '0';
+      document.getElementById('total-time-count').innerText = `${totalTimer}`;
 
-      remainingStars = TOTAL_STARS;
-      timer = 0;
+      document.getElementById('ready-title').innerText = levelData.title;
+      document.getElementById('ready-desc').innerHTML = levelData.desc;
+
+      hideAllModals();
+      document.getElementById('ready-screen').style.display = 'flex';
+    }
+
+    function hideAllModals() {
+      document.getElementById('ready-screen').style.display = 'none';
+      document.getElementById('countdown-screen').style.display = 'none';
+      document.getElementById('step-clear-modal').style.display = 'none';
+      document.getElementById('all-clear-modal').style.display = 'none';
+    }
+
+    // 카운트다운
+    function startCountdown() {
+      hideAllModals();
+      const countdownScreen = document.getElementById('countdown-screen');
+      const countText = document.getElementById('countdown-text');
+      countdownScreen.style.display = 'flex';
+
+      let count = 3;
+      countText.innerText = count;
+      playCountdownTick();
+
+      const countdownTimer = setInterval(() => {
+        count--;
+        if (count > 0) {
+          countText.innerText = count;
+          playCountdownTick();
+        } else if (count === 0) {
+          countText.innerText = "START!";
+          playStartFanfare();
+        } else {
+          clearInterval(countdownTimer);
+          countdownScreen.style.display = 'none';
+          startGame();
+        }
+      }, 850);
+    }
+
+    // 게임 시작
+    function startGame() {
+      document.querySelectorAll('.star-target, .pop-effect').forEach(el => el.remove());
+      const levelData = LEVELS[currentLevel];
+      remainingStars = levelData.totalStars;
+      roundTimer = 0;
       isRunning = true;
 
       document.getElementById('stars-count').innerText = remainingStars;
-      document.getElementById('time-count').innerText = timer;
+      document.getElementById('round-time-count').innerText = '0';
+      document.getElementById('total-time-count').innerText = `${totalTimer}`;
 
       timerInterval = setInterval(() => {
-        timer++;
-        document.getElementById('time-count').innerText = timer;
+        roundTimer++;
+        totalTimer++;
+        document.getElementById('round-time-count').innerText = `${roundTimer}`;
+        document.getElementById('total-time-count').innerText = `${totalTimer}`;
       }, 1000);
 
       spawnStar();
     }
 
+    // 별 생성 (단계별 크기 적용)
     function spawnStar() {
       if (!isRunning) return;
 
+      const levelData = LEVELS[currentLevel];
       const board = document.getElementById('board');
       const star = document.createElement('div');
       star.className = 'star-target';
       star.innerText = '⭐';
+      
+      // 단계별 폰트 크기 계산 (반응형 비율 고려)
+      const baseSize = levelData.fontSize;
+      star.style.fontSize = `clamp(${Math.round(baseSize * 0.65)}px, 8vw, ${baseSize}px)`;
 
-      const boardW = board.clientWidth;
-      const boardH = board.clientHeight;
-      const starSize = 60;
+      const boardW = board.clientWidth || 800;
+      const boardH = board.clientHeight || 450;
+      const starPixelSize = Math.round(60 * levelData.starScale);
 
-      const randX = Math.random() * (boardW - starSize - 20) + 10;
-      const randY = Math.random() * (boardH - starSize - 20) + 10;
+      const randX = Math.random() * (boardW - starPixelSize - 20) + 10;
+      const randY = Math.random() * (boardH - starPixelSize - 20) + 10;
 
       star.style.left = `${randX}px`;
       star.style.top = `${randY}px`;
 
-      // 더블클릭 이벤트 (PC dblclick + 모바일 탭 대응)
       let lastTap = 0;
-      
       function handleDoubleClick(e) {
         if (!isRunning) return;
         e.stopPropagation();
         e.preventDefault();
 
         playCatchSound();
-        createPopEffect(parseFloat(star.style.left) + 20, parseFloat(star.style.top) + 20);
+        createPopEffect(parseFloat(star.style.left) + 15, parseFloat(star.style.top) + 15);
         star.remove();
 
         remainingStars--;
         document.getElementById('stars-count').innerText = remainingStars;
 
         if (remainingStars <= 0) {
-          gameClear();
+          onRoundClear();
         } else {
-          setTimeout(spawnStar, 250);
+          setTimeout(spawnStar, 220);
         }
       }
 
-      // PC 더블클릭
       star.addEventListener('dblclick', handleDoubleClick);
 
-      // 모바일 터치 더블 탭
       star.addEventListener('touchend', (e) => {
         const currentTime = new Date().getTime();
         const tapLength = currentTime - lastTap;
@@ -356,16 +558,46 @@
       setTimeout(() => pop.remove(), 600);
     }
 
-    function gameClear() {
+    // 단계 클리어 판정
+    function onRoundClear() {
       isRunning = false;
       clearInterval(timerInterval);
-      playWinSound();
 
-      document.getElementById('clear-modal').style.display = 'flex';
+      if (currentLevel < 3) {
+        playLevelClearFanfare();
+        const nextLevelData = LEVELS[currentLevel + 1];
+        const modal = document.getElementById('step-clear-modal');
+        document.getElementById('step-clear-desc').innerHTML = `
+          이번 판 소요 시간: <strong><span style="color: #38bdf8;">${roundTimer}초</span></strong> | 전체 누적: <strong><span style="color: #facc15;">${totalTimer}초</span></strong><br><br>
+          🎉 <strong>${currentLevel}단계를 멋지게 완료했습니다!</strong><br>
+          다음 ${currentLevel + 1}단계는 <strong>별이 10% 더 작아지고 ${nextLevelData.totalStars}개</strong>가 나타납니다.
+        `;
+        modal.style.display = 'flex';
+      } else {
+        triggerFinalCelebration();
+      }
+    }
+
+    function goToNextLevel() {
+      currentLevel++;
+      showReadyScreen(currentLevel);
+    }
+
+    function resetToFirstLevel() {
+      stopFireworks();
+      currentLevel = 1;
+      totalTimer = 0;
+      showReadyScreen(1);
+    }
+
+    function triggerFinalCelebration() {
+      playFinalGrandFanfare();
+      document.getElementById('final-total-time').innerText = `${totalTimer}초`;
+      document.getElementById('all-clear-modal').style.display = 'flex';
       startFireworks();
     }
 
-    // 폭죽 연출 엔진
+    // 폭죽 연출
     let fwCanvas = document.getElementById('fw-canvas');
     let fwCtx = fwCanvas.getContext('2d');
     let particles = [];
@@ -378,7 +610,7 @@
       particles = [];
 
       let spawnTimer = setInterval(() => {
-        if (document.getElementById('clear-modal').style.display !== 'flex') {
+        if (document.getElementById('all-clear-modal').style.display !== 'flex') {
           clearInterval(spawnTimer);
           return;
         }
@@ -393,8 +625,8 @@
       const y = Math.random() * (fwCanvas.height - 100) + 50;
       const colors = ['#facc15', '#38bdf8', '#4ade80', '#f43f5e', '#a855f7', '#fb923c'];
       
-      for (let i = 0; i < 30; i++) {
-        const angle = (Math.PI * 2 / 30) * i;
+      for (let i = 0; i < 35; i++) {
+        const angle = (Math.PI * 2 / 35) * i;
         const speed = Math.random() * 4 + 2;
         particles.push({
           x: x, y: y,
@@ -439,7 +671,7 @@
       particles = [];
     }
 
-    window.onload = startGame;
+    window.onload = () => showReadyScreen(1);
   </script>
 </body>
 </html>
