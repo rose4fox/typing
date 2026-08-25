@@ -1,408 +1,445 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>반짝반짝! 더블클릭 별 잡기!</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Jua&display=swap');
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>반짝반짝! 더블클릭 별 잡기</title>
+  
+  <!-- 구글 폰트 Jua -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
 
-        * {
-            -webkit-tap-highlight-color: transparent;
-            -webkit-touch-callout: none;
-            user-select: none;
-            -webkit-user-select: none;
-            box-sizing: border-box;
-        }
+  <style>
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      margin: 0;
+      padding: 0;
+      font-family: 'Jua', sans-serif;
+      letter-spacing: 0.5px;
+    }
 
-        body {
-            margin: 0; padding: 0; overflow: hidden;
-            background-color: #f0f4ff;
-            font-family: 'Jua', sans-serif;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            height: 100vh; width: 100vw;
-        }
+    body {
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      color: #f8fafc;
+      overflow-x: hidden;
+      touch-action: manipulation;
+    }
 
-        #game-title {
-            font-size: clamp(30px, 8vw, 55px);
-            margin-top: 5px; margin-bottom: 2vh;
-            color: #ff3366;
-            text-shadow: 2px 2px 0px #fff, 4px 4px 0px rgba(0,0,0,0.06);
-            animation: bounceTitle 2s infinite;
-            flex-shrink: 0;
-        }
+    header {
+      text-align: center;
+      margin-bottom: 16px;
+    }
 
-        @keyframes bounceTitle {
-            0%, 100% { transform: translateY(0) rotate(-1deg); }
-            50% { transform: translateY(-8px) rotate(1deg); }
-        }
+    h1 {
+      font-size: clamp(24px, 5vw, 38px);
+      color: #facc15;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      text-shadow: 0 0 20px rgba(250, 204, 21, 0.5);
+    }
 
-        #info-board {
-            display: none; align-items: center; justify-content: space-around;
-            width: 92vw; max-width: 650px; background: white;
-            padding: clamp(10px, 1.8vh, 18px) 20px;
-            border-radius: 40px; box-shadow: 0 6px 24px rgba(0,0,0,0.08);
-            margin-bottom: 2vh; z-index: 10; flex-shrink: 0;
-        }
+    .subtitle {
+      font-size: clamp(13px, 3.2vw, 17px);
+      color: #cbd5e1;
+      margin-top: 4px;
+    }
 
-        .stat-group {
-            display: flex; align-items: center; gap: 6px;
-            font-size: clamp(16px, 2.5vh, 23px); color: #444;
-            position: relative;
-        }
+    /* 상단 정보창 */
+    .dashboard {
+      display: flex;
+      gap: 16px;
+      background: rgba(30, 41, 59, 0.85);
+      border: 1px solid #475569;
+      padding: 8px 24px;
+      border-radius: 40px;
+      margin-bottom: 14px;
+      font-size: clamp(14px, 3.4vw, 17px);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
 
-        .time-bonus {
-            position: absolute;
-            right: -48px;
-            top: -12px;
-            color: #10b981;
-            font-size: 1em;
-            font-weight: bold;
-            animation: floatFadeUp 0.8s ease-out forwards;
-            pointer-events: none;
-        }
+    .dash-item span {
+      color: #38bdf8;
+      font-size: 1.15em;
+      margin-left: 3px;
+    }
 
-        @keyframes floatFadeUp {
-            0% { opacity: 0; transform: translateY(5px) scale(0.8); }
-            50% { opacity: 1; transform: translateY(-10px) scale(1.2); }
-            100% { opacity: 0; transform: translateY(-20px) scale(1); }
-        }
+    /* 게임 화면 보드 */
+    .game-board {
+      width: 100%;
+      max-width: 860px;
+      height: clamp(380px, 60vh, 500px);
+      background: radial-gradient(circle at center, #1e293b 0%, #090d16 100%);
+      border: 3px solid #38bdf8;
+      border-radius: 24px;
+      box-shadow: 0 0 30px rgba(56, 189, 248, 0.25), inset 0 0 30px rgba(0, 0, 0, 0.6);
+      position: relative;
+      overflow: hidden;
+    }
 
-        .top-retry-btn {
-            padding: 10px 28px; border-radius: 30px; border: none;
-            background: linear-gradient(145deg, #00d2ff, #3a7bd5);
-            color: white; font-family: 'Jua'; cursor: pointer;
-            font-size: clamp(18px, 2.5vh, 24px); 
-            box-shadow: 0 6px 0 #2563eb, 0 8px 15px rgba(58, 123, 213, 0.35), inset 0 2px 3px rgba(255, 255, 255, 0.3);
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
-            transition: all 0.15s ease;
-        }
+    /* 더블클릭 대상 별 */
+    .star-target {
+      position: absolute;
+      cursor: pointer;
+      font-size: clamp(38px, 9vw, 56px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.1s ease;
+      filter: drop-shadow(0 0 12px rgba(250, 204, 21, 0.8));
+      animation: twinkle 1s infinite alternate ease-in-out;
+    }
 
-        .top-retry-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #2563eb; }
+    .star-target:active {
+      transform: scale(1.2);
+    }
 
-        #monitor-frame {
-            width: 88vw; max-width: 850px; height: 55vh;
-            border: clamp(10px, 2vw, 16px) solid #2d3748;
-            border-radius: clamp(20px, 4vw, 35px);
-            position: relative; background-color: #ffffff;
-            box-shadow: 0 15px 50px rgba(0,0,0,0.12);
-            overflow: hidden; touch-action: none;
-            transition: background-color 0.5s ease, border-color 0.1s ease; 
-        }
+    @keyframes twinkle {
+      0% { transform: scale(0.9); opacity: 0.85; }
+      100% { transform: scale(1.08); opacity: 1; }
+    }
 
-        #monitor-stand {
-            width: clamp(80px, 15vw, 130px); height: 18px;
-            background: #4a5568; clip-path: polygon(15% 0%, 85% 0%, 100% 100%, 0% 100%);
-            margin-top: -2px; margin-bottom: 3vh; flex-shrink: 0;
-        }
+    /* 클릭 시 터지는 이펙트 */
+    .pop-effect {
+      position: absolute;
+      pointer-events: none;
+      font-size: 28px;
+      animation: popFade 0.6s ease-out forwards;
+    }
 
-        /* 랜덤 방향 바운딩 컨테이너 */
-        .star-container { 
-            position: absolute; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-            animation: randomBounceIn 0.75s cubic-bezier(0.28, 0.84, 0.42, 1) forwards; 
-            cursor: pointer;
-        }
+    @keyframes popFade {
+      0% { transform: scale(0.6) translateY(0); opacity: 1; }
+      100% { transform: scale(1.6) translateY(-25px); opacity: 0; }
+    }
 
-        .star-svg {
-            width: 100%;
-            height: 100%;
-            filter: drop-shadow(0 8px 12px rgba(0,0,0,0.15));
-            transition: transform 0.1s;
-        }
+    /* ================= 축하 종료 팝업 (반응형 최적화) ================= */
+    .clear-modal {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(11, 15, 25, 0.95);
+      backdrop-filter: blur(8px);
+      z-index: 2000;
+      border-radius: 20px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: clamp(14px, 4vw, 30px);
+    }
 
-        /* CSS 변수(--bx, --by)를 활용한 360도 랜덤 바운딩 애니메이션 */
-        @keyframes randomBounceIn {
-            0% {
-                opacity: 0;
-                transform: translate(var(--bx), var(--by)) scale(0.3) rotate(var(--rot));
-            }
-            45% {
-                opacity: 1;
-                transform: translate(0, 0) scale(1.15, 0.85) rotate(0deg);
-            }
-            65% {
-                transform: translate(calc(var(--bx) * -0.25), calc(var(--by) * -0.25)) scale(0.95, 1.05);
-            }
-            82% {
-                transform: translate(0, 0) scale(1.05, 0.95);
-            }
-            92% {
-                transform: translate(calc(var(--bx) * -0.08), calc(var(--by) * -0.08)) scale(0.98, 1.02);
-            }
-            100% {
-                opacity: 1;
-                transform: translate(0, 0) scale(1, 1);
-            }
-        }
+    .clear-modal-title {
+      font-size: clamp(32px, 8vw, 48px);
+      color: #facc15;
+      text-shadow: 0 0 20px rgba(250, 204, 21, 0.6);
+      margin-bottom: clamp(10px, 2.5vh, 18px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
 
-        .popped { 
-            transform: scale(2.2) rotate(30deg) !important; 
-            opacity: 0 !important; 
-            pointer-events: none; 
-            transition: all 0.18s ease-out; 
-        }
-        
-        .overlay-layer { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.92); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 1000; text-align: center; padding: 20px; }
-        .ready-text { color: white; font-size: clamp(35px, 6vw, 50px); margin-bottom: 16px; text-shadow: 0 0 15px rgba(255,255,255,0.3); }
-        .ready-sub { color: #ffd166; font-size: clamp(18px, 3.5vw, 24px); margin-bottom: 36px; }
-        .giant-start-btn { font-family: 'Jua', sans-serif; font-size: clamp(38px, 9vw, 60px); padding: 22px 65px; color: white; background: linear-gradient(145deg, #ff007f, #7928ca); border: none; border-radius: 70px; box-shadow: 0 12px 0 #4c1d95; cursor: pointer; }
-        .result-msg { font-size: clamp(35px, 8vw, 65px); line-height: 1.3; margin-bottom: 35px; }
-        .result-retry-btn { font-family: 'Jua', sans-serif; font-size: clamp(26px, 6vw, 36px); padding: 20px 65px; border-radius: 50px; border: none; background: linear-gradient(145deg, #06d6a0, #118ab2); color: white; cursor: pointer; box-shadow: 0 10px 0 #073b4c; }
-        .sparkle { position: absolute; width: 6px; height: 6px; border-radius: 50%; pointer-events: none; }
-    </style>
+    /* 단어가 어색하게 쪼개지지 않고 모바일 화면에 맞게 자동 축소 */
+    .clear-modal-desc {
+      font-size: clamp(16px, 4.3vw, 24px);
+      color: #ffffff;
+      line-height: 1.45;
+      margin-bottom: clamp(18px, 4vh, 32px);
+      word-break: keep-all; /* 한글 단어 단위 줄바꿈 유지 */
+      max-width: 90%;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+    }
+
+    .clear-modal-desc .highlight {
+      color: #38bdf8;
+      font-weight: bold;
+    }
+
+    .restart-btn {
+      background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+      color: #ffffff;
+      border: 2px solid #67e8f9;
+      padding: clamp(10px, 2.5vh, 14px) clamp(26px, 6vw, 40px);
+      font-size: clamp(18px, 4.5vw, 22px);
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 0 25px rgba(6, 182, 212, 0.5);
+      transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .restart-btn:hover {
+      transform: scale(1.06);
+      box-shadow: 0 0 35px rgba(6, 182, 212, 0.8);
+    }
+
+    /* 폭죽 캔버스 */
+    #fw-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 2500;
+      display: none;
+    }
+  </style>
 </head>
 <body>
 
-    <div id="game-title">✨ 반짝반짝! 더블클릭 별 잡기</div>
+  <header>
+    <h1>✨ 반짝반짝! 더블클릭 별 잡기</h1>
+    <p class="subtitle">별이 사라지기 전에 마우스로 <b>따닥!(두 번)</b> 빠르게 눌러보세요!</p>
+  </header>
 
-    <div id="info-board">
-        <div class="stat-group">
-            <span>⭐</span> 남은 별: <span id="stars-left" style="color: #ff9f1c; font-weight:bold;">50</span>개
-        </div>
-        <div class="stat-group" id="timer-group">
-            <span>⏱</span> 남은 시간: <span id="timer" style="color: #ff0055; font-weight:bold;">30</span>초
-        </div>
-        <button class="top-retry-btn" onclick="location.reload()">다시 시작</button>
+  <div class="dashboard">
+    <div class="dash-item">남은 별: <span id="stars-count">10</span>개</div>
+    <div class="dash-item">걸린 시간: <span id="time-count">0</span>초</div>
+  </div>
+
+  <div class="game-board" id="board">
+    <canvas id="fw-canvas"></canvas>
+
+    <!-- 개선된 반응형 종료 축하 화면 -->
+    <div class="clear-modal" id="clear-modal">
+      <div class="clear-modal-title">와아~! ⭐🎉</div>
+      <p class="clear-modal-desc">
+        반짝이는 별을 모두 잡은<br>
+        <span class="highlight">더블클릭 챔피언!</span>
+      </p>
+      <button class="restart-btn" onclick="startGame()">다시 도전하기! 🔄</button>
     </div>
+  </div>
 
-    <div id="monitor-frame"></div>
-    <div id="monitor-stand"></div>
+  <script>
+    const TOTAL_STARS = 10;
+    let remainingStars = TOTAL_STARS;
+    let timer = 0;
+    let timerInterval = null;
+    let starInterval = null;
+    let isRunning = false;
 
-    <div id="start-layer" class="overlay-layer">
-        <div class="ready-text">별을 빠르게 <b>두 번</b> 톡톡!</div>
-        <div class="ready-sub">✨ 10개를 잡을 때마다 시간이 +5초 충전돼요!</div>
-        <button class="giant-start-btn" onclick="startGameProcess()">게임 시작!</button>
-    </div>
-
-    <div id="result-layer" class="overlay-layer" style="display: none;">
-        <div id="result-text" class="result-msg"></div>
-        <button class="result-retry-btn" onclick="location.reload()">다시 도전하기!</button>
-    </div>
-
-<script>
-    const TOTAL_GOAL = 50;  
-    const VIEW_LIMIT = 5;   
-    const GAME_TIME = 30;   
-    const BONUS_INTERVAL = 10;
-    const BONUS_SECONDS = 5;
-
-    let poppedCount = 0;      
-    let createdCount = 0;     
-    let timeLeft = GAME_TIME;
-    let gameActive = false;
-    let timerInterval;
-    let currentBaseBorderColor = '#2d3748';
-    let starIdCounter = 0;
-
-    const frame = document.getElementById('monitor-frame');
-    const timerDisplay = document.getElementById('timer');
-    const timerGroup = document.getElementById('timer-group');
-    const leftDisplay = document.getElementById('stars-left');
-    const infoBoard = document.getElementById('info-board');
-    const startLayer = document.getElementById('start-layer');
-    const resultLayer = document.getElementById('result-layer');
-    const resultText = document.getElementById('result-text');
-
-    const monitorBgColors = ['#ffffff', '#fffdfa', '#f7faff', '#fdf7ff', '#f0fdf4', '#fff5f5'];
-    const monitorBorderColors = ['#2d3748', '#1a202c', '#4a5568', '#2b6cb0', '#2f855a', '#9b2c2c', '#6b46c1'];
-
-    const starPalettes = [
-        { main: '#FFB800', light: '#FFE27A', shadow: '#D97706' }, // 옐로우
-        { main: '#FF2E74', light: '#FFA3BF', shadow: '#C0134E' }, // 팝 핑크
-        { main: '#00D084', light: '#86F0C5', shadow: '#00945E' }, // 에메랄드 그린
-        { main: '#00B4D8', light: '#8AE4F7', shadow: '#007A94' }, // 스카이 블루
-        { main: '#9B51E0', light: '#D6A6FF', shadow: '#6A23AF' }, // 퍼플
-        { main: '#FF6D00', light: '#FFB273', shadow: '#C44600' }, // 오렌지
-        { main: '#2F80ED', light: '#99C4FF', shadow: '#1357B3' }, // 로열 블루
-        { main: '#FF0055', light: '#FF80A8', shadow: '#B3003B' }  // 레드
-    ];
-
-    function changeMonitorColor() {
-        const bg = monitorBgColors[Math.floor(Math.random() * monitorBgColors.length)];
-        currentBaseBorderColor = monitorBorderColors[Math.floor(Math.random() * monitorBorderColors.length)];
-        frame.style.backgroundColor = bg;
-        frame.style.borderColor = currentBaseBorderColor;
+    // 사운드 엔진
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playBeep(freq, duration, type = 'sine') {
+      try {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch(e) {}
     }
 
-    function flashBorder(color) {
-        frame.style.borderColor = color;
-        setTimeout(() => {
-            if(gameActive) frame.style.borderColor = currentBaseBorderColor;
-        }, 150);
+    function playCatchSound() {
+      playBeep(659.25, 0.08); // E5
+      setTimeout(() => playBeep(880, 0.12), 60); // A5
     }
 
-    function showTimeBonusEffect() {
-        const bonusTag = document.createElement('span');
-        bonusTag.className = 'time-bonus';
-        bonusTag.innerText = `+${BONUS_SECONDS}초!`;
-        timerGroup.appendChild(bonusTag);
-        setTimeout(() => bonusTag.remove(), 800);
+    function playWinSound() {
+      const melody = [523.25, 659.25, 783.99, 1046.50, 1318.51];
+      melody.forEach((freq, i) => {
+        setTimeout(() => playBeep(freq, 0.2, 'triangle'), i * 110);
+      });
     }
 
-    function startGameProcess() {
-        startLayer.style.display = 'none';
-        infoBoard.style.display = 'flex';
-        gameActive = true;
-        changeMonitorColor();
-        for (let i = 0; i < VIEW_LIMIT; i++) {
-            setTimeout(() => createStar(), i * 180);
-        }
-        timerInterval = setInterval(() => {
-            timeLeft--;
-            timerDisplay.innerText = timeLeft;
-            if (timeLeft <= 0) {
-                if (poppedCount < TOTAL_GOAL) endGame(false);
-                else endGame(true);
-            }
-        }, 1000);
+    function startGame() {
+      stopFireworks();
+      clearInterval(timerInterval);
+      clearInterval(starInterval);
+
+      // 기존 보드 초기화
+      const board = document.getElementById('board');
+      document.querySelectorAll('.star-target, .pop-effect').forEach(el => el.remove());
+      document.getElementById('clear-modal').style.display = 'none';
+
+      remainingStars = TOTAL_STARS;
+      timer = 0;
+      isRunning = true;
+
+      document.getElementById('stars-count').innerText = remainingStars;
+      document.getElementById('time-count').innerText = timer;
+
+      timerInterval = setInterval(() => {
+        timer++;
+        document.getElementById('time-count').innerText = timer;
+      }, 1000);
+
+      spawnStar();
     }
 
-    function createStar() {
-        if (createdCount >= TOTAL_GOAL || !gameActive) return;
-        createdCount++;
-        starIdCounter++;
-        const uId = starIdCounter;
+    function spawnStar() {
+      if (!isRunning) return;
 
-        const container = document.createElement('div');
-        container.className = 'star-container';
-        
-        const baseSize = Math.min(frame.clientWidth, frame.clientHeight) * 0.22;
-        const scale = Math.random() * (1.15 - 0.85) + 0.85; 
-        const size = baseSize * scale;
-        
-        container.style.width = size + 'px';
-        container.style.height = size + 'px';
+      const board = document.getElementById('board');
+      const star = document.createElement('div');
+      star.className = 'star-target';
+      star.innerText = '⭐';
 
-        // ★ 무작위 360도 방향 벡터 생성 (거리 80px ~ 110px) ★
-        const angle = Math.random() * Math.PI * 2;
-        const distance = Math.random() * 30 + 80;
-        const bx = Math.cos(angle) * distance;
-        const by = Math.sin(angle) * distance;
-        const rot = (Math.random() * 60 - 30) + 'deg'; // 살짝 회전하며 등장
+      const boardW = board.clientWidth;
+      const boardH = board.clientHeight;
+      const starSize = 60;
 
-        container.style.setProperty('--bx', `${bx}px`);
-        container.style.setProperty('--by', `${by}px`);
-        container.style.setProperty('--rot', rot);
+      const randX = Math.random() * (boardW - starSize - 20) + 10;
+      const randY = Math.random() * (boardH - starSize - 20) + 10;
 
-        const p = starPalettes[Math.floor(Math.random() * starPalettes.length)];
-        const starPoints = "50,8 62,35 92,38 69,57 76,86 50,71 24,86 31,57 8,38 38,35";
+      star.style.left = `${randX}px`;
+      star.style.top = `${randY}px`;
 
-        container.innerHTML = `
-            <svg class="star-svg" viewBox="0 0 100 100">
-                <defs>
-                    <linearGradient id="bodyGrad-${uId}" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stop-color="${p.light}" />
-                        <stop offset="100%" stop-color="${p.main}" />
-                    </linearGradient>
-                </defs>
+      // 더블클릭 이벤트 (PC dblclick + 모바일 탭 대응)
+      let lastTap = 0;
+      
+      function handleDoubleClick(e) {
+        if (!isRunning) return;
+        e.stopPropagation();
+        e.preventDefault();
 
-                <!-- 입체 그림자 베이스 -->
-                <polygon points="${starPoints}" 
-                         transform="translate(0, 5)"
-                         fill="${p.shadow}" 
-                         stroke="${p.shadow}" 
-                         stroke-width="5" 
-                         stroke-linejoin="round" />
+        playCatchSound();
+        createPopEffect(parseFloat(star.style.left) + 20, parseFloat(star.style.top) + 20);
+        star.remove();
 
-                <!-- 메인 별 몸체 -->
-                <polygon points="${starPoints}" 
-                         fill="url(#bodyGrad-${uId})" 
-                         stroke="${p.main}" 
-                         stroke-width="4" 
-                         stroke-linejoin="round" />
+        remainingStars--;
+        document.getElementById('stars-count').innerText = remainingStars;
 
-                <!-- 윗면 하이라이트 -->
-                <path d="M 50 14 L 59 34 L 83 37 L 65 52 L 48 45 L 35 34 Z" 
-                      fill="#ffffff" 
-                      opacity="0.45" />
-
-                <!-- 반짝임 포인트 -->
-                <circle cx="36" cy="38" r="3.2" fill="#ffffff" opacity="0.9" />
-                <circle cx="44" cy="31" r="1.8" fill="#ffffff" opacity="0.9" />
-            </svg>
-        `;
-
-        const x = Math.random() * (frame.clientWidth - size - 20) + 10;
-        const y = Math.random() * (frame.clientHeight - size - 20) + 10;
-        
-        container.style.left = x + 'px';
-        container.style.top = y + 'px';
-        
-        const handlePop = (e) => {
-            if (e) e.preventDefault();
-            if (!gameActive || container.classList.contains('popped')) return;
-            
-            flashBorder(p.main);
-
-            poppedCount++;
-            leftDisplay.innerText = TOTAL_GOAL - poppedCount;
-
-            if (poppedCount % BONUS_INTERVAL === 0 && poppedCount < TOTAL_GOAL) {
-                timeLeft += BONUS_SECONDS;
-                timerDisplay.innerText = timeLeft;
-                showTimeBonusEffect();
-            }
-
-            container.classList.add('popped');
-            setTimeout(() => {
-                container.remove();
-                if (createdCount < TOTAL_GOAL) createStar();
-                if (poppedCount === TOTAL_GOAL) endGame(true);
-            }, 180);
-        };
-
-        container.addEventListener('dblclick', handlePop);
-
-        let lastTap = 0;
-        container.addEventListener('touchend', (e) => {
-            const currentTime = new Date().getTime();
-            const tapLength = currentTime - lastTap;
-            if (tapLength < 300 && tapLength > 0) {
-                handlePop(e);
-            }
-            lastTap = currentTime;
-        }, {passive: false});
-
-        frame.appendChild(container);
-    }
-
-    function endGame(isWin) {
-        if (!gameActive) return;
-        gameActive = false;
-        clearInterval(timerInterval);
-        resultLayer.style.display = 'flex';
-        frame.style.borderColor = '#2d3748';
-        if (isWin) {
-            resultText.innerHTML = "<span style='color:#ffd166;'>와아~! ⭐🎉</span><br><span style='color:white; font-size:0.8em;'>반짝이는 별을 모두 잡은 더블클릭 챔피언!</span>";
-            createSparkleEffect();
+        if (remainingStars <= 0) {
+          gameClear();
         } else {
-            resultText.innerHTML = "<span style='color:#00d2ff;'>아쉬워요! ✨</span><br><span style='color:white; font-size:0.7em;'>톡톡! 더 빠르게 두 번 눌러볼까요?<br>다시 도전해보세요! 💪</span>";
+          setTimeout(spawnStar, 250);
         }
+      }
+
+      // PC 더블클릭
+      star.addEventListener('dblclick', handleDoubleClick);
+
+      // 모바일 터치 더블 탭
+      star.addEventListener('touchend', (e) => {
+        const currentTime = new Date().getTime();
+        const tapLength = currentTime - lastTap;
+        if (tapLength < 350 && tapLength > 0) {
+          handleDoubleClick(e);
+        }
+        lastTap = currentTime;
+      });
+
+      board.appendChild(star);
     }
 
-    function createSparkleEffect() {
-        for (let i = 0; i < 40; i++) {
-            setTimeout(() => {
-                const sp = document.createElement('div');
-                sp.className = 'sparkle';
-                sp.style.left = Math.random() * 100 + 'vw';
-                sp.style.top = Math.random() * 100 + 'vh';
-                const color = starPalettes[Math.floor(Math.random() * starPalettes.length)].main;
-                sp.style.backgroundColor = color;
-                sp.style.boxShadow = `0 0 10px ${color}`;
-                resultLayer.appendChild(sp);
-                const anim = sp.animate([
-                    { transform: 'translate(0,0) scale(1)', opacity: 1 },
-                    { transform: `translate(${(Math.random()-0.5)*140}px, ${(Math.random()-0.5)*140}px) scale(16)`, opacity: 0 }
-                ], { duration: 800 });
-                anim.onfinish = () => sp.remove();
-            }, i * 40);
-        }
+    function createPopEffect(x, y) {
+      const board = document.getElementById('board');
+      const pop = document.createElement('div');
+      pop.className = 'pop-effect';
+      pop.innerText = '✨';
+      pop.style.left = `${x}px`;
+      pop.style.top = `${y}px`;
+      board.appendChild(pop);
+      setTimeout(() => pop.remove(), 600);
     }
-</script>
 
+    function gameClear() {
+      isRunning = false;
+      clearInterval(timerInterval);
+      playWinSound();
+
+      document.getElementById('clear-modal').style.display = 'flex';
+      startFireworks();
+    }
+
+    // 폭죽 연출 엔진
+    let fwCanvas = document.getElementById('fw-canvas');
+    let fwCtx = fwCanvas.getContext('2d');
+    let particles = [];
+    let fwAnimId = null;
+
+    function startFireworks() {
+      fwCanvas.style.display = 'block';
+      fwCanvas.width = fwCanvas.parentElement.clientWidth;
+      fwCanvas.height = fwCanvas.parentElement.clientHeight;
+      particles = [];
+
+      let spawnTimer = setInterval(() => {
+        if (document.getElementById('clear-modal').style.display !== 'flex') {
+          clearInterval(spawnTimer);
+          return;
+        }
+        createFireworkBatch();
+      }, 250);
+
+      renderFireworks();
+    }
+
+    function createFireworkBatch() {
+      const x = Math.random() * (fwCanvas.width - 100) + 50;
+      const y = Math.random() * (fwCanvas.height - 100) + 50;
+      const colors = ['#facc15', '#38bdf8', '#4ade80', '#f43f5e', '#a855f7', '#fb923c'];
+      
+      for (let i = 0; i < 30; i++) {
+        const angle = (Math.PI * 2 / 30) * i;
+        const speed = Math.random() * 4 + 2;
+        particles.push({
+          x: x, y: y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          alpha: 1,
+          decay: Math.random() * 0.02 + 0.015,
+          radius: Math.random() * 3 + 2
+        });
+      }
+    }
+
+    function renderFireworks() {
+      fwCtx.clearRect(0, 0, fwCanvas.width, fwCanvas.height);
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.04;
+        p.alpha -= p.decay;
+
+        if (p.alpha <= 0) {
+          particles.splice(i, 1);
+          continue;
+        }
+
+        fwCtx.save();
+        fwCtx.globalAlpha = p.alpha;
+        fwCtx.fillStyle = p.color;
+        fwCtx.beginPath();
+        fwCtx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        fwCtx.fill();
+        fwCtx.restore();
+      }
+      fwAnimId = requestAnimationFrame(renderFireworks);
+    }
+
+    function stopFireworks() {
+      if (fwAnimId) cancelAnimationFrame(fwAnimId);
+      fwCanvas.style.display = 'none';
+      particles = [];
+    }
+
+    window.onload = startGame;
+  </script>
 </body>
 </html>
