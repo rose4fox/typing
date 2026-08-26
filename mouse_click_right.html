@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>마법학교: 슬라임 수련관 (PC/모바일 하이브리드 - 속도 밸런스 패치)</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+      font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background: radial-gradient(circle at center, #2e1065 0%, #0f172a 100%);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      touch-action: manipulation;
+    }
+    
+    /* 상단 상태창 */
+    #header {
+      width: 92%;
+      max-width: 900px;
+      margin-top: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      padding: 10px 20px;
+      border-radius: 18px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+    .status-item {
+      font-size: 19px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .status-val {
+      color: #38bdf8;
+      font-size: 24px;
+    }
+
+    /* 게임 화면 */
+    #game-container {
+      position: relative;
+      width: 92%;
+      max-width: 900px;
+      height: 68vh;
+      margin-top: 12px;
+      background: linear-gradient(180deg, rgba(46, 16, 101, 0.5) 0%, rgba(15, 23, 42, 0.95) 100%);
+      border: 3px solid #818cf8;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 0 35px rgba(129, 140, 248, 0.3);
+    }
+
+    /* 방어선 */
+    #defense-line {
+      position: absolute;
+      bottom: 25px;
+      left: 0;
+      width: 100%;
+      height: 6px;
+      background: repeating-linear-gradient(90deg, #f87171, #f87171 20px, transparent 20px, transparent 40px);
+      box-shadow: 0 0 15px #ef4444;
+    }
+    #defense-text {
+      position: absolute;
+      bottom: 35px;
+      right: 20px;
+      font-size: 15px;
+      color: #fca5a5;
+      font-weight: 900;
+      letter-spacing: 2px;
+    }
+
+    /* 슬라임 타겟 */
+    .slime {
+      position: absolute;
+      width: 110px;
+      height: 95px;
+      border-radius: 50% 50% 45% 45%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.15s ease;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5), inset 0 -8px 12px rgba(0,0,0,0.25), inset 0 8px 14px rgba(255,255,255,0.5);
+      animation: bounce 0.8s infinite alternate ease-in-out;
+    }
+    
+    .slime::before {
+      content: '';
+      position: absolute;
+      top: 28px;
+      left: 30px;
+      width: 12px;
+      height: 14px;
+      background: #0f172a;
+      border-radius: 50%;
+      box-shadow: 38px 0 0 #0f172a;
+    }
+    .slime::after {
+      content: '';
+      position: absolute;
+      bottom: 22px;
+      width: 18px;
+      height: 8px;
+      background: #0f172a;
+      border-radius: 0 0 12px 12px;
+    }
+
+    .slime-fire {
+      background: linear-gradient(135deg, #f87171, #dc2626);
+      border: 3px solid #fecdd3;
+    }
+    .slime-water {
+      background: linear-gradient(135deg, #60a5fa, #2563eb);
+      border: 3px solid #bfdbfe;
+    }
+    .slime-grass {
+      background: linear-gradient(135deg, #4ade80, #16a34a);
+      border: 3px solid #bbf7d0;
+    }
+
+    /* 대형 말풍선 힌트 뱃지 */
+    .slime-badge {
+      position: absolute;
+      top: -46px;
+      font-size: 15px;
+      font-weight: 900;
+      padding: 6px 14px;
+      border-radius: 20px;
+      background: #ffffff;
+      color: #0f172a;
+      white-space: nowrap;
+      border: 3px solid #facc15;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      pointer-events: none;
+    }
+    .slime-badge::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 8px 6px 0;
+      border-style: solid;
+      border-color: #facc15 transparent;
+      display: block;
+      width: 0;
+    }
+
+    /* 원형 마법 시전 메뉴 */
+    #spell-menu {
+      display: none;
+      position: absolute;
+      width: 190px;
+      height: 190px;
+      border-radius: 50%;
+      z-index: 999;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+    .spell-circle {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: rgba(15, 23, 42, 0.94);
+      border: 3px solid #fbbf24;
+      box-shadow: 0 0 30px rgba(251, 191, 36, 0.6);
+      animation: spinIn 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+    }
+    .menu-center-hint {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 12px;
+      font-weight: 800;
+      color: #94a3b8;
+      text-align: center;
+      line-height: 1.2;
+    }
+    .spell-btn {
+      pointer-events: auto;
+      position: absolute;
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      transition: transform 0.15s, filter 0.15s;
+    }
+    .spell-btn span {
+      font-size: 10px;
+      font-weight: 900;
+      margin-top: -2px;
+    }
+    .spell-btn:hover {
+      transform: scale(1.18);
+      filter: brightness(1.2);
+    }
+    .spell-water {
+      top: 6px; left: 66px;
+      background: linear-gradient(135deg, #38bdf8, #0284c7);
+      border: 3px solid #bae6fd;
+      color: #fff;
+    }
+    .spell-grass {
+      bottom: 16px; left: 20px;
+      background: linear-gradient(135deg, #4ade80, #16a34a);
+      border: 3px solid #bbf7d0;
+      color: #fff;
+    }
+    .spell-fire {
+      bottom: 16px; right: 20px;
+      background: linear-gradient(135deg, #fb7185, #e11d48);
+      border: 3px solid #fecdd3;
+      color: #fff;
+    }
+
+    /* 하단 가이드 & 모드 스위치 */
+    #footer-bar {
+      margin-top: 10px;
+      width: 92%;
+      max-width: 900px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    #guide-bar {
+      font-size: 15px;
+      font-weight: 800;
+      color: #f8fafc;
+      display: flex;
+      gap: 16px;
+      background: rgba(255,255,255,0.12);
+      padding: 8px 18px;
+      border-radius: 30px;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .rule-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    #mobile-toggle-btn {
+      display: none;
+      padding: 8px 16px;
+      background: #4f46e5;
+      border: 2px solid #a5b4fc;
+      border-radius: 20px;
+      color: #fff;
+      font-weight: bold;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    /* 마법 폭발 이펙트 */
+    .pop-effect {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      font-size: 34px;
+      font-weight: 900;
+      color: #fde047;
+      text-shadow: 0 0 12px #ca8a04;
+      pointer-events: none;
+      animation: explode 0.6s ease-out forwards;
+      white-space: nowrap;
+    }
+
+    /* 오버레이 */
+    .overlay {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(15, 23, 42, 0.94);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      border-radius: 22px;
+      padding: 20px;
+      text-align: center;
+    }
+    .btn-start {
+      margin-top: 24px;
+      padding: 16px 44px;
+      font-size: 22px;
+      font-weight: 900;
+      color: #fff;
+      background: linear-gradient(135deg, #6366f1, #4338ca);
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(99, 102, 241, 0.6);
+      transition: transform 0.15s;
+    }
+    .btn-start:hover {
+      transform: scale(1.06);
+    }
+
+    @keyframes bounce {
+      from { transform: translateY(0) scale(1, 1); }
+      to { transform: translateY(-8px) scale(1.05, 0.95); }
+    }
+    @keyframes spinIn {
+      from { transform: scale(0.3) rotate(-90deg); opacity: 0; }
+      to { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+    @keyframes explode {
+      0% { opacity: 1; transform: translate(-50%, -50%) scale(0.6); }
+      100% { opacity: 0; transform: translate(-50%, -90px) scale(1.5); }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="header">
+    <div class="status-item">🏆 점수: <span id="score-val" class="status-val">0</span>점</div>
+    <div class="status-item">❤️ 생명: <span id="life-val" class="status-val">❤️❤️❤️</span></div>
+    <div class="status-item">⏱️ 시간: <span id="time-val" class="status-val">60</span>초</div>
+  </div>
+
+  <div id="game-container">
+    <div id="defense-line"></div>
+    <div id="defense-text">방어선</div>
+
+    <!-- 시작 오버레이 -->
+    <div id="start-overlay" class="overlay">
+      <h1 style="font-size: 32px; color: #a5b4fc; margin-bottom: 12px;">🧙 마법학교 슬라임 디펜스</h1>
+      <p style="color: #f1f5f9; font-size: 18px; margin: 6px 0; font-weight: 700;">
+        💻 <b>PC</b>: 슬라임 <b>[우클릭]</b> ➔ 마법 <b>[좌클릭]</b>
+      </p>
+      <p style="color: #fde047; font-size: 18px; margin: 6px 0; font-weight: 700;">
+        📱 <b>태블릿/폰</b>: 슬라임을 <b>[살짝 꾹 누르기]</b> ➔ 마법 <b>[터치]</b>
+      </p>
+      <button class="btn-start" onclick="startGame()">수련 시작하기 ▶</button>
+    </div>
+
+    <!-- 결과 오버레이 -->
+    <div id="game-over-overlay" class="overlay" style="display: none;">
+      <h1 id="result-title" style="font-size: 34px; color: #f87171;">수련 완료!</h1>
+      <p id="result-desc" style="font-size: 20px; color: #f1f5f9; margin-top: 14px; font-weight: 700;">최종 점수: 0점</p>
+      <button class="btn-start" onclick="startGame()">다시 도전하기 🔄</button>
+    </div>
+
+    <!-- 원형 마법 메뉴 -->
+    <div id="spell-menu">
+      <div class="spell-circle">
+        <div class="menu-center-hint">마법<br>선택!</div>
+        <div class="spell-btn spell-water" data-spell="water" title="물 마법">💧<span>물</span></div>
+        <div class="spell-btn spell-grass" data-spell="grass" title="풀 마법">🌿<span>풀</span></div>
+        <div class="spell-btn spell-fire" data-spell="fire" title="불 마법">🔥<span>불</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="footer-bar">
+    <div id="guide-bar">
+      <span class="rule-tag">🔥 불 ➔ <b>💧 물</b></span>
+      <span class="rule-tag">💧 물 ➔ <b>🌿 풀</b></span>
+      <span class="rule-tag">🌿 풀 ➔ <b>🔥 불</b></span>
+    </div>
+    <button id="mobile-toggle-btn" onclick="toggleTouchMode()">모바일 간편 터치 모드: OFF</button>
+  </div>
+
+  <script>
+    const container = document.getElementById('game-container');
+    const spellMenu = document.getElementById('spell-menu');
+    const scoreVal = document.getElementById('score-val');
+    const lifeVal = document.getElementById('life-val');
+    const timeVal = document.getElementById('time-val');
+    const startOverlay = document.getElementById('start-overlay');
+    const gameOverOverlay = document.getElementById('game-over-overlay');
+    const resultTitle = document.getElementById('result-title');
+    const resultDesc = document.getElementById('result-desc');
+    const mobileToggleBtn = document.getElementById('mobile-toggle-btn');
+
+    // 모바일 터치 기기 감지
+    const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+    if (isTouchDevice) {
+      mobileToggleBtn.style.display = 'inline-block';
+    }
+
+    let directTapMode = false;
+    function toggleTouchMode() {
+      directTapMode = !directTapMode;
+      mobileToggleBtn.textContent = `모바일 간편 터치 모드: ${directTapMode ? 'ON (즉시 터치)' : 'OFF (살짝 누르기)'}`;
+      mobileToggleBtn.style.background = directTapMode ? '#059669' : '#4f46e5';
+    }
+
+    // Web Audio API 사운드
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playTone(freq, type, duration) {
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch(e) {}
+    }
+
+    function soundOpenMenu() { playTone(540, 'sine', 0.12); }
+    function soundCastSuccess() { 
+      playTone(587, 'sine', 0.1);
+      setTimeout(() => playTone(880, 'triangle', 0.25), 90);
+    }
+    function soundFail() { playTone(180, 'sawtooth', 0.3); }
+
+    let score = 0;
+    let life = 3;
+    let timeLeft = 60;
+    let gameRunning = false;
+    let activeSlime = null;
+    let slimes = [];
+    let gameLoopId = null;
+    let spawnTimerId = null;
+    let clockTimerId = null;
+
+    const SLIME_TYPES = [
+      { type: 'fire', name: '불 슬라임', weak: 'water', class: 'slime-fire', badge: '💧 물 마법 발사!' },
+      { type: 'water', name: '물 슬라임', weak: 'grass', class: 'slime-water', badge: '🌿 풀 마법 발사!' },
+      { type: 'grass', name: '풀 슬라임', weak: 'fire', class: 'slime-grass', badge: '🔥 불 마법 발사!' }
+    ];
+
+    // 브라우저 기본 컨텍스트 메뉴 비활성화
+    window.addEventListener('contextmenu', (e) => e.preventDefault());
+
+    // 배경 클릭/터치 시 메뉴 닫기
+    window.addEventListener('pointerdown', (e) => {
+      if (!spellMenu.contains(e.target) && !e.target.closest('.slime')) {
+        closeSpellMenu();
+      }
+    });
+
+    function startGame() {
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      
+      score = 0;
+      life = 3;
+      timeLeft = 60;
+      gameRunning = true;
+      scoreVal.textContent = score;
+      lifeVal.textContent = '❤️❤️❤️';
+      timeVal.textContent = timeLeft;
+
+      startOverlay.style.display = 'none';
+      gameOverOverlay.style.display = 'none';
+      closeSpellMenu();
+
+      slimes.forEach(s => s.el.remove());
+      slimes = [];
+
+      clearInterval(spawnTimerId);
+      clearInterval(clockTimerId);
+      cancelAnimationFrame(gameLoopId);
+
+      // 슬라임 등장 주기 (2.0초)
+      spawnTimerId = setInterval(spawnSlime, 2000);
+      clockTimerId = setInterval(tickTime, 1000);
+      
+      spawnSlime();
+      gameLoop();
+    }
+
+    function tickTime() {
+      timeLeft--;
+      timeVal.textContent = timeLeft;
+      if (timeLeft <= 0) {
+        endGame(true);
+      }
+    }
+
+    function spawnSlime() {
+      if (!gameRunning) return;
+      if (slimes.length >= 3) return; // 화면 내 동시 최대 3마리
+
+      const template = SLIME_TYPES[Math.floor(Math.random() * SLIME_TYPES.length)];
+      const el = document.createElement('div');
+      el.className = `slime ${template.class}`;
+      el.dataset.weak = template.weak;
+
+      const badge = document.createElement('div');
+      badge.className = 'slime-badge';
+      badge.textContent = template.badge;
+      el.appendChild(badge);
+
+      const maxX = container.clientWidth - 140;
+      const posX = Math.max(30, Math.floor(Math.random() * maxX));
+      
+      // 적정 밸런스 속도 (0.42 ~ 0.58)
+      const speed = 0.42 + Math.random() * 0.16;
+
+      const slimeObj = {
+        el: el,
+        x: posX,
+        y: -70,
+        speed: speed,
+        weak: template.weak
+      };
+
+      el.style.left = `${slimeObj.x}px`;
+      el.style.top = `${slimeObj.y}px`;
+
+      // 1. PC 마우스 우클릭
+      el.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!gameRunning) return;
+        triggerSlimeAction(slimeObj, e.clientX, e.clientY);
+      });
+
+      // 2. 모바일 터치: 180ms(0.18초)로 기민하게 반응
+      let touchTimer = null;
+      let startX = 0, startY = 0;
+
+      el.addEventListener('touchstart', (e) => {
+        if (!gameRunning) return;
+        const touch = e.touches[0];
+        startX = touch.clientX;
+        startY = touch.clientY;
+
+        if (directTapMode) {
+          e.preventDefault();
+          triggerSlimeAction(slimeObj, startX, startY);
+          return;
+        }
+
+        touchTimer = setTimeout(() => {
+          triggerSlimeAction(slimeObj, startX, startY);
+          touchTimer = null;
+        }, 180);
+      }, { passive: false });
+
+      el.addEventListener('touchmove', (e) => {
+        const touch = e.touches[0];
+        if (Math.abs(touch.clientX - startX) > 15 || Math.abs(touch.clientY - startY) > 15) {
+          if (touchTimer) clearTimeout(touchTimer);
+        }
+      });
+
+      el.addEventListener('touchend', () => {
+        if (touchTimer) {
+          clearTimeout(touchTimer);
+          if (!directTapMode) {
+            el.style.transform = 'scale(0.92)';
+            setTimeout(() => el.style.transform = '', 120);
+          }
+        }
+      });
+
+      container.appendChild(el);
+      slimes.push(slimeObj);
+    }
+
+    function triggerSlimeAction(slimeObj, clientX, clientY) {
+      activeSlime = slimeObj;
+      openSpellMenu(clientX, clientY);
+    }
+
+    function gameLoop() {
+      if (!gameRunning) return;
+
+      const boundaryY = container.clientHeight - 110;
+
+      for (let i = slimes.length - 1; i >= 0; i--) {
+        const s = slimes[i];
+        s.y += s.speed;
+        s.el.style.top = `${s.y}px`;
+
+        if (s.y >= boundaryY) {
+          s.el.remove();
+          slimes.splice(i, 1);
+          if (activeSlime === s) closeSpellMenu();
+          
+          life--;
+          soundFail();
+          lifeVal.textContent = '❤️'.repeat(Math.max(0, life)) + '🖤'.repeat(3 - Math.max(0, life));
+          
+          if (life <= 0) {
+            endGame(false);
+            return;
+          }
+        }
+      }
+
+      gameLoopId = requestAnimationFrame(gameLoop);
+    }
+
+    function openSpellMenu(clientX, clientY) {
+      const rect = container.getBoundingClientRect();
+      let x = clientX - rect.left;
+      let y = clientY - rect.top;
+
+      x = Math.max(100, Math.min(x, container.clientWidth - 100));
+      y = Math.max(100, Math.min(y, container.clientHeight - 100));
+
+      spellMenu.style.left = `${x}px`;
+      spellMenu.style.top = `${y}px`;
+      spellMenu.style.display = 'block';
+      soundOpenMenu();
+    }
+
+    function closeSpellMenu() {
+      spellMenu.style.display = 'none';
+      activeSlime = null;
+    }
+
+    // 마법 선택 (클릭 / 터치 공용)
+    document.querySelectorAll('.spell-btn').forEach(btn => {
+      const handleSelect = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!activeSlime) return;
+
+        const spell = btn.dataset.spell;
+        const target = activeSlime;
+
+        if (target.weak === spell) {
+          soundCastSuccess();
+          score += 10;
+          scoreVal.textContent = score;
+
+          showEffect('✨ 대성공! +10점', target.x + 55, target.y + 30);
+
+          target.el.remove();
+          slimes = slimes.filter(s => s !== target);
+        } else {
+          soundFail();
+          showEffect('❌ 다시 골라보자!', target.x + 55, target.y + 30);
+        }
+
+        closeSpellMenu();
+      };
+
+      btn.addEventListener('click', handleSelect);
+      btn.addEventListener('touchstart', handleSelect, { passive: false });
+    });
+
+    function showEffect(text, x, y) {
+      const effect = document.createElement('div');
+      effect.className = 'pop-effect';
+      effect.textContent = text;
+      effect.style.left = `${x}px`;
+      effect.style.top = `${y}px`;
+      container.appendChild(effect);
+      setTimeout(() => effect.remove(), 600);
+    }
+
+    function endGame(isClear) {
+      gameRunning = false;
+      clearInterval(spawnTimerId);
+      clearInterval(clockTimerId);
+      cancelAnimationFrame(gameLoopId);
+      closeSpellMenu();
+
+      gameOverOverlay.style.display = 'flex';
+      if (isClear) {
+        resultTitle.textContent = '🎉 마법 수련 완료! 최고예요!';
+        resultTitle.style.color = '#38bdf8';
+        resultDesc.innerHTML = `마법학교를 멋지게 지켜냈습니다!<br>최종 점수: <b>${score}점</b>`;
+      } else {
+        resultTitle.textContent = '아쉬워요! 다시 도전해볼까요?';
+        resultTitle.style.color = '#f87171';
+        resultDesc.innerHTML = `슬라임이 방어선에 닿았어요.<br>최종 점수: <b>${score}점</b>`;
+      }
+    }
+  </script>
+</body>
+</html>
