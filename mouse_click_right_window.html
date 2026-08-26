@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>윈도우 바탕화면 탐험대 (마우스 우클릭 실전 연습)</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Jua&display=swap');
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+      font-family: 'Jua', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      letter-spacing: 0.3px;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+      background-color: #0f172a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      touch-action: manipulation;
+    }
+
+    /* 반응형 윈도우 창 컨테이너 */
+    #desktop-wrapper {
+      width: 96vw;
+      max-width: 1020px;
+      height: 94vh;
+      height: 94dvh;
+      background: #1e3a8a;
+      border-radius: 18px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.45);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border: 3px solid #60a5fa;
+      position: relative;
+    }
+
+    /* 상단 미션 안내 바 */
+    #mission-bar {
+      background: linear-gradient(90deg, #1d4ed8, #2563eb);
+      color: #ffffff;
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #60a5fa;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .mission-badge {
+      background: #facc15;
+      color: #1e293b;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: clamp(13px, 2.5vw, 16px);
+      font-weight: bold;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .mission-text {
+      font-size: clamp(15px, 2.8vw, 19px);
+      color: #ffffff;
+      font-weight: bold;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      text-align: center;
+      flex: 1;
+      line-height: 1.3;
+      word-break: keep-all;
+    }
+    .score-box {
+      font-size: clamp(13px, 2.5vw, 17px);
+      color: #bfdbfe;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    /* 바탕화면 본체 */
+    #desktop {
+      flex: 1;
+      position: relative;
+      background: radial-gradient(circle at center, #2563eb 0%, #1e3a8a 100%);
+      padding: 12px;
+      cursor: default;
+      overflow: hidden;
+    }
+
+    /* 윈도우 아이콘 */
+    .win-icon {
+      position: absolute;
+      width: clamp(76px, 18vw, 94px);
+      height: clamp(80px, 19vw, 98px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.25s, left 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), top 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+      z-index: 10;
+    }
+    .win-icon:hover, .win-icon:active {
+      background: rgba(255, 255, 255, 0.25);
+    }
+    .win-icon.selected {
+      background: rgba(59, 130, 246, 0.45);
+      border: 1px dotted rgba(255, 255, 255, 0.9);
+    }
+    .win-icon.highlight {
+      animation: pulseGlow 1s infinite alternate;
+    }
+    .icon-emoji {
+      font-size: clamp(34px, 8vw, 46px);
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+      transition: font-size 0.3s ease;
+    }
+    .icon-label {
+      font-size: clamp(11px, 2.4vw, 14px);
+      color: #ffffff;
+      margin-top: 3px;
+      text-align: center;
+      padding: 2px 4px;
+      border-radius: 4px;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+      white-space: nowrap;
+      max-width: 90%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* 모바일 반응형 컨텍스트 메뉴 */
+    #win-context-menu {
+      display: none;
+      position: absolute;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+      padding: 6px 0;
+      width: clamp(170px, 45vw, 210px);
+      max-height: 80%;
+      overflow-y: auto;
+      z-index: 1000;
+      animation: menuFade 0.12s ease-out;
+    }
+    .menu-item {
+      padding: 9px 14px;
+      font-size: clamp(13px, 2.8vw, 15px);
+      color: #1e293b;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+    .menu-item:hover, .menu-item:active {
+      background: #2563eb;
+      color: #ffffff;
+    }
+    .menu-item.disabled {
+      color: #94a3b8;
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+    .menu-item.disabled:hover, .menu-item.disabled:active {
+      background: transparent;
+      color: #94a3b8;
+    }
+    .menu-separator {
+      height: 1px;
+      background: #e2e8f0;
+      margin: 4px 0;
+    }
+
+    /* 하단 작업표시줄 */
+    #taskbar {
+      height: 40px;
+      background: rgba(15, 23, 42, 0.94);
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      flex-shrink: 0;
+    }
+    .start-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.12);
+      padding: 4px 10px;
+      border-radius: 6px;
+      color: #fff;
+      font-size: clamp(12px, 2.5vw, 14px);
+    }
+    .taskbar-clock {
+      color: #cbd5e1;
+      font-size: clamp(11px, 2.2vw, 13px);
+    }
+
+    /* 오버레이 팝업 */
+    .overlay {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(15, 23, 42, 0.94);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      color: #fff;
+      text-align: center;
+      padding: 20px 16px;
+    }
+    .overlay-title {
+      font-size: clamp(26px, 5.5vw, 44px);
+      color: #93c5fd;
+      margin-bottom: clamp(12px, 2.5vw, 20px);
+      text-shadow: 0 3px 8px rgba(0,0,0,0.5);
+      line-height: 1.25;
+    }
+    .overlay-desc-main {
+      font-size: clamp(16px, 3.4vw, 23px);
+      color: #f8fafc;
+      margin: 6px 0;
+      line-height: 1.55;
+      font-weight: 500;
+      word-break: keep-all;
+      max-width: 90%;
+    }
+    .overlay-desc-sub {
+      font-size: clamp(14px, 3vw, 19px);
+      color: #fde047;
+      margin: 10px 0 6px 0;
+      line-height: 1.55;
+      font-weight: 500;
+      word-break: keep-all;
+      max-width: 90%;
+    }
+    .btn-main {
+      margin-top: clamp(18px, 3.5vw, 28px);
+      padding: clamp(12px, 2.5vw, 16px) clamp(28px, 6vw, 48px);
+      font-size: clamp(18px, 4vw, 24px);
+      background: linear-gradient(145deg, #3b82f6, #1d4ed8);
+      border: 3px solid #bfdbfe;
+      border-radius: 16px;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(37, 99, 235, 0.5);
+      transition: transform 0.15s;
+    }
+    .btn-main:active {
+      transform: scale(0.96);
+    }
+
+    /* 토스트 성공 알림 */
+    #toast-msg {
+      display: none;
+      position: absolute;
+      bottom: 50px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #10b981;
+      color: #ffffff;
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-size: clamp(13px, 2.8vw, 17px);
+      font-weight: bold;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+      z-index: 1500;
+      white-space: nowrap;
+      animation: popToast 0.3s ease-out;
+    }
+
+    /* 파일 속성 팝업 창 */
+    #prop-modal {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: clamp(260px, 80vw, 340px);
+      background: #ffffff;
+      border: 2px solid #3b82f6;
+      border-radius: 14px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+      z-index: 1800;
+      padding: 16px;
+      color: #1e293b;
+    }
+    .modal-header {
+      font-size: clamp(15px, 3.2vw, 18px);
+      color: #1d4ed8;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 6px;
+      margin-bottom: 10px;
+    }
+    .modal-body {
+      font-size: clamp(13px, 2.6vw, 15px);
+      line-height: 1.6;
+    }
+    .modal-btn {
+      margin-top: 14px;
+      width: 100%;
+      padding: 9px;
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: clamp(14px, 3vw, 16px);
+    }
+
+    @keyframes menuFade {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulseGlow {
+      from { box-shadow: 0 0 0 0 rgba(250, 204, 21, 0.7); }
+      to { box-shadow: 0 0 15px 6px rgba(250, 204, 21, 0.9); border-radius: 12px; }
+    }
+    @keyframes popToast {
+      from { transform: translate(-50%, 20px); opacity: 0; }
+      to { transform: translate(-50%, 0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="desktop-wrapper">
+    <!-- 상단 미션 바 -->
+    <div id="mission-bar">
+      <div class="mission-badge" id="mission-step">미션 1/7</div>
+      <div class="mission-text" id="mission-desc">미션을 불러오는 중...</div>
+      <div class="score-box">완료: <span id="cleared-count" style="color:#facc15;">0</span> / 7</div>
+    </div>
+
+    <!-- 바탕화면 본체 -->
+    <div id="desktop">
+      <!-- 윈도우 컨텍스트 메뉴 -->
+      <div id="win-context-menu">
+        <div class="menu-item" data-action="open">📂 열기 / 실행(O)</div>
+        <div class="menu-separator"></div>
+        <div class="menu-item" data-action="sort-name">📊 이름순 정렬(S)</div>
+        <div class="menu-separator"></div>
+        <div class="menu-item" data-action="copy">📋 복사(C)</div>
+        <div class="menu-item" data-action="paste">📥 붙여넣기(P)</div>
+        <div class="menu-separator"></div>
+        <div class="menu-item" data-action="new-folder">📁 새 폴더 만들기(N)</div>
+        <div class="menu-item" data-action="rename">✏️ 이름 바꾸기(M)</div>
+        <div class="menu-item" data-action="properties">ℹ️ 속성 / 정보(R)</div>
+      </div>
+
+      <!-- 파일 속성 확인 모달 창 -->
+      <div id="prop-modal">
+        <div class="modal-header">📄 비디오 영상 정보</div>
+        <div class="modal-body">
+          • 파일 이름: 비디오 영상.mp4<br>
+          • 파일 크기: 15.4 MB<br>
+          • 저장 위치: 바탕화면<br>
+          • 파일 상태: 정상 파일
+        </div>
+        <button class="modal-btn" onclick="closePropModal()">확인(닫기)</button>
+      </div>
+    </div>
+
+    <!-- 성공 알림 토스트 -->
+    <div id="toast-msg">✨ 미션 성공! 참 잘하셨어요!</div>
+
+    <!-- 하단 작업표시줄 -->
+    <div id="taskbar">
+      <div class="start-btn">🪟 <span>시작</span></div>
+      <div class="taskbar-clock">오후 2:30 | 윈도우 우클릭 연습</div>
+    </div>
+
+    <!-- 시작 오버레이 -->
+    <div id="start-overlay" class="overlay">
+      <h1 class="overlay-title">🪟 윈도우 실전 우클릭 연습</h1>
+      <p class="overlay-desc-main">
+        컴퓨터에서 가장 많이 쓰는 <b>7가지 필수 우클릭 기능</b>을 직접 조작해 보세요!
+      </p>
+      <p class="overlay-desc-sub">
+        복사, 붙여넣기, 새 폴더 만들기, 이름순 정렬, 이름 바꾸기, 파일 정보 확인을 연습합니다.
+      </p>
+      <button class="btn-main" onclick="startGame()">연습 시작하기 ▶</button>
+    </div>
+
+    <!-- 완료 오버레이 -->
+    <div id="end-overlay" class="overlay" style="display: none;">
+      <h1 class="overlay-title" style="color: #fde047;">🎉 윈도우 우클릭 마스터 달성!</h1>
+      <p class="overlay-desc-main" style="margin-top: 10px;">
+        마우스와 한 걸음 더 친해졌어요!<br>이제 컴퓨터 파일 관리를 쉽고 자신 있게 해보세요!
+      </p>
+      <button class="btn-main" onclick="startGame()">다시 연습하기 🔄</button>
+    </div>
+  </div>
+
+  <script>
+    const desktop = document.getElementById('desktop');
+    const menu = document.getElementById('win-context-menu');
+    const propModal = document.getElementById('prop-modal');
+    const missionStepEl = document.getElementById('mission-step');
+    const missionDescEl = document.getElementById('mission-desc');
+    const clearedCountEl = document.getElementById('cleared-count');
+    const toastMsg = document.getElementById('toast-msg');
+    const startOverlay = document.getElementById('start-overlay');
+    const endOverlay = document.getElementById('end-overlay');
+
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playTone(freq, type, duration) {
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch(e) {}
+    }
+
+    function soundMenu() { playTone(540, 'sine', 0.08); }
+    function soundSuccess() {
+      playTone(523, 'triangle', 0.1);
+      setTimeout(() => playTone(659, 'triangle', 0.1), 70);
+      setTimeout(() => playTone(784, 'triangle', 0.2), 140);
+    }
+    function soundFail() { playTone(200, 'sawtooth', 0.2); }
+
+    let currentStep = 0;
+    let targetElement = null;
+    let hasCopied = false;
+
+    // 7단계 실전 미션 시나리오
+    const MISSIONS = [
+      {
+        step: 1,
+        desc: "📄 [중요한 편지]를 우클릭한 후 [복사]를 누르세요!",
+        action: "copy",
+        targetId: "letter-file"
+      },
+      {
+        step: 2,
+        desc: "바탕화면의 빈 공간을 우클릭한 후 [붙여넣기]를 누르세요!",
+        action: "paste",
+        targetId: "desktop-bg"
+      },
+      {
+        step: 3,
+        desc: "바탕화면의 빈 공간을 우클릭한 후 [새 폴더 만들기]를 누르세요!",
+        action: "new-folder",
+        targetId: "desktop-bg"
+      },
+      {
+        step: 4,
+        desc: "📁 [새 폴더]를 우클릭한 후 [이름 바꾸기]를 눌러보세요!",
+        action: "rename",
+        targetId: "new-folder-icon"
+      },
+      {
+        step: 5,
+        desc: "🎵 [신나는 음악] 파일을 우클릭한 후 [열기 / 실행]을 누르세요!",
+        action: "open",
+        targetId: "music-file"
+      },
+      {
+        step: 6,
+        desc: "🎬 [비디오 영상]을 우클릭한 후 [속성 / 정보]로 파일 정보를 확인하세요!",
+        action: "properties",
+        targetId: "video-file"
+      },
+      {
+        step: 7,
+        desc: "바탕화면 빈 공간을 우클릭한 후 [이름순 정렬]을 누르세요!",
+        action: "sort-name",
+        targetId: "desktop-bg"
+      }
+    ];
+
+    window.addEventListener('contextmenu', (e) => e.preventDefault());
+
+    window.addEventListener('pointerdown', (e) => {
+      if (!menu.contains(e.target) && !propModal.contains(e.target)) {
+        closeContextMenu();
+      }
+    });
+
+    function startGame() {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      currentStep = 0;
+      hasCopied = false;
+      startOverlay.style.display = 'none';
+      endOverlay.style.display = 'none';
+      propModal.style.display = 'none';
+      initDesktopIcons();
+      loadMission(0);
+    }
+
+    function initDesktopIcons() {
+      desktop.innerHTML = '';
+      desktop.appendChild(menu);
+      desktop.appendChild(propModal);
+
+      const dWidth = desktop.clientWidth || 360;
+      const dHeight = desktop.clientHeight || 500;
+
+      const col1 = Math.min(20, dWidth * 0.05);
+      const col2 = Math.min(140, dWidth * 0.45);
+      const row1 = 20;
+      const row2 = Math.min(130, dHeight * 0.28);
+
+      createIcon('letter-file', '📄', '중요한 편지', row2, col1);
+      createIcon('photo-file', '🖼️', '여행 사진', row2 + 100, col2);
+      createIcon('music-file', '🎵', '신나는 음악', row1, col2);
+      createIcon('video-file', '🎬', '비디오 영상', row1, col1);
+    }
+
+    function createIcon(id, emoji, label, top, left) {
+      const icon = document.createElement('div');
+      icon.className = 'win-icon';
+      icon.id = id;
+      icon.style.top = `${top}px`;
+      icon.style.left = `${left}px`;
+      icon.innerHTML = `
+        <div class="icon-emoji">${emoji}</div>
+        <div class="icon-label">${label}</div>
+      `;
+
+      icon.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        openContextMenu(icon, e.clientX, e.clientY);
+      });
+
+      let touchTimer = null;
+      icon.addEventListener('touchstart', (e) => {
+        const touch = e.touches[0];
+        touchTimer = setTimeout(() => {
+          openContextMenu(icon, touch.clientX, touch.clientY);
+          touchTimer = null;
+        }, 180);
+      });
+      icon.addEventListener('touchend', () => { if (touchTimer) clearTimeout(touchTimer); });
+
+      desktop.appendChild(icon);
+      return icon;
+    }
+
+    desktop.addEventListener('contextmenu', (e) => {
+      if (e.target === desktop) {
+        e.preventDefault();
+        openContextMenu(desktop, e.clientX, e.clientY);
+      }
+    });
+
+    let desktopTouchTimer = null;
+    desktop.addEventListener('touchstart', (e) => {
+      if (e.target === desktop) {
+        const touch = e.touches[0];
+        desktopTouchTimer = setTimeout(() => {
+          openContextMenu(desktop, touch.clientX, touch.clientY);
+          desktopTouchTimer = null;
+        }, 180);
+      }
+    });
+    desktop.addEventListener('touchend', () => { if (desktopTouchTimer) clearTimeout(desktopTouchTimer); });
+
+    function loadMission(index) {
+      const m = MISSIONS[index];
+      missionStepEl.textContent = `미션 ${m.step}/7`;
+      missionDescEl.textContent = m.desc;
+      clearedCountEl.textContent = `${index}`;
+
+      document.querySelectorAll('.win-icon').forEach(el => el.classList.remove('highlight', 'selected'));
+      if (m.targetId !== 'desktop-bg') {
+        const target = document.getElementById(m.targetId);
+        if (target) target.classList.add('highlight');
+      }
+    }
+
+    function openContextMenu(target, clientX, clientY) {
+      targetElement = target;
+      const rect = desktop.getBoundingClientRect();
+      let x = clientX - rect.left;
+      let y = clientY - rect.top;
+
+      const menuW = menu.offsetWidth || 190;
+      const menuH = menu.offsetHeight || 300;
+
+      x = Math.max(10, Math.min(x, desktop.clientWidth - menuW - 10));
+      y = Math.max(10, Math.min(y, desktop.clientHeight - menuH - 10));
+
+      const isDesktopBg = (target === desktop);
+
+      const pasteItem = menu.querySelector('[data-action="paste"]');
+      const renameItem = menu.querySelector('[data-action="rename"]');
+      const newFolderItem = menu.querySelector('[data-action="new-folder"]');
+      const openItem = menu.querySelector('[data-action="open"]');
+      const propItem = menu.querySelector('[data-action="properties"]');
+      const sortNameItem = menu.querySelector('[data-action="sort-name"]');
+
+      if (isDesktopBg) {
+        renameItem.classList.add('disabled');
+        openItem.classList.add('disabled');
+        propItem.classList.add('disabled');
+        newFolderItem.classList.remove('disabled');
+        sortNameItem.classList.remove('disabled');
+      } else {
+        renameItem.classList.remove('disabled');
+        openItem.classList.remove('disabled');
+        propItem.classList.remove('disabled');
+        newFolderItem.classList.add('disabled');
+        sortNameItem.classList.add('disabled');
+      }
+
+      if (hasCopied && isDesktopBg) {
+        pasteItem.classList.remove('disabled');
+      } else {
+        pasteItem.classList.add('disabled');
+      }
+
+      menu.style.left = `${x}px`;
+      menu.style.top = `${y}px`;
+      menu.style.display = 'block';
+      soundMenu();
+    }
+
+    function closeContextMenu() {
+      menu.style.display = 'none';
+      targetElement = null;
+    }
+
+    document.querySelectorAll('.menu-item').forEach(item => {
+      const handleAction = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (item.classList.contains('disabled')) {
+          soundFail();
+          return;
+        }
+
+        const action = item.dataset.action;
+        const currentMission = MISSIONS[currentStep];
+
+        const isCorrectTarget = (currentMission.targetId === 'desktop-bg' && targetElement === desktop) ||
+                                (targetElement && targetElement.id === currentMission.targetId);
+
+        if (isCorrectTarget && action === currentMission.action) {
+          soundSuccess();
+          executeActionEffect(action, targetElement);
+          showToast("✨ 미션 성공! 다음 단계로 이동합니다.");
+
+          currentStep++;
+          closeContextMenu();
+
+          if (currentStep >= MISSIONS.length) {
+            clearedCountEl.textContent = `7`;
+            setTimeout(() => {
+              endOverlay.style.display = 'flex';
+            }, 1200);
+          } else {
+            setTimeout(() => {
+              loadMission(currentStep);
+            }, 1000);
+          }
+
+        } else {
+          soundFail();
+          showToast("❌ 다른 메뉴예요! 상단 안내를 확인해 보세요.");
+          closeContextMenu();
+        }
+      };
+
+      item.addEventListener('click', handleAction);
+      item.addEventListener('touchstart', handleAction, { passive: false });
+    });
+
+    function executeActionEffect(action, el) {
+      const dWidth = desktop.clientWidth || 360;
+      const col1 = Math.min(20, dWidth * 0.05);
+      const col2 = Math.min(140, dWidth * 0.45);
+
+      if (action === 'copy') {
+        hasCopied = true;
+        el.classList.add('selected');
+      } else if (action === 'paste') {
+        createIcon('letter-copy', '📄', '중요한 편지 - 복사본', 140, col2);
+      } else if (action === 'new-folder') {
+        createIcon('new-folder-icon', '📁', '새 폴더', 240, col1);
+      } else if (action === 'rename') {
+        const label = el.querySelector('.icon-label');
+        label.textContent = '내 비밀 상자';
+        label.style.background = '#2563eb';
+      } else if (action === 'open') {
+        showToast("🎶 음악 재생 중: 즐거운 컴퓨터 교실 ♬");
+        el.style.transform = 'scale(1.15)';
+        setTimeout(() => el.style.transform = '', 300);
+      } else if (action === 'properties') {
+        propModal.style.display = 'block';
+      } else if (action === 'sort-name') {
+        const icons = Array.from(document.querySelectorAll('.win-icon'));
+        icons.sort((a, b) => {
+          const nameA = a.querySelector('.icon-label').textContent.trim();
+          const nameB = b.querySelector('.icon-label').textContent.trim();
+          return nameA.localeCompare(nameB, 'ko');
+        });
+
+        const rowHeight = Math.min(105, (desktop.clientHeight - 40) / 3);
+        const colWidth = Math.min(115, (desktop.clientWidth - 40) / 2);
+        const maxRows = 3;
+
+        icons.forEach((ic, idx) => {
+          const col = Math.floor(idx / maxRows);
+          const row = idx % maxRows;
+          ic.style.left = `${15 + col * colWidth}px`;
+          ic.style.top = `${15 + row * rowHeight}px`;
+        });
+
+        showToast("✨ 아이콘이 이름순으로 깔끔하게 정렬되었습니다!");
+      }
+    }
+
+    function closePropModal() {
+      propModal.style.display = 'none';
+    }
+
+    function showToast(text) {
+      toastMsg.textContent = text;
+      toastMsg.style.display = 'block';
+      setTimeout(() => {
+        toastMsg.style.display = 'none';
+      }, 1500);
+    }
+  </script>
+</body>
+</html>
