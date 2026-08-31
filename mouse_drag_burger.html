@@ -46,7 +46,7 @@
       position: relative;
     }
 
-    /* 상단 헤더 */
+    /* 상단 헤더 기본 (PC) */
     #header-bar {
       background: linear-gradient(90deg, #f59e0b, #d97706);
       color: #ffffff;
@@ -66,6 +66,7 @@
       font-size: 16px;
       font-weight: bold;
       white-space: nowrap;
+      flex-shrink: 0;
     }
     .header-title {
       font-size: 20px;
@@ -82,6 +83,7 @@
       font-size: 17px;
       color: #fef3c7;
       white-space: nowrap;
+      flex-shrink: 0;
     }
 
     /* PC / 데스크톱 기본 스타일 */
@@ -321,7 +323,7 @@
       opacity: 0.95;
     }
 
-    /* 모바일 전용 스타일 */
+    /* 모바일 전용 반응형 스타일 */
     @media (max-width: 768px) {
       #game-wrapper {
         width: 98vw;
@@ -331,12 +333,21 @@
         border-width: 3px;
       }
       #header-bar {
-        padding: 6px 10px;
-        gap: 6px;
+        padding: 6px 8px;
+        gap: 4px;
       }
-      .header-badge { font-size: 12px; padding: 2px 8px; border-radius: 10px; }
-      .header-title { font-size: 14px; }
-      .score-badge { font-size: 12px; }
+      .header-badge { 
+        font-size: 11px; 
+        padding: 2px 6px; 
+        border-radius: 8px; 
+      }
+      .header-title { 
+        font-size: clamp(11px, 3.2vw, 14px); /* 모바일 헤더 글자 자동 축소 */
+        letter-spacing: -0.2px;
+      }
+      .score-badge { 
+        font-size: 11px; 
+      }
 
       #play-area {
         grid-template-columns: 1fr;
@@ -546,7 +557,7 @@
     <!-- 상단 헤더 -->
     <div id="header-bar">
       <div class="header-badge" id="order-step">주문 1/5</div>
-      <div class="header-title">🍔 맛있는 햄버거를 순서대로 쌓아주세요!</div>
+      <div class="header-title" id="main-header-title">🍔 맛있는 햄버거를 순서대로 쌓아주세요!</div>
       <div class="score-badge">완성: <span id="cleared-count" style="color:#fde047;">0</span> / 5개</div>
     </div>
 
@@ -682,6 +693,7 @@
       if (wrap) wrap.innerHTML = SVG_ITEMS[key];
     });
 
+    const headerTitleEl = document.getElementById('main-header-title');
     const orderStepEl = document.getElementById('order-step');
     const clearedCountEl = document.getElementById('cleared-count');
     const orderRecipeEl = document.getElementById('order-recipe');
@@ -691,6 +703,17 @@
     const startOverlay = document.getElementById('start-overlay');
     const endOverlay = document.getElementById('end-overlay');
     const burgerShowcase = document.getElementById('burger-showcase');
+
+    // 모바일/PC 반응형 헤더 타이틀 문구 동적 적용
+    function updateResponsiveTitle() {
+      if (window.innerWidth <= 768) {
+        headerTitleEl.textContent = '🍔 맛있는 햄버거 만들기';
+      } else {
+        headerTitleEl.textContent = '🍔 맛있는 햄버거를 순서대로 쌓아주세요!';
+      }
+    }
+    window.addEventListener('resize', updateResponsiveTitle);
+    updateResponsiveTitle();
 
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     function playTone(freq, type, duration) {
@@ -727,7 +750,6 @@
     let activeGhost = null;
     let activeIngType = null;
 
-    // 속재료 개수 순차 증가 (1개 -> 2개 -> 2개 -> 3개 -> 4개) 및 완전 랜덤 추출
     function generateDynamicRecipes() {
       const recipes = [];
       const layerCounts = [1, 2, 2, 3, 4];
@@ -743,7 +765,6 @@
           fillings.push(pool.pop());
         }
 
-        // 재료 순서 섞기
         fillings.sort(() => Math.random() - 0.5);
         recipes.push(['bun_bottom', ...fillings, 'bun_top']);
       });
