@@ -32,17 +32,17 @@
     }
 
     #game-wrapper {
-      width: 98vw;
-      max-width: 1020px;
-      height: 98vh;
-      height: 98dvh;
+      width: 96vw;
+      max-width: 1040px;
+      height: 94vh;
+      height: 94dvh;
       background: #ffffff;
-      border-radius: 20px;
-      box-shadow: 0 12px 30px rgba(217, 119, 6, 0.25);
+      border-radius: 24px;
+      box-shadow: 0 15px 35px rgba(217, 119, 6, 0.25);
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      border: 3px solid #f59e0b;
+      border: 4px solid #f59e0b;
       position: relative;
     }
 
@@ -50,26 +50,25 @@
     #header-bar {
       background: linear-gradient(90deg, #f59e0b, #d97706);
       color: #ffffff;
-      padding: 6px 12px;
+      padding: 10px 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       border-bottom: 3px solid #b45309;
-      gap: 8px;
+      gap: 10px;
       flex-shrink: 0;
-      min-height: 44px;
     }
     .header-badge {
       background: #ffffff;
       color: #b45309;
-      padding: 3px 10px;
-      border-radius: 12px;
-      font-size: clamp(12px, 2.8vw, 16px);
+      padding: 4px 12px;
+      border-radius: 14px;
+      font-size: 16px;
       font-weight: bold;
       white-space: nowrap;
     }
     .header-title {
-      font-size: clamp(13px, 3.4vw, 20px);
+      font-size: 20px;
       color: #ffffff;
       font-weight: bold;
       text-shadow: 0 2px 4px rgba(0,0,0,0.2);
@@ -80,43 +79,35 @@
       text-overflow: ellipsis;
     }
     .score-badge {
-      font-size: clamp(12px, 2.8vw, 17px);
+      font-size: 17px;
       color: #fef3c7;
       white-space: nowrap;
     }
 
-    /* 플레이 영역 */
+    /* =========================================================
+       1. PC / 데스크톱 기본 스타일 (시원하고 꽉 찬 레이아웃)
+       ========================================================= */
     #play-area {
       flex: 1;
       display: grid;
-      grid-template-columns: 1.25fr 1fr;
-      gap: 12px;
-      padding: 12px;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 16px;
+      padding: 16px;
       position: relative;
       overflow: hidden;
       min-height: 0;
     }
 
-    /* 모바일 세로 레이아웃 대응 */
-    @media (max-width: 768px) {
-      #play-area {
-        grid-template-columns: 1fr;
-        grid-template-rows: 1fr auto; /* 조립 공간 최대화, 트레이는 최소 필요 공간만 */
-        gap: 8px;
-        padding: 8px;
-      }
-    }
-
-    /* 왼쪽/상단: 주문서 및 접시 조립대 */
+    /* 왼쪽: 주문서 및 접시 조립대 */
     #assembly-section {
       background: #fffbeb;
       border: 3px dashed #fcd34d;
-      border-radius: 16px;
+      border-radius: 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: space-between;
-      padding: 8px;
+      padding: 14px;
       position: relative;
       overflow: hidden;
       min-height: 0;
@@ -125,14 +116,14 @@
     #order-container {
       width: 100%;
       background: #ffffff;
-      border: 2px solid #f59e0b;
-      border-radius: 14px;
-      padding: 6px 8px;
+      border: 3px solid #f59e0b;
+      border-radius: 18px;
+      padding: 10px 14px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 5px;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.06);
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
       z-index: 10;
       flex-shrink: 0;
     }
@@ -140,12 +131,12 @@
     #current-target-banner {
       background: linear-gradient(90deg, #ef4444, #dc2626);
       color: #ffffff;
-      padding: 4px 14px;
-      border-radius: 16px;
-      font-size: clamp(13px, 3.4vw, 18px);
+      padding: 6px 20px;
+      border-radius: 20px;
+      font-size: 20px;
       font-weight: bold;
       text-align: center;
-      box-shadow: 0 3px 8px rgba(239, 68, 68, 0.3);
+      box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
       animation: pulseBanner 1.2s infinite alternate;
       white-space: nowrap;
     }
@@ -153,7 +144,7 @@
     .order-recipe {
       display: flex;
       align-items: center;
-      gap: clamp(3px, 1vw, 6px);
+      gap: 8px;
       flex-wrap: wrap;
       justify-content: center;
     }
@@ -164,23 +155,23 @@
       align-items: center;
       justify-content: center;
       background: #fff7ed;
-      border: 1.5px solid #fed7aa;
-      border-radius: 8px;
-      padding: 2px 5px;
-      min-width: clamp(42px, 9vw, 58px);
+      border: 2px solid #fed7aa;
+      border-radius: 12px;
+      padding: 4px 8px;
+      min-width: 62px;
       transition: all 0.2s;
     }
     .recipe-step-card .thumb-svg {
-      width: clamp(26px, 6vw, 38px);
-      height: clamp(14px, 3.2vw, 20px);
+      width: 42px;
+      height: 22px;
       display: flex;
       align-items: center;
       justify-content: center;
     }
     .recipe-step-card .thumb-name {
-      font-size: clamp(9px, 2vw, 12px);
+      font-size: 12px;
       color: #7c2d12;
-      margin-top: 1px;
+      margin-top: 2px;
       font-weight: bold;
       white-space: nowrap;
     }
@@ -194,15 +185,15 @@
       text-decoration: line-through;
     }
     .recipe-step-card.active-target {
-      border: 2px solid #ef4444;
+      border: 3px solid #ef4444;
       background: #fef08a;
-      transform: scale(1.06);
-      box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+      transform: scale(1.08);
+      box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
       animation: bounce 0.8s infinite alternate;
     }
 
     .recipe-arrow {
-      font-size: clamp(10px, 2vw, 14px);
+      font-size: 15px;
       color: #d97706;
       font-weight: bold;
     }
@@ -211,132 +202,223 @@
     #plate-dropzone {
       flex: 1;
       width: 100%;
-      max-width: 380px;
+      max-width: 420px;
       display: flex;
       flex-direction: column-reverse;
       align-items: center;
       justify-content: flex-start;
-      margin-top: 4px;
+      margin-top: 10px;
       position: relative;
-      padding-bottom: 22px;
+      padding-bottom: 25px;
       transition: background 0.2s;
-      min-height: 120px;
     }
 
     #plate-base {
       position: absolute;
-      bottom: 2px;
-      width: clamp(170px, 46vw, 290px);
-      height: clamp(24px, 5vw, 34px);
+      bottom: 4px;
+      width: 310px;
+      height: 38px;
       background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
       border: 3px solid #cbd5e1;
       border-radius: 50%;
-      box-shadow: 0 8px 16px rgba(0,0,0,0.12);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.12);
       z-index: 1;
     }
     #plate-dropzone.hover-target {
       background-color: rgba(254, 240, 138, 0.5);
-      border-radius: 16px;
+      border-radius: 20px;
     }
 
     .stacked-svg-layer {
-      width: clamp(140px, 36vw, 230px);
+      width: 250px;
       height: auto;
-      margin-bottom: -15px;
-      filter: drop-shadow(0 3px 5px rgba(0,0,0,0.22));
+      margin-bottom: -18px;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.22));
       animation: dropPop 0.28s cubic-bezier(0.18, 0.89, 0.32, 1.28);
       z-index: 5;
       display: flex;
       justify-content: center;
     }
 
-    /* 오른쪽/하단: 재료 트레이 */
+    /* 오른쪽: 재료 트레이 */
     #ingredients-section {
       background: #ffffff;
-      border: 2px solid #fed7aa;
-      border-radius: 16px;
+      border: 3px solid #fed7aa;
+      border-radius: 20px;
       display: flex;
       flex-direction: column;
-      padding: 8px;
-      gap: 6px;
-      flex-shrink: 0;
+      padding: 14px;
+      gap: 10px;
+      min-height: 0;
     }
     .tray-title {
-      font-size: clamp(11px, 2.5vw, 15px);
+      font-size: 17px;
       color: #9a3412;
       text-align: center;
       font-weight: bold;
+      flex-shrink: 0;
     }
     .ingredients-grid {
+      flex: 1;
       display: grid;
-      grid-template-columns: repeat(3, 1fr); /* 모바일에서는 3열 2행으로 콤팩트 배치 */
-      grid-template-rows: repeat(2, 1fr);
-      gap: 6px;
-    }
-    @media (min-width: 769px) {
-      .ingredients-grid {
-        flex: 1;
-        grid-template-columns: repeat(2, 1fr);
-        grid-template-rows: repeat(3, 1fr);
-        gap: 10px;
-      }
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      gap: 12px;
+      min-height: 0;
     }
 
     .ingredient-card {
       background: #fff7ed;
       border: 2px solid #fdba74;
-      border-radius: 12px;
+      border-radius: 16px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       cursor: grab;
-      transition: transform 0.15s, background 0.15s, border-color 0.15s;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-      padding: 4px;
+      transition: transform 0.15s, background 0.15s, border-color 0.15s, box-shadow 0.15s;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.04);
+      padding: 8px;
       touch-action: none;
-      min-height: 48px;
     }
     .ingredient-card:hover {
-      transform: translateY(-2px);
+      transform: translateY(-3px);
       background: #ffedd5;
       border-color: #f97316;
+      box-shadow: 0 6px 12px rgba(249, 115, 22, 0.15);
     }
     .ingredient-card:active {
       cursor: grabbing;
-      transform: scale(0.95);
+      transform: scale(0.96);
     }
     .ingredient-card.hint-highlight {
-      border: 2px solid #f59e0b;
+      border: 3px solid #f59e0b;
       background: #fef08a;
-      box-shadow: 0 0 10px rgba(245, 158, 11, 0.6);
+      box-shadow: 0 0 14px rgba(245, 158, 11, 0.6);
     }
 
     .ing-svg-wrap {
-      width: clamp(48px, 12vw, 75px);
-      height: clamp(22px, 5.5vw, 36px);
+      width: 90px;
+      height: 46px;
       display: flex;
       align-items: center;
       justify-content: center;
       pointer-events: none;
     }
     .ing-name {
-      font-size: clamp(10px, 2.2vw, 13px);
+      font-size: 15px;
       color: #7c2d12;
-      margin-top: 2px;
+      margin-top: 4px;
       font-weight: bold;
       pointer-events: none;
-      white-space: nowrap;
     }
 
     .dragging-ghost {
       position: fixed;
       pointer-events: none;
       z-index: 9999;
-      width: clamp(120px, 32vw, 180px);
+      width: 200px;
       transform: translate(-50%, -50%);
-      filter: drop-shadow(0 10px 16px rgba(0,0,0,0.35));
+      filter: drop-shadow(0 14px 22px rgba(0,0,0,0.35));
       opacity: 0.95;
+    }
+
+    /* =========================================================
+       2. 모바일 전용 스타일 (스마트폰 세로 화면 최적화)
+       ========================================================= */
+    @media (max-width: 768px) {
+      #game-wrapper {
+        width: 98vw;
+        height: 98vh;
+        height: 98dvh;
+        border-radius: 18px;
+        border-width: 3px;
+      }
+      #header-bar {
+        padding: 6px 10px;
+        gap: 6px;
+      }
+      .header-badge { font-size: 12px; padding: 2px 8px; border-radius: 10px; }
+      .header-title { font-size: 14px; }
+      .score-badge { font-size: 12px; }
+
+      #play-area {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr auto;
+        gap: 8px;
+        padding: 8px;
+      }
+
+      #assembly-section {
+        padding: 8px;
+        border-radius: 14px;
+      }
+
+      #order-container {
+        padding: 5px 8px;
+        gap: 4px;
+        border-width: 2px;
+        border-radius: 12px;
+      }
+      #current-target-banner {
+        font-size: 13px;
+        padding: 3px 12px;
+        border-radius: 14px;
+      }
+
+      .order-recipe { gap: 4px; }
+      .recipe-step-card {
+        min-width: 44px;
+        padding: 2px 4px;
+        border-radius: 8px;
+        border-width: 1.5px;
+      }
+      .recipe-step-card .thumb-svg { width: 28px; height: 15px; }
+      .recipe-step-card .thumb-name { font-size: 10px; margin-top: 1px; }
+      .recipe-arrow { font-size: 11px; }
+
+      #plate-dropzone {
+        margin-top: 4px;
+        padding-bottom: 20px;
+        min-height: 100px;
+      }
+      #plate-base {
+        width: clamp(170px, 48vw, 240px);
+        height: 26px;
+      }
+      .stacked-svg-layer {
+        width: clamp(140px, 38vw, 200px);
+        margin-bottom: -14px;
+      }
+
+      #ingredients-section {
+        padding: 8px;
+        gap: 6px;
+        border-width: 2px;
+        border-radius: 14px;
+      }
+      .tray-title { font-size: 12px; }
+      .ingredients-grid {
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        gap: 6px;
+      }
+      .ingredient-card {
+        padding: 4px;
+        border-radius: 10px;
+        min-height: 48px;
+      }
+      .ing-svg-wrap {
+        width: 52px;
+        height: 26px;
+      }
+      .ing-name {
+        font-size: 11px;
+        margin-top: 2px;
+      }
+      .dragging-ghost {
+        width: 140px;
+      }
     }
 
     /* 오버레이 */
@@ -352,17 +434,17 @@
       z-index: 2000;
       color: #fff;
       text-align: center;
-      padding: 16px;
+      padding: 24px;
       overflow-y: auto;
     }
     .overlay-title {
-      font-size: clamp(22px, 5vw, 36px);
+      font-size: clamp(24px, 5vw, 40px);
       color: #fde047;
-      margin-bottom: 8px;
+      margin-bottom: 12px;
       text-shadow: 0 3px 8px rgba(0,0,0,0.5);
     }
     .overlay-desc-main {
-      font-size: clamp(13px, 3vw, 18px);
+      font-size: clamp(14px, 3vw, 20px);
       color: #f8fafc;
       margin: 4px 0;
       line-height: 1.5;
@@ -375,28 +457,28 @@
       display: flex;
       justify-content: center;
       align-items: flex-end;
-      gap: clamp(6px, 1.5vw, 14px);
-      margin: 12px 0 8px 0;
+      gap: clamp(8px, 1.8vw, 16px);
+      margin: 18px 0 10px 0;
       width: 100%;
-      max-width: 850px;
+      max-width: 900px;
       flex-wrap: nowrap;
       overflow-x: auto;
-      padding: 6px 2px;
+      padding: 10px 4px;
     }
     .showcase-item {
       display: flex;
       flex-direction: column;
       align-items: center;
       background: rgba(255, 255, 255, 0.08);
-      border: 1.5px solid rgba(253, 224, 71, 0.4);
-      border-radius: 12px;
-      padding: 6px 4px 10px 4px;
-      min-width: clamp(60px, 14vw, 95px);
+      border: 2px solid rgba(253, 224, 71, 0.4);
+      border-radius: 16px;
+      padding: 8px 6px 12px 6px;
+      min-width: clamp(70px, 14vw, 110px);
     }
     .showcase-num {
-      font-size: clamp(10px, 2vw, 13px);
+      font-size: clamp(11px, 2vw, 14px);
       color: #fde047;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
       font-weight: bold;
     }
     .showcase-stack {
@@ -406,21 +488,21 @@
       width: 100%;
     }
     .showcase-stack .mini-layer {
-      width: clamp(50px, 12vw, 80px);
-      margin-bottom: -7px;
+      width: clamp(60px, 12vw, 95px);
+      margin-bottom: -8px;
       filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3));
     }
 
     .btn-main {
-      margin-top: 14px;
-      padding: clamp(10px, 2.5vw, 14px) clamp(22px, 5vw, 40px);
-      font-size: clamp(15px, 3.5vw, 20px);
+      margin-top: 20px;
+      padding: 12px 36px;
+      font-size: clamp(17px, 3.5vw, 22px);
       background: linear-gradient(145deg, #f59e0b, #d97706);
-      border: 2.5px solid #fed7aa;
-      border-radius: 14px;
+      border: 3px solid #fed7aa;
+      border-radius: 16px;
       color: white;
       cursor: pointer;
-      box-shadow: 0 6px 20px rgba(217, 119, 6, 0.5);
+      box-shadow: 0 8px 24px rgba(217, 119, 6, 0.5);
       transition: transform 0.15s;
     }
     .btn-main:active { transform: scale(0.96); }
@@ -429,35 +511,35 @@
     #toast-msg {
       display: none;
       position: absolute;
-      top: 50px;
+      top: 60px;
       left: 50%;
       transform: translateX(-50%);
       background: #10b981;
       color: #ffffff;
-      padding: 8px 18px;
-      border-radius: 18px;
-      font-size: clamp(12px, 2.6vw, 15px);
+      padding: 10px 24px;
+      border-radius: 20px;
+      font-size: clamp(13px, 2.6vw, 16px);
       font-weight: bold;
-      box-shadow: 0 5px 14px rgba(0,0,0,0.3);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.3);
       z-index: 1500;
       white-space: nowrap;
       animation: popToast 0.3s ease-out;
     }
 
     @keyframes dropPop {
-      0% { transform: translateY(-30px) scale(0.8); opacity: 0; }
+      0% { transform: translateY(-40px) scale(0.8); opacity: 0; }
       100% { transform: translateY(0) scale(1); opacity: 1; }
     }
     @keyframes bounce {
       from { transform: translateY(0); }
-      to { transform: translateY(-3px); }
+      to { transform: translateY(-4px); }
     }
     @keyframes pulseBanner {
       from { transform: scale(0.98); }
       to { transform: scale(1.02); }
     }
     @keyframes popToast {
-      from { transform: translate(-50%, -15px); opacity: 0; }
+      from { transform: translate(-50%, -20px); opacity: 0; }
       to { transform: translate(-50%, 0); opacity: 1; }
     }
   </style>
@@ -468,7 +550,7 @@
     <!-- 상단 헤더 -->
     <div id="header-bar">
       <div class="header-badge" id="order-step">주문 1/5</div>
-      <div class="header-title">🍔 순서대로 햄버거를 쌓아주세요!</div>
+      <div class="header-title">🍔 맛있는 햄버거를 순서대로 쌓아주세요!</div>
       <div class="score-badge">완성: <span id="cleared-count" style="color:#fde047;">0</span> / 5개</div>
     </div>
 
@@ -488,7 +570,7 @@
 
       <!-- 2. 재료 트레이 -->
       <div id="ingredients-section">
-        <div class="tray-title">🥫 재료를 접시로 끌어당기세요!</div>
+        <div class="tray-title">🥫 신선한 버거 재료 (접시로 끌어당기세요!)</div>
         <div class="ingredients-grid">
           <div class="ingredient-card" data-ing="bun_bottom" id="card-bun_bottom">
             <div class="ing-svg-wrap" id="icon-bun_bottom"></div>
@@ -525,7 +607,7 @@
     <div id="start-overlay" class="overlay">
       <h1 class="overlay-title">🍔 맛있는 수제버거 만들기</h1>
       <p class="overlay-desc-main">
-        주문서의 <b>빨간색 안내 배너</b>를 보고<br>신선한 재료를 끌어서 접시 위에 차례차례 쌓아보세요!
+        주문서의 <b>빨간색 안내 배너</b>를 보고<br>신선한 재료를 마우스로 끌어서 접시 위에 차례차례 쌓아보세요!
       </p>
       <button class="btn-main" onclick="startGame()">햄버거 만들기 시작 ▶</button>
     </div>
@@ -534,10 +616,10 @@
     <div id="end-overlay" class="overlay" style="display: none;">
       <h1 class="overlay-title">🎉 최고의 수제버거 완성!</h1>
       <p class="overlay-desc-main">
-        오늘 만든 <b>5가지 특별한 햄버거 세트</b>입니다.
+        마우스와 한 걸음 더 친해졌어요!<br>오늘 만든 <b>5가지 특별한 햄버거 세트</b>입니다.
       </p>
       
-      <!-- 결과 갤러리 -->
+      <!-- 결과 갤러리 쇼케이스 -->
       <div id="burger-showcase"></div>
 
       <button class="btn-main" onclick="startGame()">새로운 버거 다시 만들기 🔄</button>
@@ -773,7 +855,7 @@
       });
     }
 
-    // 드래그 & 터치 이동 처리
+    // 마우스 / 터치 이벤트
     document.querySelectorAll('.ingredient-card').forEach(card => {
       const startDrag = (clientX, clientY) => {
         activeIngType = card.dataset.ing;
