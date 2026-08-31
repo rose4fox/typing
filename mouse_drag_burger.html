@@ -85,7 +85,7 @@
     }
 
     /* =========================================================
-       1. PC / 데스크톱 기본 스타일 (시원하고 꽉 찬 레이아웃)
+       1. PC / 데스크톱 기본 스타일
        ========================================================= */
     #play-area {
       flex: 1;
@@ -118,11 +118,11 @@
       background: #ffffff;
       border: 3px solid #f59e0b;
       border-radius: 18px;
-      padding: 10px 14px;
+      padding: 16px 14px; /* 상하 여백 확장 */
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 8px;
+      gap: 18px; /* 안내 배너와 레시피 카드 사이 줄간격 대폭 확장 */
       box-shadow: 0 4px 12px rgba(0,0,0,0.06);
       z-index: 10;
       flex-shrink: 0;
@@ -131,7 +131,7 @@
     #current-target-banner {
       background: linear-gradient(90deg, #ef4444, #dc2626);
       color: #ffffff;
-      padding: 6px 20px;
+      padding: 7px 22px;
       border-radius: 20px;
       font-size: 20px;
       font-weight: bold;
@@ -355,8 +355,8 @@
       }
 
       #order-container {
-        padding: 5px 8px;
-        gap: 4px;
+        padding: 8px 6px;
+        gap: 8px; /* 모바일에서는 높이 절약을 위해 8px 적용 */
         border-width: 2px;
         border-radius: 12px;
       }
