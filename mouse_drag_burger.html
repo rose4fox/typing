@@ -84,9 +84,7 @@
       white-space: nowrap;
     }
 
-    /* =========================================================
-       1. PC / 데스크톱 기본 스타일
-       ========================================================= */
+    /* PC / 데스크톱 기본 스타일 */
     #play-area {
       flex: 1;
       display: grid;
@@ -118,11 +116,11 @@
       background: #ffffff;
       border: 3px solid #f59e0b;
       border-radius: 18px;
-      padding: 16px 14px; /* 상하 여백 확장 */
+      padding: 16px 14px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 18px; /* 안내 배너와 레시피 카드 사이 줄간격 대폭 확장 */
+      gap: 18px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.06);
       z-index: 10;
       flex-shrink: 0;
@@ -323,9 +321,7 @@
       opacity: 0.95;
     }
 
-    /* =========================================================
-       2. 모바일 전용 스타일 (스마트폰 세로 화면 최적화)
-       ========================================================= */
+    /* 모바일 전용 스타일 */
     @media (max-width: 768px) {
       #game-wrapper {
         width: 98vw;
@@ -356,7 +352,7 @@
 
       #order-container {
         padding: 8px 6px;
-        gap: 8px; /* 모바일에서는 높이 절약을 위해 8px 적용 */
+        gap: 8px;
         border-width: 2px;
         border-radius: 12px;
       }
@@ -731,28 +727,24 @@
     let activeGhost = null;
     let activeIngType = null;
 
+    // 속재료 개수 순차 증가 (1개 -> 2개 -> 2개 -> 3개 -> 4개) 및 완전 랜덤 추출
     function generateDynamicRecipes() {
       const recipes = [];
       const layerCounts = [1, 2, 2, 3, 4];
 
-      layerCounts.forEach((count, idx) => {
+      layerCounts.forEach(count => {
+        let pool = [...MIDDLE_FILLINGS].sort(() => Math.random() - 0.5);
         let fillings = [];
-        if (idx === 0) {
-          fillings = ['patty'];
-        } else {
-          let pool = [...MIDDLE_FILLINGS];
-          fillings.push('patty');
-          pool = pool.filter(item => item !== 'patty');
-          
-          while (fillings.length < count) {
-            const randIdx = Math.floor(Math.random() * pool.length);
-            fillings.push(pool[randIdx]);
-            pool.splice(randIdx, 1);
-            if (pool.length === 0) pool = [...MIDDLE_FILLINGS];
+
+        while (fillings.length < count) {
+          if (pool.length === 0) {
+            pool = [...MIDDLE_FILLINGS].sort(() => Math.random() - 0.5);
           }
-          fillings.sort(() => Math.random() - 0.5);
+          fillings.push(pool.pop());
         }
 
+        // 재료 순서 섞기
+        fillings.sort(() => Math.random() - 0.5);
         recipes.push(['bun_bottom', ...fillings, 'bun_top']);
       });
 
