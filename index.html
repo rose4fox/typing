@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>컴퓨터실 탐험대 연습실</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Jua&display=swap');
@@ -13,6 +13,7 @@
       padding: 0;
       font-family: 'Jua', sans-serif;
       letter-spacing: 0.3px;
+      -webkit-tap-highlight-color: transparent;
     }
 
     body {
@@ -21,40 +22,52 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       min-height: 100vh;
-      padding: 24px 20px;
+      min-height: 100dvh;
+      padding: clamp(16px, 4vw, 32px) clamp(12px, 3vw, 20px);
     }
 
+    /* 상단 헤더 */
     header {
       text-align: center;
-      margin-bottom: 24px;
+      margin-bottom: clamp(16px, 3vw, 24px);
+      width: 100%;
+      max-width: 960px;
     }
 
     header h1 {
-      font-size: 2.3rem;
+      font-size: clamp(1.6rem, 5.5vw, 2.3rem);
       color: #2c3e50;
       margin-bottom: 6px;
       text-shadow: 1px 1px 0 #fff;
+      word-break: keep-all;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
     }
 
     header p {
-      font-size: 1.15rem;
+      font-size: clamp(0.95rem, 3vw, 1.15rem);
       color: #64748b;
+      word-break: keep-all;
     }
 
+    /* 메인 컨테이너 */
     .container {
       width: 100%;
       max-width: 960px;
       display: flex;
       flex-direction: column;
-      gap: 22px;
+      gap: clamp(16px, 3vw, 24px);
     }
 
     .section-title {
-      font-size: 1.4rem;
+      font-size: clamp(1.15rem, 3.8vw, 1.4rem);
       color: #34495e;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       display: flex;
       align-items: center;
       gap: 6px;
@@ -64,12 +77,13 @@
     .grid-mouse {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
+      gap: 14px;
     }
 
     @media (max-width: 768px) {
       .grid-mouse {
         grid-template-columns: 1fr;
+        gap: 10px;
       }
     }
 
@@ -77,46 +91,52 @@
     .card {
       background: #ffffff;
       border: 2px solid #e2e8f0;
-      border-radius: 20px;
-      padding: 16px 22px;
+      border-radius: 18px;
+      padding: clamp(10px, 2.5vw, 16px) clamp(12px, 3vw, 20px);
       text-decoration: none;
       color: inherit;
       display: flex;
       flex-direction: row;
       align-items: center;
       justify-content: space-between;
-      gap: 14px;
+      gap: 10px;
       transition: all 0.2s ease;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
     }
 
     .card:hover {
-      transform: translateY(-3px);
+      transform: translateY(-2px);
       border-color: #3b82f6;
-      box-shadow: 0 10px 20px rgba(59, 130, 246, 0.12);
+      box-shadow: 0 8px 18px rgba(59, 130, 246, 0.12);
+    }
+
+    .card:active {
+      transform: scale(0.98);
     }
 
     .card-left {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: clamp(10px, 2.5vw, 16px);
       min-width: 0;
+      flex: 1;
     }
 
     .card-text {
       display: flex;
       flex-direction: column;
-      gap: 3px;
+      gap: 2px;
+      min-width: 0;
     }
 
     .icon-badge {
-      width: 48px;
-      height: 48px;
-      border-radius: 14px;
+      width: clamp(40px, 9vw, 48px);
+      height: clamp(40px, 9vw, 48px);
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.6rem;
+      font-size: clamp(1.3rem, 3.8vw, 1.6rem);
       flex-shrink: 0;
     }
 
@@ -127,13 +147,15 @@
     .keyboard-badge { background-color: #fef3e6; }
 
     .card h3 {
-      font-size: 1.25rem;
+      font-size: clamp(1.05rem, 3.2vw, 1.25rem);
       color: #2c3e50;
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .card p {
-      font-size: 1rem;
+      font-size: clamp(0.85rem, 2.6vw, 1rem);
       color: #64748b;
       white-space: nowrap;
       overflow: hidden;
@@ -141,11 +163,11 @@
     }
 
     .btn-tag {
-      font-size: 1rem;
+      font-size: clamp(0.85rem, 2.6vw, 1rem);
       color: #2563eb;
       background-color: #eff6ff;
-      padding: 7px 16px;
-      border-radius: 18px;
+      padding: clamp(5px, 1.5vw, 7px) clamp(10px, 2.5vw, 16px);
+      border-radius: 16px;
       white-space: nowrap;
       flex-shrink: 0;
       transition: all 0.2s;
@@ -160,7 +182,7 @@
 <body>
 
   <header>
-    <h1>🖱️ 컴퓨터실 탐험대 연습실</h1>
+    <h1><span>🖱️</span> 컴퓨터실 탐험대 연습실</h1>
     <p>원하는 활동을 선택해서 연습을 시작해 보세요!</p>
   </header>
 
@@ -182,7 +204,7 @@
               <p>풍선 클릭!</p>
             </div>
           </div>
-          <span class="btn-tag">시작하기 →</span>
+          <span class="btn-tag">시작 →</span>
         </a>
 
         <!-- 2. 클릭 2 (하트 팡팡) -->
@@ -194,7 +216,7 @@
               <p>하트 팡팡!</p>
             </div>
           </div>
-          <span class="btn-tag">시작하기 →</span>
+          <span class="btn-tag">시작 →</span>
         </a>
 
         <!-- 3. 클릭 3 (솜사탕 팡팡) -->
@@ -206,7 +228,7 @@
               <p>솜사탕 팡팡!</p>
             </div>
           </div>
-          <span class="btn-tag">시작하기 →</span>
+          <span class="btn-tag">시작 →</span>
         </a>
 
         <!-- 4. 더블클릭 (별 잡기) -->
@@ -218,7 +240,7 @@
               <p>반짝반짝 별 잡기!</p>
             </div>
           </div>
-          <span class="btn-tag">시작하기 →</span>
+          <span class="btn-tag">시작 →</span>
         </a>
 
         <!-- 5. 드래그 1 (상자에 넣기) -->
@@ -230,7 +252,7 @@
               <p>쏙쏙 상자에 넣기!</p>
             </div>
           </div>
-          <span class="btn-tag">시작하기 →</span>
+          <span class="btn-tag">시작 →</span>
         </a>
 
         <!-- 6. 드래그 2 (햄버거 만들기) -->
@@ -242,7 +264,7 @@
               <p>맛있는 햄버거 만들기!</p>
             </div>
           </div>
-          <span class="btn-tag">시작하기 →</span>
+          <span class="btn-tag">시작 →</span>
         </a>
 
         <!-- 7. 우클릭 1 (마법학교 슬라임) -->
@@ -254,7 +276,7 @@
               <p>마법학교 슬라임 잡기!</p>
             </div>
           </div>
-          <span class="btn-tag">시작하기 →</span>
+          <span class="btn-tag">시작 →</span>
         </a>
 
         <!-- 8. 우클릭 2 (윈도우 바탕화면 실전) -->
@@ -266,7 +288,7 @@
               <p>윈도우 바탕화면 정리하기!</p>
             </div>
           </div>
-          <span class="btn-tag">시작하기 →</span>
+          <span class="btn-tag">시작 →</span>
         </a>
 
       </div>
@@ -286,7 +308,7 @@
               <p>처음이어도 괜찮아요! 차근차근 키보드 연습</p>
             </div>
           </div>
-          <span class="btn-tag">시작하기 →</span>
+          <span class="btn-tag">시작 →</span>
         </a>
       </div>
     </section>
