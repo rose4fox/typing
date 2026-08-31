@@ -1,41 +1,1032 @@
-// 1. 오디오 컨텍스트 생성 (크로스 브라우징)
-  const AudioContext = window.AudioContext || window.webkitAudioContext;
-  let audioCtx = null;
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>맛있는 햄버거 만들기 (마우스 드래그 2)</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Jua&display=swap');
 
-  // 오디오 엔진 초기화 및 잠금 해제 함수
-  function initAudio() {
-    if (!audioCtx) {
-      audioCtx = new AudioContext();
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+      font-family: 'Jua', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      letter-spacing: 0.3px;
     }
-    if (audioCtx.state === 'suspended') {
-      audioCtx.resume();
+
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+      background: linear-gradient(180deg, #fef3c7 0%, #fde68a 50%, #fed7aa 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      touch-action: manipulation;
     }
-  }
 
-  // 화면 첫 터치 / 클릭 시 모바일 오디오 잠금 해제
-  window.addEventListener('touchstart', initAudio, { once: true });
-  window.addEventListener('click', initAudio, { once: true });
+    #game-wrapper {
+      width: 96vw;
+      max-width: 1040px;
+      height: 94vh;
+      height: 94dvh;
+      background: #ffffff;
+      border-radius: 24px;
+      box-shadow: 0 15px 35px rgba(217, 119, 6, 0.25);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border: 4px solid #f59e0b;
+      position: relative;
+    }
 
-  // 2. 톤 사운드 재생 함수 (재생 직전 항상 활성화 확인)
-  function playTone(freq, type, duration) {
-    try {
+    /* 상단 헤더 기본 (PC) */
+    #header-bar {
+      background: linear-gradient(90deg, #f59e0b, #d97706);
+      color: #ffffff;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 3px solid #b45309;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .header-badge {
+      background: #ffffff;
+      color: #b45309;
+      padding: 4px 12px;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: bold;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .header-title {
+      font-size: 20px;
+      color: #ffffff;
+      font-weight: bold;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      text-align: center;
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .score-badge {
+      font-size: 17px;
+      color: #fef3c7;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    /* PC / 데스크톱 기본 스타일 */
+    #play-area {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 16px;
+      padding: 16px;
+      position: relative;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    /* 왼쪽: 주문서 및 접시 조립대 */
+    #assembly-section {
+      background: #fffbeb;
+      border: 3px dashed #fcd34d;
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px;
+      position: relative;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    #order-container {
+      width: 100%;
+      background: #ffffff;
+      border: 3px solid #f59e0b;
+      border-radius: 18px;
+      padding: 16px 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      z-index: 10;
+      flex-shrink: 0;
+    }
+
+    #current-target-banner {
+      background: linear-gradient(90deg, #ef4444, #dc2626);
+      color: #ffffff;
+      padding: 7px 22px;
+      border-radius: 20px;
+      font-size: 20px;
+      font-weight: bold;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
+      animation: pulseBanner 1.2s infinite alternate;
+      white-space: nowrap;
+    }
+
+    .order-recipe {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .recipe-step-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #fff7ed;
+      border: 2px solid #fed7aa;
+      border-radius: 12px;
+      padding: 4px 8px;
+      min-width: 62px;
+      transition: all 0.2s;
+    }
+    .recipe-step-card .thumb-svg {
+      width: 42px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .recipe-step-card .thumb-name {
+      font-size: 12px;
+      color: #7c2d12;
+      margin-top: 2px;
+      font-weight: bold;
+      white-space: nowrap;
+    }
+    .recipe-step-card.done {
+      opacity: 0.35;
+      background: #e2e8f0;
+      border-color: #cbd5e1;
+    }
+    .recipe-step-card.done .thumb-name {
+      color: #64748b;
+      text-decoration: line-through;
+    }
+    .recipe-step-card.active-target {
+      border: 3px solid #ef4444;
+      background: #fef08a;
+      transform: scale(1.08);
+      box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+      animation: bounce 0.8s infinite alternate;
+    }
+
+    .recipe-arrow {
+      font-size: 15px;
+      color: #d97706;
+      font-weight: bold;
+    }
+
+    /* 접시 조립대 */
+    #plate-dropzone {
+      flex: 1;
+      width: 100%;
+      max-width: 420px;
+      display: flex;
+      flex-direction: column-reverse;
+      align-items: center;
+      justify-content: flex-start;
+      margin-top: 10px;
+      position: relative;
+      padding-bottom: 25px;
+      transition: background 0.2s;
+    }
+
+    #plate-base {
+      position: absolute;
+      bottom: 4px;
+      width: 310px;
+      height: 38px;
+      background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
+      border: 3px solid #cbd5e1;
+      border-radius: 50%;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.12);
+      z-index: 1;
+    }
+    #plate-dropzone.hover-target {
+      background-color: rgba(254, 240, 138, 0.5);
+      border-radius: 20px;
+    }
+
+    .stacked-svg-layer {
+      width: 250px;
+      height: auto;
+      margin-bottom: -18px;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.22));
+      animation: dropPop 0.28s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+      z-index: 5;
+      display: flex;
+      justify-content: center;
+    }
+
+    /* 오른쪽: 재료 트레이 */
+    #ingredients-section {
+      background: #ffffff;
+      border: 3px solid #fed7aa;
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      padding: 14px;
+      gap: 10px;
+      min-height: 0;
+    }
+    .tray-title {
+      font-size: 17px;
+      color: #9a3412;
+      text-align: center;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+    .ingredients-grid {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      gap: 12px;
+      min-height: 0;
+    }
+
+    .ingredient-card {
+      background: #fff7ed;
+      border: 2px solid #fdba74;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: grab;
+      transition: transform 0.15s, background 0.15s, border-color 0.15s, box-shadow 0.15s;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.04);
+      padding: 8px;
+      touch-action: none;
+    }
+    .ingredient-card:hover {
+      transform: translateY(-3px);
+      background: #ffedd5;
+      border-color: #f97316;
+      box-shadow: 0 6px 12px rgba(249, 115, 22, 0.15);
+    }
+    .ingredient-card:active {
+      cursor: grabbing;
+      transform: scale(0.96);
+    }
+    .ingredient-card.hint-highlight {
+      border: 3px solid #f59e0b;
+      background: #fef08a;
+      box-shadow: 0 0 14px rgba(245, 158, 11, 0.6);
+    }
+
+    .ing-svg-wrap {
+      width: 90px;
+      height: 46px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+    .ing-name {
+      font-size: 15px;
+      color: #7c2d12;
+      margin-top: 4px;
+      font-weight: bold;
+      pointer-events: none;
+    }
+
+    .dragging-ghost {
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      width: 200px;
+      transform: translate(-50%, -50%);
+      filter: drop-shadow(0 14px 22px rgba(0,0,0,0.35));
+      opacity: 0.95;
+    }
+
+    /* 오버레이 공통 */
+    .overlay {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(15, 23, 42, 0.94);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      color: #fff;
+      text-align: center;
+      padding: 16px;
+      overflow-y: auto;
+    }
+    .overlay-title {
+      font-size: clamp(22px, 5vw, 38px);
+      color: #fde047;
+      margin-bottom: 8px;
+      text-shadow: 0 3px 8px rgba(0,0,0,0.5);
+    }
+    .overlay-desc-main {
+      font-size: clamp(13px, 3vw, 18px);
+      color: #f8fafc;
+      margin: 4px 0;
+      line-height: 1.5;
+      max-width: 90%;
+      word-break: keep-all;
+    }
+
+    /* 결과 갤러리 (PC 기본) */
+    #burger-showcase {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 12px;
+      margin: 16px 0 10px 0;
+      width: 100%;
+      max-width: 860px;
+      flex-wrap: nowrap;
+      padding: 6px 2px;
+    }
+    .showcase-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.08);
+      border: 2px solid rgba(253, 224, 71, 0.4);
+      border-radius: 14px;
+      padding: 8px 6px 12px 6px;
+      min-width: 88px;
+    }
+    .showcase-num {
+      font-size: 13px;
+      color: #fde047;
+      margin-bottom: 6px;
+      font-weight: bold;
+      white-space: nowrap;
+    }
+    .showcase-stack {
+      display: flex;
+      flex-direction: column-reverse;
+      align-items: center;
+      width: 100%;
+    }
+    .showcase-stack .mini-layer {
+      width: 78px;
+      margin-bottom: -8px;
+      filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3));
+    }
+
+    .btn-main {
+      margin-top: 18px;
+      padding: clamp(10px, 2.5vw, 14px) clamp(24px, 5vw, 42px);
+      font-size: clamp(16px, 3.8vw, 22px);
+      background: linear-gradient(145deg, #f59e0b, #d97706);
+      border: 3px solid #fed7aa;
+      border-radius: 16px;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(217, 119, 6, 0.5);
+      transition: transform 0.15s;
+    }
+    .btn-main:active { transform: scale(0.96); }
+
+    /* 토스트 알림 */
+    #toast-msg {
+      display: none;
+      position: absolute;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #10b981;
+      color: #ffffff;
+      padding: 10px 24px;
+      border-radius: 20px;
+      font-size: clamp(13px, 2.6vw, 16px);
+      font-weight: bold;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+      z-index: 1500;
+      white-space: nowrap;
+      animation: popToast 0.3s ease-out;
+    }
+
+    /* 모바일 전용 반응형 스타일 */
+    @media (max-width: 768px) {
+      #game-wrapper {
+        width: 98vw;
+        height: 98vh;
+        height: 98dvh;
+        border-radius: 18px;
+        border-width: 3px;
+      }
+      #header-bar {
+        padding: 6px 8px;
+        gap: 4px;
+      }
+      .header-badge { 
+        font-size: 11px; 
+        padding: 2px 6px; 
+        border-radius: 8px; 
+      }
+      .header-title { 
+        font-size: clamp(11px, 3.2vw, 14px);
+        letter-spacing: -0.2px;
+      }
+      .score-badge { 
+        font-size: 11px; 
+      }
+
+      #play-area {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr auto;
+        gap: 8px;
+        padding: 8px;
+      }
+
+      #assembly-section {
+        padding: 8px;
+        border-radius: 14px;
+      }
+
+      #order-container {
+        padding: 8px 6px;
+        gap: 8px;
+        border-width: 2px;
+        border-radius: 12px;
+      }
+      #current-target-banner {
+        font-size: 13px;
+        padding: 3px 12px;
+        border-radius: 14px;
+      }
+
+      .order-recipe { gap: 4px; }
+      .recipe-step-card {
+        min-width: 44px;
+        padding: 2px 4px;
+        border-radius: 8px;
+        border-width: 1.5px;
+      }
+      .recipe-step-card .thumb-svg { width: 28px; height: 15px; }
+      .recipe-step-card .thumb-name { font-size: 10px; margin-top: 1px; }
+      .recipe-arrow { font-size: 11px; }
+
+      #plate-dropzone {
+        margin-top: 4px;
+        padding-bottom: 20px;
+        min-height: 100px;
+      }
+      #plate-base {
+        width: clamp(170px, 48vw, 240px);
+        height: 26px;
+      }
+      .stacked-svg-layer {
+        width: clamp(140px, 38vw, 200px);
+        margin-bottom: -14px;
+      }
+
+      #ingredients-section {
+        padding: 8px;
+        gap: 6px;
+        border-width: 2px;
+        border-radius: 14px;
+      }
+      .tray-title { font-size: 12px; }
+      .ingredients-grid {
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        gap: 6px;
+      }
+      .ingredient-card {
+        padding: 4px;
+        border-radius: 10px;
+        min-height: 48px;
+      }
+      .ing-svg-wrap {
+        width: 52px;
+        height: 26px;
+      }
+      .ing-name {
+        font-size: 11px;
+        margin-top: 2px;
+      }
+      .dragging-ghost {
+        width: 140px;
+      }
+
+      /* 모바일 결과 갤러리 (5개 자동 균등 분할 & 잘림 해결) */
+      #burger-showcase {
+        gap: 4px;
+        margin: 10px 0 6px 0;
+        padding: 4px 0;
+        width: 100%;
+        max-width: 100%;
+      }
+      .showcase-item {
+        flex: 1 1 0;
+        min-width: 0;
+        padding: 4px 2px 8px 2px;
+        border-radius: 10px;
+        border-width: 1.5px;
+      }
+      .showcase-num {
+        font-size: clamp(8.5px, 2.4vw, 11px);
+        margin-bottom: 3px;
+        letter-spacing: -0.5px;
+      }
+      .showcase-stack .mini-layer {
+        width: 100%;
+        max-width: clamp(40px, 14vw, 56px);
+        margin-bottom: -6px;
+      }
+    }
+
+    @keyframes dropPop {
+      0% { transform: translateY(-40px) scale(0.8); opacity: 0; }
+      100% { transform: translateY(0) scale(1); opacity: 1; }
+    }
+    @keyframes bounce {
+      from { transform: translateY(0); }
+      to { transform: translateY(-4px); }
+    }
+    @keyframes pulseBanner {
+      from { transform: scale(0.98); }
+      to { transform: scale(1.02); }
+    }
+    @keyframes popToast {
+      from { transform: translate(-50%, -20px); opacity: 0; }
+      to { transform: translate(-50%, 0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="game-wrapper">
+    <!-- 상단 헤더 -->
+    <div id="header-bar">
+      <div class="header-badge" id="order-step">주문 1/5</div>
+      <div class="header-title" id="main-header-title">🍔 맛있는 햄버거를 순서대로 쌓아주세요!</div>
+      <div class="score-badge">완성: <span id="cleared-count" style="color:#fde047;">0</span> / 5개</div>
+    </div>
+
+    <!-- 플레이 영역 -->
+    <div id="play-area">
+      <!-- 1. 주문서 & 접시 조립대 -->
+      <div id="assembly-section">
+        <div id="order-container">
+          <div id="current-target-banner">👉 지금 넣을 재료: [ 아래 빵 ]</div>
+          <div class="order-recipe" id="order-recipe"></div>
+        </div>
+
+        <div id="plate-dropzone">
+          <div id="plate-base"></div>
+        </div>
+      </div>
+
+      <!-- 2. 재료 트레이 -->
+      <div id="ingredients-section">
+        <div class="tray-title">🥫 신선한 버거 재료 (접시로 끌어당기세요!)</div>
+        <div class="ingredients-grid">
+          <div class="ingredient-card" data-ing="bun_bottom" id="card-bun_bottom">
+            <div class="ing-svg-wrap" id="icon-bun_bottom"></div>
+            <div class="ing-name">아래 빵</div>
+          </div>
+          <div class="ingredient-card" data-ing="patty" id="card-patty">
+            <div class="ing-svg-wrap" id="icon-patty"></div>
+            <div class="ing-name">패티(고기)</div>
+          </div>
+          <div class="ingredient-card" data-ing="cheese" id="card-cheese">
+            <div class="ing-svg-wrap" id="icon-cheese"></div>
+            <div class="ing-name">슬라이스 치즈</div>
+          </div>
+          <div class="ingredient-card" data-ing="tomato" id="card-tomato">
+            <div class="ing-svg-wrap" id="icon-tomato"></div>
+            <div class="ing-name">토마토</div>
+          </div>
+          <div class="ingredient-card" data-ing="lettuce" id="card-lettuce">
+            <div class="ing-svg-wrap" id="icon-lettuce"></div>
+            <div class="ing-name">양상추</div>
+          </div>
+          <div class="ingredient-card" data-ing="bun_top" id="card-bun_top">
+            <div class="ing-svg-wrap" id="icon-bun_top"></div>
+            <div class="ing-name">참깨 위 빵</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 토스트 알림 -->
+    <div id="toast-msg">✨ 햄버거가 맛있게 완성되었습니다!</div>
+
+    <!-- 시작 오버레이 -->
+    <div id="start-overlay" class="overlay">
+      <h1 class="overlay-title">🍔 맛있는 수제버거 만들기</h1>
+      <p class="overlay-desc-main">
+        주문서의 <b>빨간색 안내 배너</b>를 보고<br>신선한 재료를 마우스로 끌어서 접시 위에 차례차례 쌓아보세요!
+      </p>
+      <button class="btn-main" onclick="startGame()">햄버거 만들기 시작 ▶</button>
+    </div>
+
+    <!-- 완료 오버레이 -->
+    <div id="end-overlay" class="overlay" style="display: none;">
+      <h1 class="overlay-title">🎉 최고의 수제버거 완성!</h1>
+      <p class="overlay-desc-main">
+        마우스와 한 걸음 더 친해졌어요!<br>오늘 만든 <b>5가지 특별한 햄버거 세트</b>입니다.
+      </p>
+      
+      <!-- 결과 갤러리 쇼케이스 -->
+      <div id="burger-showcase"></div>
+
+      <button class="btn-main" onclick="startGame()">새로운 버거 다시 만들기 🔄</button>
+    </div>
+  </div>
+
+  <script>
+    const SVG_ITEMS = {
+      bun_top: `
+        <svg viewBox="0 0 160 65" width="100%" height="100%">
+          <path d="M 10,55 Q 80,-15 150,55 Q 80,62 10,55 Z" fill="#e08d3c" stroke="#b45309" stroke-width="3"/>
+          <path d="M 20,48 Q 80,5 140,48" stroke="#fcd34d" stroke-width="3" fill="none" opacity="0.6"/>
+          <ellipse cx="50" cy="24" rx="3.5" ry="2" fill="#fff" transform="rotate(-15 50 24)"/>
+          <ellipse cx="80" cy="16" rx="3.5" ry="2" fill="#fff"/>
+          <ellipse cx="110" cy="24" rx="3.5" ry="2" fill="#fff" transform="rotate(15 110 24)"/>
+          <ellipse cx="65" cy="36" rx="3" ry="1.8" fill="#fff" transform="rotate(10 65 36)"/>
+          <ellipse cx="95" cy="34" rx="3" ry="1.8" fill="#fff" transform="rotate(-10 95 34)"/>
+        </svg>`,
+      lettuce: `
+        <svg viewBox="0 0 160 36" width="100%" height="100%">
+          <path d="M 5,18 Q 20,2 35,18 Q 55,3 75,18 Q 95,2 115,18 Q 135,3 155,18 Q 135,32 115,22 Q 95,34 75,22 Q 55,34 35,22 Q 20,32 5,18 Z" fill="#4ade80" stroke="#15803d" stroke-width="3"/>
+          <path d="M 15,18 Q 75,12 145,18" stroke="#86efac" stroke-width="2" fill="none"/>
+        </svg>`,
+      tomato: `
+        <svg viewBox="0 0 160 32" width="100%" height="100%">
+          <ellipse cx="52" cy="16" rx="38" ry="12" fill="#ef4444" stroke="#991b1b" stroke-width="3"/>
+          <ellipse cx="52" cy="16" rx="26" ry="7" fill="#dc2626"/>
+          <circle cx="44" cy="15" r="2.5" fill="#fef08a"/>
+          <circle cx="58" cy="16" r="2.5" fill="#fef08a"/>
+          <ellipse cx="108" cy="16" rx="38" ry="12" fill="#ef4444" stroke="#991b1b" stroke-width="3"/>
+          <ellipse cx="108" cy="16" rx="26" ry="7" fill="#dc2626"/>
+          <circle cx="100" cy="15" r="2.5" fill="#fef08a"/>
+          <circle cx="116" cy="16" r="2.5" fill="#fef08a"/>
+        </svg>`,
+      cheese: `
+        <svg viewBox="0 0 160 38" width="100%" height="100%">
+          <path d="M 10,8 L 150,8 L 140,24 L 115,14 L 85,34 L 55,14 L 20,26 Z" fill="#fbbf24" stroke="#d97706" stroke-width="3"/>
+        </svg>`,
+      patty: `
+        <svg viewBox="0 0 160 38" width="100%" height="100%">
+          <rect x="10" y="6" width="140" height="26" rx="13" fill="#6b3a19" stroke="#431c07" stroke-width="3"/>
+          <line x1="45" y1="11" x2="60" y2="27" stroke="#381404" stroke-width="3" stroke-linecap="round"/>
+          <line x1="75" y1="11" x2="90" y2="27" stroke="#381404" stroke-width="3" stroke-linecap="round"/>
+          <line x1="105" y1="11" x2="120" y2="27" stroke="#381404" stroke-width="3" stroke-linecap="round"/>
+        </svg>`,
+      bun_bottom: `
+        <svg viewBox="0 0 160 40" width="100%" height="100%">
+          <path d="M 12,8 Q 80,4 148,8 Q 142,35 80,35 Q 18,35 12,8 Z" fill="#e08d3c" stroke="#b45309" stroke-width="3"/>
+          <ellipse cx="80" cy="9" rx="66" ry="4" fill="#fcd34d" opacity="0.6"/>
+        </svg>`
+    };
+
+    const INGREDIENTS_MAP = {
+      bun_bottom: { name: '아래 빵' },
+      patty:      { name: '패티(고기)' },
+      cheese:     { name: '치즈' },
+      tomato:     { name: '토마토' },
+      lettuce:    { name: '양상추' },
+      bun_top:    { name: '위 빵' }
+    };
+
+    Object.keys(SVG_ITEMS).forEach(key => {
+      const wrap = document.getElementById(`icon-${key}`);
+      if (wrap) wrap.innerHTML = SVG_ITEMS[key];
+    });
+
+    const headerTitleEl = document.getElementById('main-header-title');
+    const orderStepEl = document.getElementById('order-step');
+    const clearedCountEl = document.getElementById('cleared-count');
+    const orderRecipeEl = document.getElementById('order-recipe');
+    const targetBannerEl = document.getElementById('current-target-banner');
+    const plateDropzone = document.getElementById('plate-dropzone');
+    const toastMsg = document.getElementById('toast-msg');
+    const startOverlay = document.getElementById('start-overlay');
+    const endOverlay = document.getElementById('end-overlay');
+    const burgerShowcase = document.getElementById('burger-showcase');
+
+    function updateResponsiveTitle() {
+      if (window.innerWidth <= 768) {
+        headerTitleEl.textContent = '🍔 맛있는 햄버거 만들기';
+      } else {
+        headerTitleEl.textContent = '🍔 맛있는 햄버거를 순서대로 쌓아주세요!';
+      }
+    }
+    window.addEventListener('resize', updateResponsiveTitle);
+    updateResponsiveTitle();
+
+    /* =========================================================
+       오디오 엔진 (모바일 브라우저 자동 재생 잠금 완벽 대응)
+       ========================================================= */
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new AudioContextClass();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    // 화면 어디든 첫 터치/클릭 발생 시 모바일 오디오 잠금 해제
+    window.addEventListener('touchstart', initAudio, { once: true, passive: true });
+    window.addEventListener('click', initAudio, { once: true });
+
+    function playTone(freq, type, duration) {
+      try {
+        initAudio();
+        if (!audioCtx) return;
+
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch(e) {}
+    }
+
+    function soundDrop() {
+      playTone(480, 'triangle', 0.1);
+      setTimeout(() => playTone(640, 'triangle', 0.15), 60);
+    }
+    function soundComplete() {
+      playTone(523, 'triangle', 0.1);
+      setTimeout(() => playTone(659, 'triangle', 0.1), 80);
+      setTimeout(() => playTone(784, 'triangle', 0.12), 160);
+      setTimeout(() => playTone(1046, 'triangle', 0.25), 240);
+    }
+    function soundFail() { playTone(180, 'sawtooth', 0.2); }
+
+    const MIDDLE_FILLINGS = ['patty', 'cheese', 'tomato', 'lettuce'];
+    let burgerRecipes = []; 
+    let currentOrderIdx = 0;
+    let currentStepIdx = 0;
+    let activeGhost = null;
+    let activeIngType = null;
+
+    // 1번부터 5번까지 완전 랜덤 속재료 생성
+    function generateDynamicRecipes() {
+      const recipes = [];
+      const layerCounts = [1, 2, 2, 3, 4];
+
+      layerCounts.forEach(count => {
+        let pool = [...MIDDLE_FILLINGS].sort(() => Math.random() - 0.5);
+        let fillings = [];
+
+        while (fillings.length < count) {
+          if (pool.length === 0) {
+            pool = [...MIDDLE_FILLINGS].sort(() => Math.random() - 0.5);
+          }
+          fillings.push(pool.pop());
+        }
+
+        fillings.sort(() => Math.random() - 0.5);
+        recipes.push(['bun_bottom', ...fillings, 'bun_top']);
+      });
+
+      return recipes;
+    }
+
+    function startGame() {
       initAudio();
-      if (!audioCtx) return;
-
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-
-      osc.type = type;
-      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-      gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
-
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-
-      osc.start();
-      osc.stop(audioCtx.currentTime + duration);
-    } catch(e) {
-      console.warn("오디오 재생 실패:", e);
+      burgerRecipes = generateDynamicRecipes();
+      currentOrderIdx = 0;
+      startOverlay.style.display = 'none';
+      endOverlay.style.display = 'none';
+      loadOrder(0);
     }
-  }
+
+    function loadOrder(orderIndex) {
+      currentOrderIdx = orderIndex;
+      currentStepIdx = 0;
+      orderStepEl.textContent = `주문 ${orderIndex + 1}/5`;
+      clearedCountEl.textContent = `${orderIndex}`;
+      
+      const layers = plateDropzone.querySelectorAll('.stacked-svg-layer');
+      layers.forEach(l => l.remove());
+
+      renderRecipeGuide();
+    }
+
+    function renderRecipeGuide() {
+      orderRecipeEl.innerHTML = '';
+      const recipe = burgerRecipes[currentOrderIdx];
+      const currentTargetKey = recipe[currentStepIdx];
+
+      if (currentTargetKey) {
+        targetBannerEl.textContent = `👉 지금 넣을 재료: [ ${INGREDIENTS_MAP[currentTargetKey].name} ]`;
+      }
+
+      document.querySelectorAll('.ingredient-card').forEach(c => {
+        if (c.dataset.ing === currentTargetKey) {
+          c.classList.add('hint-highlight');
+        } else {
+          c.classList.remove('hint-highlight');
+        }
+      });
+
+      recipe.forEach((ingKey, idx) => {
+        const stepCard = document.createElement('div');
+        stepCard.className = 'recipe-step-card';
+
+        const thumbSvg = document.createElement('div');
+        thumbSvg.className = 'thumb-svg';
+        thumbSvg.innerHTML = SVG_ITEMS[ingKey];
+
+        const thumbName = document.createElement('div');
+        thumbName.className = 'thumb-name';
+        thumbName.textContent = INGREDIENTS_MAP[ingKey].name;
+
+        stepCard.appendChild(thumbSvg);
+        stepCard.appendChild(thumbName);
+
+        if (idx < currentStepIdx) {
+          stepCard.classList.add('done');
+        } else if (idx === currentStepIdx) {
+          stepCard.classList.add('active-target');
+        }
+        orderRecipeEl.appendChild(stepCard);
+
+        if (idx < recipe.length - 1) {
+          const arrow = document.createElement('span');
+          arrow.className = 'recipe-arrow';
+          arrow.textContent = '➔';
+          orderRecipeEl.appendChild(arrow);
+        }
+      });
+    }
+
+    function renderResultShowcase() {
+      burgerShowcase.innerHTML = '';
+      
+      burgerRecipes.forEach((recipe, idx) => {
+        const itemWrap = document.createElement('div');
+        itemWrap.className = 'showcase-item';
+
+        const numTitle = document.createElement('div');
+        numTitle.className = 'showcase-num';
+        numTitle.textContent = `${idx + 1}번 버거 🍔`;
+
+        const stackWrap = document.createElement('div');
+        stackWrap.className = 'showcase-stack';
+
+        recipe.forEach(ingKey => {
+          const miniLayer = document.createElement('div');
+          miniLayer.className = 'mini-layer';
+          miniLayer.innerHTML = SVG_ITEMS[ingKey];
+          stackWrap.appendChild(miniLayer);
+        });
+
+        itemWrap.appendChild(numTitle);
+        itemWrap.appendChild(stackWrap);
+        burgerShowcase.appendChild(itemWrap);
+      });
+    }
+
+    // 마우스 / 터치 이벤트
+    document.querySelectorAll('.ingredient-card').forEach(card => {
+      const startDrag = (clientX, clientY) => {
+        initAudio(); // 드래그 시점에도 오디오 활성화 보장
+        activeIngType = card.dataset.ing;
+
+        activeGhost = document.createElement('div');
+        activeGhost.className = 'dragging-ghost';
+        activeGhost.innerHTML = SVG_ITEMS[activeIngType];
+        activeGhost.style.left = `${clientX}px`;
+        activeGhost.style.top = `${clientY}px`;
+        document.body.appendChild(activeGhost);
+      };
+
+      card.addEventListener('mousedown', (e) => {
+        if (e.button !== 0) return;
+        e.preventDefault();
+        startDrag(e.clientX, e.clientY);
+      });
+
+      card.addEventListener('touchstart', (e) => {
+        const touch = e.touches[0];
+        startDrag(touch.clientX, touch.clientY);
+      }, { passive: true });
+    });
+
+    const moveDrag = (clientX, clientY) => {
+      if (!activeGhost) return;
+      activeGhost.style.left = `${clientX}px`;
+      activeGhost.style.top = `${clientY}px`;
+
+      const rect = plateDropzone.getBoundingClientRect();
+      const isOverPlate = (clientX >= rect.left && clientX <= rect.right && clientY >= rect.top && clientY <= rect.bottom);
+      if (isOverPlate) {
+        plateDropzone.classList.add('hover-target');
+      } else {
+        plateDropzone.classList.remove('hover-target');
+      }
+    };
+
+    window.addEventListener('mousemove', (e) => moveDrag(e.clientX, e.clientY));
+    window.addEventListener('touchmove', (e) => {
+      if (e.touches.length > 0) moveDrag(e.touches[0].clientX, e.touches[0].clientY);
+    }, { passive: true });
+
+    const endDrag = (clientX, clientY) => {
+      if (!activeGhost) return;
+
+      activeGhost.remove();
+      activeGhost = null;
+      plateDropzone.classList.remove('hover-target');
+
+      const rect = plateDropzone.getBoundingClientRect();
+      const isDroppedOnPlate = (clientX >= rect.left && clientX <= rect.right && clientY >= rect.top && clientY <= rect.bottom);
+
+      if (isDroppedOnPlate) {
+        checkIngredientMatch(activeIngType);
+      }
+      activeIngType = null;
+    };
+
+    window.addEventListener('mouseup', (e) => endDrag(e.clientX, e.clientY));
+    window.addEventListener('touchend', (e) => {
+      if (e.changedTouches.length > 0) {
+        const touch = e.changedTouches[0];
+        endDrag(touch.clientX, touch.clientY);
+      }
+    });
+
+    function checkIngredientMatch(droppedIng) {
+      const recipe = burgerRecipes[currentOrderIdx];
+      const targetIng = recipe[currentStepIdx];
+
+      if (droppedIng === targetIng) {
+        soundDrop();
+
+        const layer = document.createElement('div');
+        layer.className = 'stacked-svg-layer';
+        layer.innerHTML = SVG_ITEMS[droppedIng];
+        plateDropzone.appendChild(layer);
+
+        currentStepIdx++;
+        renderRecipeGuide();
+
+        if (currentStepIdx >= recipe.length) {
+          soundComplete();
+          showToast("✨ 햄버거가 맛있게 완성되었습니다!");
+
+          setTimeout(() => {
+            currentOrderIdx++;
+            if (currentOrderIdx >= burgerRecipes.length) {
+              clearedCountEl.textContent = '5';
+              renderResultShowcase();
+              endOverlay.style.display = 'flex';
+            } else {
+              loadOrder(currentOrderIdx);
+            }
+          }, 1200);
+        }
+      } else {
+        soundFail();
+        showToast(`❌ 지금은 [${INGREDIENTS_MAP[targetIng].name}]을(를) 넣을 차례예요!`);
+      }
+    }
+
+    function showToast(text) {
+      toastMsg.textContent = text;
+      toastMsg.style.display = 'block';
+      setTimeout(() => {
+        toastMsg.style.display = 'none';
+      }, 1500);
+    }
+  </script>
+</body>
+</html>
