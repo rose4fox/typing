@@ -2,8 +2,8 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>마법학교: 슬라임 수련관 (PC/모바일 하이브리드 - 속도 밸런스 패치)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>마법학교: 슬라임 수련관 (3D 입체 젤리 버전)</title>
   <style>
     * {
       box-sizing: border-box;
@@ -11,6 +11,7 @@
       -webkit-user-select: none;
       -webkit-touch-callout: none;
       font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+      word-break: keep-all;
     }
     body {
       margin: 0;
@@ -23,6 +24,8 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
       touch-action: manipulation;
     }
     
@@ -30,26 +33,30 @@
     #header {
       width: 92%;
       max-width: 900px;
-      margin-top: 12px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       background: rgba(255, 255, 255, 0.15);
       backdrop-filter: blur(10px);
-      padding: 10px 20px;
+      padding: 8px 16px;
       border-radius: 18px;
       border: 2px solid rgba(255, 255, 255, 0.3);
+      white-space: nowrap;
     }
     .status-item {
-      font-size: 19px;
+      font-size: clamp(13px, 3.4vw, 19px);
       font-weight: 800;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 4px;
+      white-space: nowrap;
     }
     .status-val {
       color: #38bdf8;
-      font-size: 24px;
+      font-size: clamp(15px, 3.8vw, 24px);
+    }
+    #life-val {
+      letter-spacing: -2px;
     }
 
     /* 게임 화면 */
@@ -57,8 +64,7 @@
       position: relative;
       width: 92%;
       max-width: 900px;
-      height: 68vh;
-      margin-top: 12px;
+      height: clamp(380px, 64vh, 580px);
       background: linear-gradient(180deg, rgba(46, 16, 101, 0.5) 0%, rgba(15, 23, 42, 0.95) 100%);
       border: 3px solid #818cf8;
       border-radius: 24px;
@@ -80,87 +86,164 @@
       position: absolute;
       bottom: 35px;
       right: 20px;
-      font-size: 15px;
+      font-size: 14px;
       color: #fca5a5;
       font-weight: 900;
       letter-spacing: 2px;
     }
 
-    /* 슬라임 타겟 */
+    /* 3D 반짝이는 입체 젤리 슬라임 */
     .slime {
       position: absolute;
-      width: 110px;
-      height: 95px;
-      border-radius: 50% 50% 45% 45%;
+      width: 104px;
+      height: 90px;
+      border-radius: 50% 50% 46% 46% / 60% 60% 40% 40%;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: transform 0.15s ease;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.5), inset 0 -8px 12px rgba(0,0,0,0.25), inset 0 8px 14px rgba(255,255,255,0.5);
-      animation: bounce 0.8s infinite alternate ease-in-out;
+      transform-origin: center bottom;
+      animation: jellySquish 1.2s infinite ease-in-out alternate;
     }
-    
+
     .slime::before {
       content: '';
       position: absolute;
-      top: 28px;
-      left: 30px;
-      width: 12px;
-      height: 14px;
-      background: #0f172a;
+      top: 10px;
+      left: 18px;
+      width: 44px;
+      height: 22px;
       border-radius: 50%;
-      box-shadow: 38px 0 0 #0f172a;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.15) 100%);
+      transform: rotate(-16deg);
+      pointer-events: none;
+      filter: drop-shadow(0 0 4px rgba(255,255,255,0.8));
+      z-index: 5;
     }
+
     .slime::after {
       content: '';
       position: absolute;
-      bottom: 22px;
-      width: 18px;
+      top: 24px;
+      right: 18px;
+      width: 12px;
       height: 8px;
-      background: #0f172a;
-      border-radius: 0 0 12px 12px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.6);
+      transform: rotate(25deg);
+      pointer-events: none;
+      z-index: 5;
     }
 
     .slime-fire {
-      background: linear-gradient(135deg, #f87171, #dc2626);
-      border: 3px solid #fecdd3;
+      background: radial-gradient(circle at 35% 30%, #ff7b7b 0%, #ef4444 45%, #991b1b 90%);
+      box-shadow: 
+        0 14px 28px rgba(0, 0, 0, 0.5),
+        0 0 20px rgba(239, 68, 68, 0.4),
+        inset 0 -12px 18px rgba(127, 29, 29, 0.8),
+        inset 0 10px 14px rgba(255, 255, 255, 0.6);
+      border: 2px solid rgba(254, 205, 211, 0.7);
     }
+
     .slime-water {
-      background: linear-gradient(135deg, #60a5fa, #2563eb);
-      border: 3px solid #bfdbfe;
+      background: radial-gradient(circle at 35% 30%, #93c5fd 0%, #3b82f6 45%, #1e3a8a 90%);
+      box-shadow: 
+        0 14px 28px rgba(0, 0, 0, 0.5),
+        0 0 20px rgba(59, 130, 246, 0.4),
+        inset 0 -12px 18px rgba(30, 58, 138, 0.8),
+        inset 0 10px 14px rgba(255, 255, 255, 0.6);
+      border: 2px solid rgba(191, 219, 254, 0.7);
     }
+
     .slime-grass {
-      background: linear-gradient(135deg, #4ade80, #16a34a);
-      border: 3px solid #bbf7d0;
+      background: radial-gradient(circle at 35% 30%, #86efac 0%, #22c55e 45%, #14532d 90%);
+      box-shadow: 
+        0 14px 28px rgba(0, 0, 0, 0.5),
+        0 0 20px rgba(34, 197, 94, 0.4),
+        inset 0 -12px 18px rgba(20, 83, 45, 0.8),
+        inset 0 10px 14px rgba(255, 255, 255, 0.6);
+      border: 2px solid rgba(187, 247, 208, 0.7);
     }
+
+    .slime-face {
+      position: absolute;
+      top: 38px;
+      display: flex;
+      justify-content: space-between;
+      width: 58px;
+      z-index: 6;
+      pointer-events: none;
+    }
+    .slime-eye {
+      width: 14px;
+      height: 16px;
+      background: #0f172a;
+      border-radius: 50%;
+      position: relative;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    .slime-eye::before {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 3px;
+      width: 6px;
+      height: 6px;
+      background: #ffffff;
+      border-radius: 50%;
+    }
+    .slime-eye::after {
+      content: '';
+      position: absolute;
+      bottom: 2px;
+      right: 3px;
+      width: 3px;
+      height: 3px;
+      background: #ffffff;
+      border-radius: 50%;
+    }
+
+    .slime-mouth {
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 14px;
+      height: 8px;
+      background: #0f172a;
+      border-radius: 0 0 14px 14px;
+    }
+
+    .slime-small { transform: scale(0.85); }
+    .slime-normal { transform: scale(1.0); }
+    .slime-giant { transform: scale(1.25); }
 
     /* 대형 말풍선 힌트 뱃지 */
     .slime-badge {
       position: absolute;
-      top: -46px;
-      font-size: 15px;
+      top: -42px;
+      font-size: 13px;
       font-weight: 900;
-      padding: 6px 14px;
+      padding: 5px 13px;
       border-radius: 20px;
       background: #ffffff;
       color: #0f172a;
       white-space: nowrap;
-      border: 3px solid #facc15;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      border: 2.5px solid #facc15;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.35);
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 4px;
       pointer-events: none;
+      z-index: 10;
     }
     .slime-badge::after {
       content: '';
       position: absolute;
-      bottom: -8px;
+      bottom: -7px;
       left: 50%;
       transform: translateX(-50%);
-      border-width: 8px 6px 0;
+      border-width: 7px 5px 0;
       border-style: solid;
       border-color: #facc15 transparent;
       display: block;
@@ -171,8 +254,8 @@
     #spell-menu {
       display: none;
       position: absolute;
-      width: 190px;
-      height: 190px;
+      width: 180px;
+      height: 180px;
       border-radius: 50%;
       z-index: 999;
       transform: translate(-50%, -50%);
@@ -193,7 +276,7 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 800;
       color: #94a3b8;
       text-align: center;
@@ -202,83 +285,97 @@
     .spell-btn {
       pointer-events: auto;
       position: absolute;
-      width: 58px;
-      height: 58px;
+      width: 54px;
+      height: 54px;
       border-radius: 50%;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      font-size: 22px;
+      font-size: 20px;
       cursor: pointer;
       box-shadow: 0 4px 12px rgba(0,0,0,0.4);
       transition: transform 0.15s, filter 0.15s;
     }
     .spell-btn span {
-      font-size: 10px;
+      font-size: 9.5px;
       font-weight: 900;
       margin-top: -2px;
     }
     .spell-btn:hover {
-      transform: scale(1.18);
+      transform: scale(1.16);
       filter: brightness(1.2);
     }
     .spell-water {
-      top: 6px; left: 66px;
+      top: 6px; left: 63px;
       background: linear-gradient(135deg, #38bdf8, #0284c7);
       border: 3px solid #bae6fd;
       color: #fff;
     }
     .spell-grass {
-      bottom: 16px; left: 20px;
+      bottom: 14px; left: 18px;
       background: linear-gradient(135deg, #4ade80, #16a34a);
       border: 3px solid #bbf7d0;
       color: #fff;
     }
     .spell-fire {
-      bottom: 16px; right: 20px;
+      bottom: 14px; right: 18px;
       background: linear-gradient(135deg, #fb7185, #e11d48);
       border: 3px solid #fecdd3;
       color: #fff;
     }
 
-    /* 하단 가이드 & 모드 스위치 */
+    /* 💡 하단 가이드 바: 넉넉한 간격 및 쾌적한 띄어쓰기 적용 */
     #footer-bar {
-      margin-top: 10px;
       width: 92%;
       max-width: 900px;
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
-      flex-wrap: wrap;
-      gap: 10px;
+      flex-direction: column;
+      gap: 8px;
     }
     #guide-bar {
-      font-size: 15px;
+      font-size: clamp(12px, 2.7vw, 15px);
       font-weight: 800;
       color: #f8fafc;
       display: flex;
-      gap: 16px;
-      background: rgba(255,255,255,0.12);
-      padding: 8px 18px;
+      justify-content: center;
+      align-items: center;
+      gap: clamp(10px, 2.8vw, 20px);
+      background: rgba(255, 255, 255, 0.12);
+      padding: 7px 18px;
       border-radius: 30px;
-      border: 1px solid rgba(255,255,255,0.2);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      white-space: nowrap;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     }
     .rule-tag {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 6px;
+      letter-spacing: 0.5px;
+    }
+    .rule-arrow {
+      color: #94a3b8;
+      font-size: 11px;
+      margin: 0 2px;
+    }
+    .rule-sep {
+      color: rgba(255, 255, 255, 0.25);
+      font-weight: 300;
+      font-size: 13px;
     }
     
     #mobile-toggle-btn {
       display: none;
-      padding: 8px 16px;
+      padding: 6px 16px;
       background: #4f46e5;
       border: 2px solid #a5b4fc;
       border-radius: 20px;
       color: #fff;
       font-weight: bold;
-      font-size: 14px;
+      font-size: 13px;
       cursor: pointer;
     }
 
@@ -286,13 +383,14 @@
     .pop-effect {
       position: absolute;
       transform: translate(-50%, -50%);
-      font-size: 34px;
+      font-size: 30px;
       font-weight: 900;
       color: #fde047;
       text-shadow: 0 0 12px #ca8a04;
       pointer-events: none;
       animation: explode 0.6s ease-out forwards;
       white-space: nowrap;
+      z-index: 100;
     }
 
     /* 오버레이 */
@@ -307,13 +405,13 @@
       justify-content: center;
       z-index: 1000;
       border-radius: 22px;
-      padding: 20px;
+      padding: 18px;
       text-align: center;
     }
     .btn-start {
-      margin-top: 24px;
-      padding: 16px 44px;
-      font-size: 22px;
+      margin-top: 18px;
+      padding: 14px 38px;
+      font-size: clamp(17px, 4.5vw, 22px);
       font-weight: 900;
       color: #fff;
       background: linear-gradient(135deg, #6366f1, #4338ca);
@@ -327,9 +425,16 @@
       transform: scale(1.06);
     }
 
-    @keyframes bounce {
-      from { transform: translateY(0) scale(1, 1); }
-      to { transform: translateY(-8px) scale(1.05, 0.95); }
+    @keyframes jellySquish {
+      0% {
+        transform: scale(1, 1);
+      }
+      50% {
+        transform: scale(1.08, 0.92) translateY(2px);
+      }
+      100% {
+        transform: scale(0.94, 1.06) translateY(-6px);
+      }
     }
     @keyframes spinIn {
       from { transform: scale(0.3) rotate(-90deg); opacity: 0; }
@@ -353,26 +458,23 @@
     <div id="defense-line"></div>
     <div id="defense-text">방어선</div>
 
-    <!-- 시작 오버레이 -->
     <div id="start-overlay" class="overlay">
-      <h1 style="font-size: 32px; color: #a5b4fc; margin-bottom: 12px;">🧙 마법학교 슬라임 디펜스</h1>
-      <p style="color: #f1f5f9; font-size: 18px; margin: 6px 0; font-weight: 700;">
+      <h1 style="font-size: clamp(22px, 5.5vw, 32px); color: #a5b4fc; margin-bottom: 12px;">🧙 마법학교 슬라임 디펜스</h1>
+      <p style="color: #f1f5f9; font-size: clamp(14px, 3.4vw, 17px); margin: 6px 0; font-weight: 700;">
         💻 <b>PC</b>: 슬라임 <b>[우클릭]</b> ➔ 마법 <b>[좌클릭]</b>
       </p>
-      <p style="color: #fde047; font-size: 18px; margin: 6px 0; font-weight: 700;">
+      <p style="color: #fde047; font-size: clamp(14px, 3.4vw, 17px); margin: 6px 0; font-weight: 700;">
         📱 <b>태블릿/폰</b>: 슬라임을 <b>[살짝 꾹 누르기]</b> ➔ 마법 <b>[터치]</b>
       </p>
       <button class="btn-start" onclick="startGame()">수련 시작하기 ▶</button>
     </div>
 
-    <!-- 결과 오버레이 -->
     <div id="game-over-overlay" class="overlay" style="display: none;">
-      <h1 id="result-title" style="font-size: 34px; color: #f87171;">수련 완료!</h1>
-      <p id="result-desc" style="font-size: 20px; color: #f1f5f9; margin-top: 14px; font-weight: 700;">최종 점수: 0점</p>
+      <h1 id="result-title" style="font-size: clamp(22px, 5.5vw, 32px); color: #f87171;">수련 완료!</h1>
+      <p id="result-desc" style="font-size: clamp(15px, 3.8vw, 20px); color: #f1f5f9; margin-top: 14px; font-weight: 700;">최종 점수: 0점</p>
       <button class="btn-start" onclick="startGame()">다시 도전하기 🔄</button>
     </div>
 
-    <!-- 원형 마법 메뉴 -->
     <div id="spell-menu">
       <div class="spell-circle">
         <div class="menu-center-hint">마법<br>선택!</div>
@@ -385,9 +487,11 @@
 
   <div id="footer-bar">
     <div id="guide-bar">
-      <span class="rule-tag">🔥 불 ➔ <b>💧 물</b></span>
-      <span class="rule-tag">💧 물 ➔ <b>🌿 풀</b></span>
-      <span class="rule-tag">🌿 풀 ➔ <b>🔥 불</b></span>
+      <span class="rule-tag">🔥 불 <span class="rule-arrow">➔</span> <b>💧 물</b></span>
+      <span class="rule-sep">|</span>
+      <span class="rule-tag">💧 물 <span class="rule-arrow">➔</span> <b>🌿 풀</b></span>
+      <span class="rule-sep">|</span>
+      <span class="rule-tag">🌿 풀 <span class="rule-arrow">➔</span> <b>🔥 불</b></span>
     </div>
     <button id="mobile-toggle-btn" onclick="toggleTouchMode()">모바일 간편 터치 모드: OFF</button>
   </div>
@@ -404,7 +508,6 @@
     const resultDesc = document.getElementById('result-desc');
     const mobileToggleBtn = document.getElementById('mobile-toggle-btn');
 
-    // 모바일 터치 기기 감지
     const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
     if (isTouchDevice) {
       mobileToggleBtn.style.display = 'inline-block';
@@ -417,10 +520,10 @@
       mobileToggleBtn.style.background = directTapMode ? '#059669' : '#4f46e5';
     }
 
-    // Web Audio API 사운드
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     function playTone(freq, type, duration) {
       try {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         osc.type = type;
@@ -457,10 +560,8 @@
       { type: 'grass', name: '풀 슬라임', weak: 'fire', class: 'slime-grass', badge: '🔥 불 마법 발사!' }
     ];
 
-    // 브라우저 기본 컨텍스트 메뉴 비활성화
     window.addEventListener('contextmenu', (e) => e.preventDefault());
 
-    // 배경 클릭/터치 시 메뉴 닫기
     window.addEventListener('pointerdown', (e) => {
       if (!spellMenu.contains(e.target) && !e.target.closest('.slime')) {
         closeSpellMenu();
@@ -491,7 +592,6 @@
       clearInterval(clockTimerId);
       cancelAnimationFrame(gameLoopId);
 
-      // 슬라임 등장 주기 (2.0초)
       spawnTimerId = setInterval(spawnSlime, 2000);
       clockTimerId = setInterval(tickTime, 1000);
       
@@ -509,28 +609,50 @@
 
     function spawnSlime() {
       if (!gameRunning) return;
-      if (slimes.length >= 3) return; // 화면 내 동시 최대 3마리
+      if (slimes.length >= 3) return;
 
       const template = SLIME_TYPES[Math.floor(Math.random() * SLIME_TYPES.length)];
       const el = document.createElement('div');
-      el.className = `slime ${template.class}`;
+      
+      const rand = Math.random();
+      let sizeClass = 'slime-normal';
+      let speed = 0.50 + Math.random() * 0.15;
+      let scale = 1.0;
+
+      if (rand < 0.20) {
+        sizeClass = 'slime-giant';
+        speed = 0.35 + Math.random() * 0.10;
+        scale = 1.25;
+      } else if (rand > 0.80) {
+        sizeClass = 'slime-small';
+        speed = 0.68 + Math.random() * 0.15;
+        scale = 0.85;
+      }
+
+      el.className = `slime ${template.class} ${sizeClass}`;
       el.dataset.weak = template.weak;
+
+      const face = document.createElement('div');
+      face.className = 'slime-face';
+      face.innerHTML = `
+        <div class="slime-eye"></div>
+        <div class="slime-eye"></div>
+        <div class="slime-mouth"></div>
+      `;
+      el.appendChild(face);
 
       const badge = document.createElement('div');
       badge.className = 'slime-badge';
       badge.textContent = template.badge;
       el.appendChild(badge);
 
-      const maxX = container.clientWidth - 140;
-      const posX = Math.max(30, Math.floor(Math.random() * maxX));
-      
-      // 적정 밸런스 속도 (0.42 ~ 0.58)
-      const speed = 0.42 + Math.random() * 0.16;
+      const maxX = container.clientWidth - (120 * scale);
+      const posX = Math.max(20, Math.floor(Math.random() * maxX));
 
       const slimeObj = {
         el: el,
         x: posX,
-        y: -70,
+        y: -80,
         speed: speed,
         weak: template.weak
       };
@@ -538,7 +660,6 @@
       el.style.left = `${slimeObj.x}px`;
       el.style.top = `${slimeObj.y}px`;
 
-      // 1. PC 마우스 우클릭
       el.addEventListener('contextmenu', (e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -546,7 +667,6 @@
         triggerSlimeAction(slimeObj, e.clientX, e.clientY);
       });
 
-      // 2. 모바일 터치: 180ms(0.18초)로 기민하게 반응
       let touchTimer = null;
       let startX = 0, startY = 0;
 
@@ -579,8 +699,8 @@
         if (touchTimer) {
           clearTimeout(touchTimer);
           if (!directTapMode) {
-            el.style.transform = 'scale(0.92)';
-            setTimeout(() => el.style.transform = '', 120);
+            el.style.filter = 'brightness(0.9)';
+            setTimeout(() => el.style.filter = '', 120);
           }
         }
       });
@@ -597,7 +717,7 @@
     function gameLoop() {
       if (!gameRunning) return;
 
-      const boundaryY = container.clientHeight - 110;
+      const boundaryY = container.clientHeight - 105;
 
       for (let i = slimes.length - 1; i >= 0; i--) {
         const s = slimes[i];
@@ -628,8 +748,8 @@
       let x = clientX - rect.left;
       let y = clientY - rect.top;
 
-      x = Math.max(100, Math.min(x, container.clientWidth - 100));
-      y = Math.max(100, Math.min(y, container.clientHeight - 100));
+      x = Math.max(90, Math.min(x, container.clientWidth - 90));
+      y = Math.max(90, Math.min(y, container.clientHeight - 90));
 
       spellMenu.style.left = `${x}px`;
       spellMenu.style.top = `${y}px`;
@@ -642,7 +762,6 @@
       activeSlime = null;
     }
 
-    // 마법 선택 (클릭 / 터치 공용)
     document.querySelectorAll('.spell-btn').forEach(btn => {
       const handleSelect = (e) => {
         e.preventDefault();
@@ -657,13 +776,13 @@
           score += 10;
           scoreVal.textContent = score;
 
-          showEffect('✨ 대성공! +10점', target.x + 55, target.y + 30);
+          showEffect('✨ 대성공! +10점', target.x + 50, target.y + 30);
 
           target.el.remove();
           slimes = slimes.filter(s => s !== target);
         } else {
           soundFail();
-          showEffect('❌ 다시 골라보자!', target.x + 55, target.y + 30);
+          showEffect('❌ 다시 골라보자!', target.x + 50, target.y + 30);
         }
 
         closeSpellMenu();
