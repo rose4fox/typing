@@ -2,11 +2,17 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>알록달록 하트 팡팡</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Jua&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Dongle:wght@700&display=swap');
+
+        * {
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            box-sizing: border-box;
+        }
 
         body, html {
             height: 100%; margin: 0;
@@ -16,6 +22,7 @@
             overflow: hidden; user-select: none;
         }
 
+        /* ── [기본 / PC 환경 스타일: 원본 유지] ── */
         #game-container {
             text-align: center; background: white;
             padding: 20px 40px; border-radius: 50px;
@@ -47,7 +54,6 @@
         }
         .fancy-btn:active { transform: translateY(4px); box-shadow: 0 4px 0 #e64980; }
 
-        /* 🔄 게임 중 다시 시작 버튼 스타일 */
         #reset-btn {
             position: absolute; bottom: 20px; right: 30px;
             padding: 8px 15px; font-size: 18px; color: #e64980;
@@ -76,7 +82,6 @@
             filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15)); 
         }
 
-        /* 3D 하트 색상별 그래디언트 적용 */
         .red .heart-base { fill: url(#grad-heart-red); }
         .yellow .heart-base { fill: url(#grad-heart-yellow); }
         .green .heart-base { fill: url(#grad-heart-green); }
@@ -103,32 +108,121 @@
 
         #message-hint { margin-top: 20px; font-size: clamp(22px, 2.5vw, 28px); color: #e64980; height: 35px; }
         .confetti { position: absolute; width: 12px; height: 12px; z-index: 150; pointer-events: none; }
+
+        /* ── [💡 모바일 화면 전용 보완: 768px 이하 기기에서만 작동] ── */
+        @media (max-width: 768px) {
+            #game-container {
+                width: 92vw;
+                max-height: 94vh;
+                padding: 18px 14px 14px 14px;
+                border-radius: 32px;
+                border-width: 6px;
+                box-shadow: 0 8px 0 #fcc2d7;
+            }
+
+            .overlay {
+                border-radius: 26px;
+                padding: 15px;
+            }
+
+            h1 { font-size: 24px; margin: 5px 0; }
+            .result-msg { font-size: 15px; margin-bottom: 15px; word-break: keep-all; }
+            .fancy-btn { font-size: 20px; padding: 10px 28px; }
+
+            /* 점수판 텍스트 한 줄 정렬 & 줄바꿈 방지 */
+            #stats {
+                font-size: clamp(15px, 4.2vw, 18px);
+                margin-bottom: 10px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 8px;
+                white-space: nowrap;
+            }
+
+            #time-bonus-msg {
+                font-size: 18px;
+                top: -18px;
+                right: 2%;
+            }
+
+            .target-section {
+                padding: 10px 8px;
+                border-radius: 20px;
+                margin-bottom: 10px;
+                border-width: 3px;
+            }
+
+            /* 한글 단어 단위 자연스러운 줄바꿈 */
+            .instruction {
+                font-size: 13.5px;
+                margin-bottom: 6px;
+                word-break: keep-all;
+                line-height: 1.3;
+            }
+
+            /* 목표 하트 크기 */
+            #target-display {
+                width: 72px;
+                height: 72px;
+            }
+
+            /* 아래 선택 하트 크기 및 간격 */
+            #button-area {
+                padding: 4px 0;
+                justify-content: space-between;
+            }
+
+            #button-area .heart-container {
+                width: clamp(58px, 17vw, 70px);
+                height: clamp(58px, 17vw, 70px);
+                filter: drop-shadow(0 4px 0 rgba(0,0,0,0.06));
+            }
+
+            .ouch-emoji {
+                font-size: 26px;
+            }
+
+            /* 하단 안내 문구 */
+            #message-hint {
+                margin-top: 10px;
+                font-size: 16px;
+                height: 22px;
+            }
+
+            /* 💡 모바일에서 겹치지 않도록 버튼 위치/크기 재정의 */
+            #reset-btn {
+                position: static;
+                margin: 8px auto 0 auto;
+                padding: 6px 16px;
+                font-size: 14px;
+                border-radius: 16px;
+                border-width: 2px;
+                display: inline-block;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <!-- 🌟 완벽한 100% 투명 배경 + 통통한 3D 유광 하트 그래픽 정의 -->
+    <!-- 🌟 통통한 3D 유광 하트 그래픽 정의 -->
     <svg width="0" height="0" style="position:absolute;">
         <defs>
-            <!-- 빨강 통통 하트 -->
             <radialGradient id="grad-heart-red" cx="35%" cy="30%" r="75%">
                 <stop offset="0%" stop-color="#ff7b7b" />
                 <stop offset="50%" stop-color="#e03131" />
                 <stop offset="100%" stop-color="#8f101c" />
             </radialGradient>
-            <!-- 노랑 통통 하트 -->
             <radialGradient id="grad-heart-yellow" cx="35%" cy="30%" r="75%">
                 <stop offset="0%" stop-color="#fff9db" />
                 <stop offset="45%" stop-color="#ffd43b" />
                 <stop offset="100%" stop-color="#e67700" />
             </radialGradient>
-            <!-- 초록 통통 하트 -->
             <radialGradient id="grad-heart-green" cx="35%" cy="30%" r="75%">
                 <stop offset="0%" stop-color="#96f2d7" />
                 <stop offset="45%" stop-color="#40c057" />
                 <stop offset="100%" stop-color="#1b6426" />
             </radialGradient>
-            <!-- 파랑 통통 하트 -->
             <radialGradient id="grad-heart-blue" cx="35%" cy="30%" r="75%">
                 <stop offset="0%" stop-color="#a5d8ff" />
                 <stop offset="45%" stop-color="#339af0" />
@@ -151,7 +245,9 @@
         </div>
 
         <div id="stats">
-            ⏰ 시간: <span id="time" style="color:#e03131">30</span>초 | 🎯 맞힌 개수: <span id="progress">0</span> / 30
+            <span>⏰ 시간: <span id="time" style="color:#e03131">30</span>초</span>
+            <span>|</span>
+            <span>🎯 맞힌 개수: <span id="progress">0</span> / 30</span>
             <div id="time-bonus-msg">+5초 보너스! ✨</div>
         </div>
 
@@ -159,9 +255,7 @@
             <div class="instruction">이 하트와 똑같은 색을 아래에서 찾으세요!</div>
             <div id="target-display" class="heart-container red" style="cursor: default;">
                 <svg class="heart-svg" viewBox="0 0 100 100">
-                    <!-- 통통한 하트 본체 -->
                     <path class="heart-base" d="M50,84 C32,72 10,58 10,34 C10,18 22,8 35,8 C42,8 47,13 50,19 C53,13 58,8 65,8 C78,8 90,18 90,34 C90,58 68,72 50,84 Z" />
-                    <!-- 통통한 하트 볼 광택 하이라이트 -->
                     <ellipse cx="33" cy="24" rx="13" ry="8" transform="rotate(-28 33 24)" fill="white" fill-opacity="0.65" />
                     <ellipse cx="67" cy="24" rx="10" ry="6" transform="rotate(28 67 24)" fill="white" fill-opacity="0.45" />
                 </svg>
