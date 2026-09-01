@@ -142,7 +142,6 @@
       position: relative;
     }
 
-    /* 공통 드래그 아이템 */
     .drag-item {
       cursor: grab;
       display: flex;
@@ -177,7 +176,7 @@
       white-space: nowrap;
     }
 
-    /* ── 1단계: 동글동글 3D 버블 ── */
+    /* 1단계 */
     .theme-bubble.drag-item {
       border-radius: 50% !important;
       box-shadow: 0 8px 16px rgba(0,0,0,0.16), inset 0 3px 6px rgba(255,255,255,0.55), inset 0 -3px 6px rgba(0,0,0,0.15);
@@ -189,7 +188,7 @@
       box-shadow: 0 4px 10px rgba(0,0,0,0.06);
     }
 
-    /* ── 2단계: 디저트 스탬프 ── */
+    /* 2단계 */
     .theme-stamp.drag-item {
       border-radius: 14px !important;
       box-shadow: 0 8px 0 rgba(0,0,0,0.14), 0 12px 18px rgba(0,0,0,0.12), inset 0 2px 2px rgba(255,255,255,0.5);
@@ -206,7 +205,7 @@
       box-shadow: 0 4px 8px rgba(217, 119, 6, 0.1);
     }
 
-    /* ── 3단계: 육각 스포츠 엠블럼 ── */
+    /* 3단계 */
     .theme-shield.drag-item {
       clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
       box-shadow: 0 10px 20px rgba(0,0,0,0.22);
@@ -258,7 +257,6 @@
       margin-top: -2px;
     }
 
-    /* 타깃 슬롯 공통 */
     .target-slot {
       display: flex;
       flex-direction: column;
@@ -271,6 +269,7 @@
     .target-slot.hovered {
       transform: scale(1.08) !important;
       border-color: #6366f1 !important;
+      z-index: 25 !important;
     }
 
     .target-slot.completed {
@@ -302,7 +301,6 @@
       white-space: nowrap;
     }
 
-    /* 오버레이 */
     .overlay-screen {
       display: flex;
       position: absolute;
@@ -553,7 +551,7 @@
       },
       3: {
         title: "3단계: 스포츠 엠블럼 타깃 (6가지)",
-        desc: "좌우로 이동하는 미래형 육각 엠블럼 타깃을 타이밍에 맞춰 잡으세요!",
+        desc: "서로 겹치며 이동하는 육각 엠블럼 타깃을 타이밍에 맞춰 잡으세요!",
         themeClass: "theme-shield",
         items: [
           { id: 'tennis', emoji: '🎾', label: '테니스공', color: '#5f9e29', badgeColor: '#f1f8e9' },
@@ -695,6 +693,7 @@
       let targetW, targetH, badgeSize, slotFontSize;
 
       if (levelData.moving) {
+        // 💡 3단계: 화면 전체를 시원하게 교차 이동 (겹침 스릴 복원)
         const maxSlotWidth = Math.floor((containerWidth - (count * 8)) / count);
         targetW = isMobile ? Math.min(68, Math.floor((containerWidth - 24) / 3.2)) : Math.min(Math.round(levelData.baseTargetSize.w * scaleRatio), maxSlotWidth);
         targetH = Math.round(targetW * 1.1);
@@ -710,7 +709,7 @@
           slotEl.style.width = `${targetW}px`;
           slotEl.style.height = `${targetH}px`;
 
-          let initialLeft, bottomPos, minX, maxX;
+          let initialLeft, bottomPos;
 
           if (isMobile) {
             const row = index < 3 ? 0 : 1;
@@ -718,18 +717,14 @@
             const mobStep = containerWidth / 3;
             initialLeft = colIndex * mobStep + (mobStep - targetW) / 2;
             bottomPos = row === 0 ? 110 : 16;
-            minX = colIndex * mobStep + 2;
-            maxX = (colIndex + 1) * mobStep - targetW - 2;
           } else {
             initialLeft = index * step + (step - targetW) / 2;
             bottomPos = 18;
-            const zoneMargin = Math.max(10, step * 0.2);
-            minX = Math.max(4, initialLeft - zoneMargin);
-            maxX = Math.min(containerWidth - targetW - 4, initialLeft + zoneMargin);
           }
 
           slotEl.style.left = `${initialLeft}px`;
           slotEl.style.bottom = `${bottomPos}px`;
+          slotEl.style.zIndex = (10 + index).toString(); // 교차 시 겹침 레이어 깊이감
 
           slotEl.innerHTML = `
             <div class="hex-slot-wrapper">
@@ -749,16 +744,16 @@
             </div>
           `;
 
+          // 💡 화면 전체 너비를 다양한 속도로 교차 이동
           slotEl.dataset.direction = index % 2 === 0 ? '1' : '-1';
-          const speeds = [0.8, 1.05, 0.9, 1.15, 0.85, 1.1];
+          const speeds = [1.1, 1.6, 1.3, 1.8, 1.4, 1.7];
           slotEl.dataset.speed = (speeds[index % speeds.length]).toString();
           slotEl.dataset.currentX = initialLeft.toString();
-          slotEl.dataset.minX = minX.toString();
-          slotEl.dataset.maxX = maxX.toString();
 
           targetArea.appendChild(slotEl);
         });
       } else {
+        // 1, 2단계 일반 균등 배치
         const maxSlotWidth = Math.floor((containerWidth - (count * 6)) / count);
         targetW = Math.min(Math.round(levelData.baseTargetSize.w * scaleRatio), maxSlotWidth);
         targetH = Math.round(targetW * (levelData.baseTargetSize.h / levelData.baseTargetSize.w));
@@ -836,24 +831,28 @@
       }
     }
 
+    // 💡 화면 전체를 교차하며 왕복 이동 (스릴 넘치는 레이어 겹침)
     function startMovingTargets() {
+      const container = document.getElementById('target-area');
+
       function update() {
         if (!isGameRunning) return;
         const slots = document.querySelectorAll('.target-slot');
+        const containerWidth = container.clientWidth;
 
         slots.forEach(slot => {
+          const slotWidth = slot.offsetWidth || 70;
+          const maxRight = containerWidth - slotWidth - 4;
           let x = parseFloat(slot.dataset.currentX || slot.offsetLeft);
           let dir = parseFloat(slot.dataset.direction || 1);
-          let speed = parseFloat(slot.dataset.speed || 1.0);
-          let minX = parseFloat(slot.dataset.minX || 4);
-          let maxX = parseFloat(slot.dataset.maxX || (document.getElementById('target-area').clientWidth - 70));
+          let speed = parseFloat(slot.dataset.speed || 1.3);
 
           x += dir * speed;
-          if (x >= maxX) {
-            x = maxX;
+          if (x >= maxRight) {
+            x = maxRight;
             dir = -1;
-          } else if (x <= minX) {
-            x = minX;
+          } else if (x <= 4) {
+            x = 4;
             dir = 1;
           }
 
@@ -915,7 +914,6 @@
       if (e.cancelable && e.type.startsWith('touch')) e.preventDefault();
     }
 
-    // 💡 호버 시에도 넉넉한 여유 판정 적용
     function checkHoveredSlot(x, y) {
       const HIT_PADDING = 20;
       const slots = document.querySelectorAll('.target-slot:not(.completed)');
@@ -934,7 +932,6 @@
       });
     }
 
-    // 💡 모바일 터치 감도와 적중률을 대폭 높인 드롭 판정 (HIT_PADDING = 20px)
     function endDrag(e) {
       if (!dragClone) return;
 
@@ -946,6 +943,7 @@
       const slots = document.querySelectorAll('.target-slot:not(.completed)');
       const HIT_PADDING = 20;
 
+      // 겹쳐 있는 슬롯 중 일치하는 타깃 우선 판정
       slots.forEach(slot => {
         const rect = slot.getBoundingClientRect();
         if (
@@ -954,7 +952,7 @@
           clientY >= (rect.top - HIT_PADDING) &&
           clientY <= (rect.bottom + HIT_PADDING)
         ) {
-          if (slot.dataset.matchId === targetId) {
+          if (!matched && slot.dataset.matchId === targetId) {
             matched = true;
             onSuccessDrop(activeDragEl, slot);
           }
