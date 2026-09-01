@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>알록달록 솜사탕 팡팡</title>
     <meta property="og:title" content="🍭 알록달록 솜사탕 팡팡">
-    <meta property="og:description" content="초등 저학년 마우스 클릭 연습 게임">
+    <meta property="og:description" content="누구나 쉽고 재미있게 즐기는 색깔 맞히기 순발력 게임">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Jua&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Dongle:wght@700&display=swap');
@@ -243,7 +243,6 @@
     <!-- 🌟 몽실몽실 파스텔 솜사탕 그라데이션 정의 -->
     <svg width="0" height="0" style="position:absolute;">
         <defs>
-            <!-- 솜사탕 종이 손잡이 스틱 -->
             <linearGradient id="grad-stick" x1="0%" y1="0%" x2="100%" y2="0%">
                 <stop offset="0%" stop-color="#edf2f7" />
                 <stop offset="35%" stop-color="#ffffff" />
@@ -251,7 +250,7 @@
                 <stop offset="100%" stop-color="#cbd5e1" />
             </linearGradient>
 
-            <!-- 🌸 파스텔 핑크 솜사탕 (딸기맛) -->
+            <!-- 🌸 파스텔 핑크 -->
             <radialGradient id="grad-candy-pink-base" cx="50%" cy="50%" r="50%">
                 <stop offset="0%" stop-color="#ffd5e5" />
                 <stop offset="70%" stop-color="#ffa8c5" />
@@ -268,7 +267,7 @@
                 <stop offset="100%" stop-color="#ffa3c4" />
             </radialGradient>
 
-            <!-- 🍋 파스텔 옐로우 솜사탕 (바나나/레몬맛) -->
+            <!-- 🍋 파스텔 옐로우 -->
             <radialGradient id="grad-candy-yellow-base" cx="50%" cy="50%" r="50%">
                 <stop offset="0%" stop-color="#fff9db" />
                 <stop offset="70%" stop-color="#ffec99" />
@@ -285,7 +284,7 @@
                 <stop offset="100%" stop-color="#ffd43b" />
             </radialGradient>
 
-            <!-- 🫐 파스텔 블루/소다 솜사탕 (블루베리/소다맛) -->
+            <!-- 🫐 파스텔 블루 -->
             <radialGradient id="grad-candy-blue-base" cx="50%" cy="50%" r="50%">
                 <stop offset="0%" stop-color="#d0ebff" />
                 <stop offset="70%" stop-color="#a5d8ff" />
@@ -302,7 +301,7 @@
                 <stop offset="100%" stop-color="#91a7ff" />
             </radialGradient>
 
-            <!-- 🍇 파스텔 퍼플 솜사탕 (포도맛) -->
+            <!-- 🍇 파스텔 퍼플 -->
             <radialGradient id="grad-candy-purple-base" cx="50%" cy="50%" r="50%">
                 <stop offset="0%" stop-color="#f3d9fa" />
                 <stop offset="70%" stop-color="#e599f7" />
@@ -358,29 +357,23 @@
         const colors = ['pink', 'yellow', 'blue', 'purple'];
         const floatClasses = ['float-1', 'float-2', 'float-3', 'float-4'];
 
-        // 몽실몽실 구름 솜사탕 SVG 생성 함수
         function getCottonCandySVG() {
             return `
                 <svg class="candy-svg" viewBox="0 0 100 110">
-                    <!-- 하단 종이 막대 -->
                     <path d="M 46 68 L 47 106 C 47 108 53 108 53 106 L 54 68 Z" fill="url(#grad-stick)" stroke="#cbd5e1" stroke-width="0.8" />
                     
-                    <!-- 솜사탕 하단 볼륨 구름 -->
                     <circle class="candy-puff-base" cx="34" cy="58" r="17" />
                     <circle class="candy-puff-base" cx="66" cy="58" r="17" />
                     <circle class="candy-puff-base" cx="50" cy="62" r="16" />
 
-                    <!-- 솜사탕 중간 볼륨 구름 -->
                     <circle class="candy-puff-mid" cx="25" cy="40" r="18" />
                     <circle class="candy-puff-mid" cx="75" cy="40" r="18" />
                     <circle class="candy-puff-mid" cx="50" cy="44" r="23" />
 
-                    <!-- 솜사탕 상단 봉긋 구름 -->
                     <circle class="candy-puff-top" cx="37" cy="24" r="18" />
                     <circle class="candy-puff-top" cx="63" cy="24" r="18" />
                     <circle class="candy-puff-top" cx="50" cy="18" r="16" />
 
-                    <!-- 폭신한 하이라이트/빛 반사 -->
                     <ellipse cx="38" cy="18" rx="8" ry="4" transform="rotate(-20 38 18)" fill="white" fill-opacity="0.6" />
                     <ellipse cx="26" cy="36" rx="7" ry="3.5" transform="rotate(-30 26 36)" fill="white" fill-opacity="0.5" />
                     <circle cx="68" cy="28" r="4.5" fill="white" fill-opacity="0.45" />
@@ -492,7 +485,6 @@
             }
         }
 
-        // 초기 시작 전 타겟 영역 렌더링
         document.getElementById('target-display').innerHTML = getCottonCandySVG();
     </script>
 </body>
