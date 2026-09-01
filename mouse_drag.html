@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>신나는 마우스 드래그 챌린지</title>
   
-  <!-- 구글 폰트 Jua (주아체) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
@@ -109,13 +108,12 @@
       color: #facc15;
     }
 
-    /* 반응형 게임 보드 */
     .game-container {
       width: 100%;
       max-width: 980px;
       height: clamp(430px, 68vh, 520px);
       background: #ffffff;
-      border-radius: 20px;
+      border-radius: 24px;
       box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
       position: relative;
       display: flex;
@@ -126,87 +124,136 @@
       border: 3px solid #334155;
     }
 
-    /* 상단 드래그 원본 구역 (PC: 1줄 가로 정렬) */
     .drag-zone {
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 10px;
-      min-height: 90px;
+      gap: 12px;
+      min-height: 95px;
       background: #f8fafc;
-      border-radius: 14px;
+      border-radius: 18px;
       border: 2px dashed #cbd5e1;
       padding: 10px;
       flex-wrap: wrap;
     }
 
-    /* 하단 타깃 영역 */
     .drop-zone-container {
       width: 100%;
       height: 220px;
       position: relative;
     }
 
-    /* 드래그 아이템 */
+    /* ── 공통 드래그 아이템 기본기 ── */
     .drag-item {
       cursor: grab;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      border-radius: 14px;
-      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
       touch-action: none;
       z-index: 10;
       flex-shrink: 0;
+      position: relative;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
 
     .drag-item:active {
       cursor: grabbing;
-      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+      transform: scale(0.95);
     }
 
     .drag-item.dragging {
       position: fixed;
       pointer-events: none;
       z-index: 3000;
-      transform: scale(1.15);
-      opacity: 0.92;
+      transform: scale(1.18);
+      opacity: 0.95;
     }
 
     .item-label {
       font-size: clamp(10px, 2.3vw, 13px);
       color: #ffffff;
-      margin-top: 1px;
-      text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+      margin-top: 2px;
+      text-shadow: 0 1.5px 3px rgba(0,0,0,0.4);
       white-space: nowrap;
     }
 
-    /* 드롭 타깃 슬롯 */
-    .target-slot {
+    /* ──────────────────────────────────────────────────────────
+       🌟 1단계: 동글동글 3D 버블 스타일 (Circle Bubble)
+    ────────────────────────────────────────────────────────── */
+    .theme-bubble.drag-item {
+      border-radius: 50% !important;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.16), inset 0 3px 6px rgba(255,255,255,0.55), inset 0 -3px 6px rgba(0,0,0,0.15);
+    }
+    .theme-bubble.target-slot {
+      border-radius: 50% !important;
       border: 2px dashed #64748b;
-      background: #ffffff;
-      border-radius: 14px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+    }
+
+    /* ──────────────────────────────────────────────────────────
+       🌟 2단계: 달콤한 디저트 마름모/스탬프 스타일 (Diamond Badge)
+    ────────────────────────────────────────────────────────── */
+    .theme-stamp.drag-item {
+      border-radius: 14px !important;
+      transform: rotate(0deg);
+      box-shadow: 0 8px 0 rgba(0,0,0,0.14), 0 12px 18px rgba(0,0,0,0.12), inset 0 2px 2px rgba(255,255,255,0.5);
+      border: 2px solid rgba(255,255,255,0.3);
+    }
+    .theme-stamp.drag-item:active {
+      transform: translateY(4px) !important;
+      box-shadow: 0 4px 0 rgba(0,0,0,0.14), 0 6px 10px rgba(0,0,0,0.12) !important;
+    }
+    .theme-stamp.target-slot {
+      border-radius: 16px !important;
+      border: 2px dashed #d97706;
+      background: #fffbeb;
+      box-shadow: 0 4px 8px rgba(217, 119, 6, 0.1);
+    }
+
+    /* ──────────────────────────────────────────────────────────
+       🌟 3단계: 다이내믹 스포츠 육각 엠블럼 (Hexagon Shield)
+    ────────────────────────────────────────────────────────── */
+    .theme-shield.drag-item {
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.25);
+      border: none;
+    }
+    .theme-shield.drag-item::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,0.4);
+      pointer-events: none;
+    }
+    .theme-shield.target-slot {
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      border: 2px dashed #0284c7;
+      background: #f0f9ff;
+      box-shadow: 0 0 12px rgba(2, 132, 199, 0.2);
+    }
+
+    /* 타깃 슬롯 공통 */
+    .target-slot {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       transition: background-color 0.2s, border-color 0.2s, transform 0.2s;
       position: absolute;
-      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
     }
 
     .target-slot.hovered {
-      background: #e0e7ff;
-      border-color: #6366f1;
-      transform: scale(1.05);
+      background: #e0e7ff !important;
+      border-color: #6366f1 !important;
+      transform: scale(1.06);
     }
 
     .target-slot.completed {
-      background: #dcfce7;
-      border-color: #22c55e;
-      border-style: solid;
+      background: #dcfce7 !important;
+      border-color: #22c55e !important;
+      border-style: solid !important;
     }
 
     .target-badge {
@@ -214,12 +261,12 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1);
-      border: 1.5px solid rgba(0, 0, 0, 0.08);
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.08);
+      border: 1.5px solid rgba(0, 0, 0, 0.06);
     }
 
     .target-icon {
-      filter: drop-shadow(0 0 1px #0f172a) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35));
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
       display: flex;
       align-items: center;
       justify-content: center;
@@ -234,7 +281,7 @@
       white-space: nowrap;
     }
 
-    /* 모달 및 오버레이 */
+    /* 오버레이 화면 */
     .overlay-screen {
       display: flex;
       position: absolute;
@@ -245,7 +292,7 @@
       background: rgba(11, 15, 25, 0.94);
       backdrop-filter: blur(6px);
       z-index: 2000;
-      border-radius: 18px;
+      border-radius: 20px;
       flex-direction: column;
       align-items: center;
       justify-content: center;
@@ -369,7 +416,6 @@
       display: none;
     }
 
-    /* 💡 모바일 화면 전용: 3:3 및 3:2 균형 배치 */
     @media (max-width: 768px) {
       .game-container {
         height: 65vh;
@@ -377,7 +423,6 @@
         padding: 10px 8px;
       }
       
-      /* 모바일 상단 드래그 영역을 3열 대칭 그리드로 강제 정렬 */
       .drag-zone {
         display: flex;
         flex-wrap: wrap;
@@ -457,47 +502,50 @@
   <script>
     const LEVELS = {
       1: {
-        title: "1단계: 다채로운 색상 맞추기 (6가지)",
-        desc: "총 6가지 색상의 과일과 채소를 알맞은 상자로 드래그하세요.",
+        title: "1단계: 다채로운 버블 맞추기 (6가지)",
+        desc: "동글동글 원형 버블 과일/채소를 알맞은 바구니로 드래그하세요.",
+        themeClass: "theme-bubble",
         items: [
-          { id: 'red', emoji: '🍎', label: '빨강', color: '#ef4444', badgeColor: '#fee2e2' },
-          { id: 'orange', emoji: '🥕', label: '주황', color: '#f97316', badgeColor: '#ffedd5' },
-          { id: 'yellow', emoji: '⭐', label: '노랑', color: '#eab308', badgeColor: '#fef9c3' },
-          { id: 'green', emoji: '🐸', label: '초록', color: '#22c55e', badgeColor: '#dcfce7' },
-          { id: 'blue', emoji: '🚙', label: '파랑', color: '#3b82f6', badgeColor: '#dbeafe' },
-          { id: 'purple', emoji: '🍆', label: '보라', color: '#8b5cf6', badgeColor: '#f3e8ff' }
+          { id: 'green', emoji: '🐸', label: '초록', color: '#5cb85c', badgeColor: '#e8f5e9' },
+          { id: 'red', emoji: '🍎', label: '빨강', color: '#d9534f', badgeColor: '#ffebee' },
+          { id: 'orange', emoji: '🥕', label: '주황', color: '#f08a24', badgeColor: '#fff3e0' },
+          { id: 'purple', emoji: '🍆', label: '보라', color: '#7b5eea', badgeColor: '#ede7f6' },
+          { id: 'yellow', emoji: '⭐', label: '노랑', color: '#e6b822', badgeColor: '#fffde7' },
+          { id: 'blue', emoji: '🚙', label: '파랑', color: '#4a7be8', badgeColor: '#e3f2fd' }
         ],
-        baseTargetSize: { w: 105, h: 105 },
-        baseItemSize: 68,
+        baseTargetSize: { w: 100, h: 100 },
+        baseItemSize: 72,
         moving: false
       },
       2: {
-        title: "2단계: 정밀 쏙 넣기 (5가지 디저트)",
-        desc: "상자가 작아졌습니다! 5가지 디저트를 세밀하게 조준하세요.",
+        title: "2단계: 디저트 스탬프 쏙 넣기 (5가지)",
+        desc: "달콤한 디저트 스탬프를 정밀하게 조준하여 넣으세요.",
+        themeClass: "theme-stamp",
         items: [
-          { id: 'cookie', emoji: '🍪', label: '쿠키', color: '#b45309', badgeColor: '#fef3c7' },
-          { id: 'candy', emoji: '🍬', label: '사탕', color: '#ec4899', badgeColor: '#fce7f3' },
-          { id: 'donut', emoji: '🍩', label: '도넛', color: '#7c3aed', badgeColor: '#ede9fe' },
-          { id: 'pizza', emoji: '🍕', label: '피자', color: '#ea580c', badgeColor: '#ffedd5' },
-          { id: 'cupcake', emoji: '🧁', label: '컵케이크', color: '#0d9488', badgeColor: '#ccfbf1' }
+          { id: 'donut', emoji: '🍩', label: '도넛', color: '#6d42e0', badgeColor: '#ede9fe' },
+          { id: 'pizza', emoji: '🍕', label: '피자', color: '#d96424', badgeColor: '#ffedd5' },
+          { id: 'cookie', emoji: '🍪', label: '쿠키', color: '#a05822', badgeColor: '#fef3c7' },
+          { id: 'candy', emoji: '🍬', label: '사탕', color: '#d6487e', badgeColor: '#fce7f3' },
+          { id: 'cupcake', emoji: '🧁', label: '컵케이크', color: '#319782', badgeColor: '#ccfbf1' }
         ],
-        baseTargetSize: { w: 88, h: 88 },
-        baseItemSize: 62,
+        baseTargetSize: { w: 90, h: 90 },
+        baseItemSize: 66,
         moving: false
       },
       3: {
-        title: "3단계: 움직이는 타깃 맞추기 (6가지 스포츠)",
-        desc: "바구니들이 좌우로 이동합니다! 타이밍을 예측하여 넣으세요.",
+        title: "3단계: 스포츠 엠블럼 타깃 (6가지)",
+        desc: "좌우로 이동하는 미래형 육각 엠블럼 타깃을 타이밍에 맞춰 잡으세요!",
+        themeClass: "theme-shield",
         items: [
-          { id: 'soccer', emoji: '⚽', label: '축구공', color: '#1e293b', badgeColor: '#cbd5e1' },
-          { id: 'basket', emoji: '🏀', label: '농구공', color: '#ea580c', badgeColor: '#ffedd5' },
-          { id: 'baseball', emoji: '⚾', label: '야구공', color: '#0369a1', badgeColor: '#bfdbfe' },
-          { id: 'volleyball', emoji: '🏐', label: '배구공', color: '#ca8a04', badgeColor: '#fef08a' },
-          { id: 'tennis', emoji: '🎾', label: '테니스공', color: '#65a30d', badgeColor: '#d9f99d' },
-          { id: 'rugby', emoji: '🏉', label: '럭비공', color: '#991b1b', badgeColor: '#fecaca' }
+          { id: 'tennis', emoji: '🎾', label: '테니스공', color: '#5f9e29', badgeColor: '#f1f8e9' },
+          { id: 'soccer', emoji: '⚽', label: '축구공', color: '#252a34', badgeColor: '#eceff1' },
+          { id: 'rugby', emoji: '🏉', label: '럭비공', color: '#7e2b25', badgeColor: '#fbe9e7' },
+          { id: 'volleyball', emoji: '🏐', label: '배구공', color: '#c49320', badgeColor: '#fff8e1' },
+          { id: 'basket', emoji: '🏀', label: '농구공', color: '#db5b24', badgeColor: '#fbe9e7' },
+          { id: 'baseball', emoji: '⚾', label: '야구공', color: '#38639e', badgeColor: '#e8eaf6' }
         ],
         baseTargetSize: { w: 96, h: 98 },
-        baseItemSize: 62,
+        baseItemSize: 68,
         moving: true
       }
     };
@@ -603,21 +651,24 @@
       
       const scaleRatio = Math.min(1, Math.max(0.45, containerWidth / 850));
       
-      // 💡 모바일 화면에서는 한 줄에 3개씩(3:3 또는 3:2) 쾌적하게 들어가도록 폭 계산
-      const itemSize = isMobile ? Math.min(62, Math.floor((containerWidth - 60) / 3)) : Math.round(levelData.baseItemSize * scaleRatio);
-      const fontSize = isMobile ? 22 : Math.max(16, Math.round(26 * scaleRatio));
+      // 모바일 화면: 한 줄에 3개씩(3:3 또는 3:2) 최적 크기 배정
+      const itemSize = isMobile ? Math.min(62, Math.floor((containerWidth - 54) / 3.2)) : Math.round(levelData.baseItemSize * scaleRatio);
+      const fontSize = isMobile ? 22 : Math.max(18, Math.round(28 * scaleRatio));
 
-      // 1. 드래그 아이템 렌더링
+      // 1. 드래그 아이템 렌더링 (단계별 고유 테마 클래스 추가)
       const shuffledItems = [...levelData.items].sort(() => Math.random() - 0.5);
       shuffledItems.forEach(item => {
         const itemEl = document.createElement('div');
-        itemEl.classList.add('drag-item');
+        itemEl.classList.add('drag-item', levelData.themeClass);
         itemEl.id = `item-${item.id}`;
         itemEl.dataset.targetId = item.id;
         itemEl.style.width = `${itemSize}px`;
         itemEl.style.height = `${itemSize}px`;
         itemEl.style.backgroundColor = item.color;
-        itemEl.innerHTML = `<span style="font-size:${fontSize}px; line-height: 1;">${item.emoji}</span><span class="item-label">${item.label}</span>`;
+        itemEl.innerHTML = `
+          <span style="font-size:${fontSize}px; line-height: 1; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.25));">${item.emoji}</span>
+          <span class="item-label">${item.label}</span>
+        `;
         
         attachDragEvents(itemEl);
         sourceArea.appendChild(itemEl);
@@ -627,7 +678,7 @@
       let targetW, targetH, badgeSize, slotFontSize;
 
       if (isMobile && levelData.moving) {
-        // 3단계 모바일: 6개의 움직이는 타깃을 윗줄 3개, 아랫줄 3개로 분산 배치
+        // 3단계 모바일: 6개 타깃 복층 분산
         targetW = Math.min(68, Math.floor((containerWidth - 24) / 3.2));
         targetH = Math.round(targetW * 1.05);
         badgeSize = Math.round(targetW * 0.52);
@@ -635,7 +686,7 @@
 
         levelData.items.forEach((item, index) => {
           const slotEl = document.createElement('div');
-          slotEl.classList.add('target-slot');
+          slotEl.classList.add('target-slot', levelData.themeClass);
           slotEl.id = `slot-${item.id}`;
           slotEl.dataset.matchId = item.id;
           slotEl.style.width = `${targetW}px`;
@@ -675,7 +726,7 @@
         const step = containerWidth / count;
         levelData.items.forEach((item, index) => {
           const slotEl = document.createElement('div');
-          slotEl.classList.add('target-slot');
+          slotEl.classList.add('target-slot', levelData.themeClass);
           slotEl.id = `slot-${item.id}`;
           slotEl.dataset.matchId = item.id;
           slotEl.style.width = `${targetW}px`;
@@ -961,7 +1012,6 @@
       startFireworks();
     }
 
-    // Canvas 폭죽 애니메이션
     let fireworksCanvas = document.getElementById('fireworks-canvas');
     let fwCtx = fireworksCanvas.getContext('2d');
     let particles = [];
