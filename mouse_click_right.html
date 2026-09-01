@@ -390,7 +390,7 @@
       z-index: 100;
     }
 
-    /* 오버레이 */
+    /* 오버레이 및 안내 박스 개선 */
     .overlay {
       position: absolute;
       top: 0; left: 0;
@@ -402,13 +402,63 @@
       justify-content: center;
       z-index: 1000;
       border-radius: 22px;
-      padding: 18px;
+      padding: 16px;
       text-align: center;
     }
+
+    .guide-box-container {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 95%;
+      max-width: 440px;
+      margin: 14px 0 18px 0;
+    }
+
+    .guide-card {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 14px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: clamp(12px, 3.2vw, 15px);
+    }
+
+    .guide-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      color: #93c5fd;
+      font-size: clamp(13px, 3.4vw, 16px);
+      white-space: nowrap;
+    }
+
+    .guide-label.mobile {
+      color: #fde047;
+    }
+
+    .guide-desc {
+      color: #f8fafc;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+    }
+
+    .guide-desc b {
+      color: #fff;
+    }
+
+    .guide-desc .arrow {
+      color: #94a3b8;
+      font-size: 11px;
+    }
+
     .btn-start {
-      margin-top: 18px;
-      padding: 14px 38px;
-      font-size: clamp(18px, 4.8vw, 24px);
+      padding: 12px 36px;
+      font-size: clamp(17px, 4.4vw, 22px);
       color: #fff;
       background: linear-gradient(135deg, #6366f1, #4338ca);
       border: none;
@@ -455,13 +505,19 @@
     <div id="defense-text">방어선</div>
 
     <div id="start-overlay" class="overlay">
-      <h1 style="font-size: clamp(24px, 5.8vw, 34px); color: #a5b4fc; margin-bottom: 12px;">🧙 마법학교 슬라임 디펜스</h1>
-      <p style="color: #f1f5f9; font-size: clamp(15px, 3.6vw, 18px); margin: 6px 0;">
-        💻 <b>PC</b>: 슬라임 <b>[우클릭]</b> ➔ 마법 <b>[좌클릭]</b>
-      </p>
-      <p style="color: #fde047; font-size: clamp(15px, 3.6vw, 18px); margin: 6px 0;">
-        📱 <b>태블릿/폰</b>: 슬라임을 <b>[살짝 꾹 누르기]</b> ➔ 마법 <b>[터치]</b>
-      </p>
+      <h1 style="font-size: clamp(20px, 5.2vw, 30px); color: #a5b4fc; margin: 0 0 4px 0;">🧙 마법학교 슬라임 디펜스</h1>
+      
+      <div class="guide-box-container">
+        <div class="guide-card">
+          <span class="guide-label">💻 PC</span>
+          <span class="guide-desc">슬라임 <b>[우클릭]</b> <span class="arrow">➔</span> 마법 <b>[좌클릭]</b></span>
+        </div>
+        <div class="guide-card">
+          <span class="guide-label mobile">📱 스마트폰·패드</span>
+          <span class="guide-desc">슬라임 <b>[길게 터치]</b> <span class="arrow">➔</span> 마법 <b>[터치]</b></span>
+        </div>
+      </div>
+
       <button class="btn-start" onclick="startGame()">수련 시작하기 ▶</button>
     </div>
 
