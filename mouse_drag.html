@@ -185,6 +185,7 @@
     .theme-bubble.target-slot {
       border-radius: 50% !important;
       border: 2px dashed #64748b;
+      background: #ffffff;
       box-shadow: 0 4px 10px rgba(0,0,0,0.06);
     }
 
@@ -205,7 +206,7 @@
       box-shadow: 0 4px 8px rgba(217, 119, 6, 0.1);
     }
 
-    /* ── 3단계: 육각 엠블럼 (테두리 사각 잔상 및 잘림 해결) ── */
+    /* ── 3단계: 육각 스포츠 엠블럼 ── */
     .theme-shield.drag-item {
       clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
       box-shadow: 0 10px 20px rgba(0,0,0,0.22);
@@ -221,20 +222,40 @@
       pointer-events: none;
     }
 
-    /* 💡 육각 슬롯의 사각 점선 테두리 제거 & 육각 전용 글로우 스타일 */
     .theme-shield.target-slot {
-      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
       border: none !important;
-      background: #f0f9ff;
-      filter: drop-shadow(0 2px 5px rgba(2, 132, 199, 0.35));
+      background: transparent !important;
+      box-shadow: none !important;
+      clip-path: none !important;
     }
-    .theme-shield.target-slot::before {
-      content: '';
+
+    .hex-slot-wrapper {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hex-slot-bg {
       position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-      box-shadow: inset 0 0 0 2px #0284c7;
-      pointer-events: none;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 1;
+      overflow: visible;
+      filter: drop-shadow(0 4px 8px rgba(2, 132, 199, 0.15));
+    }
+
+    .hex-slot-content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin-top: -2px;
     }
 
     /* 타깃 슬롯 공통 */
@@ -248,14 +269,12 @@
     }
 
     .target-slot.hovered {
-      background: #e0e7ff !important;
-      transform: scale(1.06);
+      transform: scale(1.08) !important;
+      border-color: #6366f1 !important;
     }
 
     .target-slot.completed {
-      background: #dcfce7 !important;
-      border-color: #22c55e !important;
-      border-style: solid !important;
+      filter: drop-shadow(0 4px 10px rgba(34, 197, 94, 0.35)) !important;
     }
 
     .target-badge {
@@ -278,7 +297,7 @@
       font-size: clamp(9px, 2.2vw, 12px);
       color: #1e293b;
       font-weight: 700;
-      margin-top: 2px;
+      margin-top: 3px;
       text-align: center;
       white-space: nowrap;
     }
@@ -544,7 +563,7 @@
           { id: 'basket', emoji: '🏀', label: '농구공', color: '#db5b24', badgeColor: '#fbe9e7' },
           { id: 'baseball', emoji: '⚾', label: '야구공', color: '#38639e', badgeColor: '#e8eaf6' }
         ],
-        baseTargetSize: { w: 96, h: 98 },
+        baseTargetSize: { w: 98, h: 108 },
         baseItemSize: 72,
         moving: true
       }
@@ -650,7 +669,6 @@
       const count = levelData.items.length;
       
       const scaleRatio = Math.min(1, Math.max(0.45, containerWidth / 850));
-      
       const itemSize = isMobile ? Math.min(62, Math.floor((containerWidth - 54) / 3.2)) : Math.round(levelData.baseItemSize * scaleRatio);
       const fontSize = isMobile ? 22 : Math.max(18, Math.round(28 * scaleRatio));
 
@@ -677,10 +695,9 @@
       let targetW, targetH, badgeSize, slotFontSize;
 
       if (levelData.moving) {
-        // 💡 3단계: PC/모바일 모두 서로 겹치지 않도록 구역 및 속도 분산
         const maxSlotWidth = Math.floor((containerWidth - (count * 8)) / count);
         targetW = isMobile ? Math.min(68, Math.floor((containerWidth - 24) / 3.2)) : Math.min(Math.round(levelData.baseTargetSize.w * scaleRatio), maxSlotWidth);
-        targetH = Math.round(targetW * 1.05);
+        targetH = Math.round(targetW * 1.1);
         badgeSize = Math.round(targetW * 0.52);
         slotFontSize = Math.round(targetW * 0.35);
 
@@ -693,38 +710,55 @@
           slotEl.style.width = `${targetW}px`;
           slotEl.style.height = `${targetH}px`;
 
-          let initialLeft, bottomPos;
+          let initialLeft, bottomPos, minX, maxX;
+
           if (isMobile) {
             const row = index < 3 ? 0 : 1;
             const colIndex = index % 3;
             const mobStep = containerWidth / 3;
             initialLeft = colIndex * mobStep + (mobStep - targetW) / 2;
-            bottomPos = row === 0 ? 110 : 10;
+            bottomPos = row === 0 ? 110 : 16;
+            minX = colIndex * mobStep + 2;
+            maxX = (colIndex + 1) * mobStep - targetW - 2;
           } else {
             initialLeft = index * step + (step - targetW) / 2;
-            bottomPos = 12;
+            bottomPos = 18;
+            const zoneMargin = Math.max(10, step * 0.2);
+            minX = Math.max(4, initialLeft - zoneMargin);
+            maxX = Math.min(containerWidth - targetW - 4, initialLeft + zoneMargin);
           }
 
           slotEl.style.left = `${initialLeft}px`;
           slotEl.style.bottom = `${bottomPos}px`;
 
           slotEl.innerHTML = `
-            <div class="target-badge" style="width:${badgeSize}px; height:${badgeSize}px; background-color: ${item.badgeColor || '#f1f5f9'};">
-              <span class="target-icon" style="font-size:${slotFontSize}px;">${item.emoji}</span>
+            <div class="hex-slot-wrapper">
+              <svg class="hex-slot-bg" viewBox="0 0 100 110">
+                <polygon points="50,4 96,28 96,82 50,106 4,82 4,28" 
+                         fill="#f8fafc" 
+                         stroke="#0284c7" 
+                         stroke-width="3" 
+                         stroke-dasharray="6 3" />
+              </svg>
+              <div class="hex-slot-content">
+                <div class="target-badge" style="width:${badgeSize}px; height:${badgeSize}px; background-color: ${item.badgeColor || '#f1f5f9'};">
+                  <span class="target-icon" style="font-size:${slotFontSize}px;">${item.emoji}</span>
+                </div>
+                <div class="target-title" style="font-size:${Math.max(9, slotFontSize * 0.75)}px;">${item.label}</div>
+              </div>
             </div>
-            <div class="target-title" style="font-size:${Math.max(9, slotFontSize * 0.75)}px;">${item.label}</div>
           `;
 
-          // 💡 서로 겹치지 않고 일정한 간격으로 왕복하도록 조절된 속도값
           slotEl.dataset.direction = index % 2 === 0 ? '1' : '-1';
-          const speeds = [0.85, 1.15, 0.95, 1.25, 0.9, 1.2];
+          const speeds = [0.8, 1.05, 0.9, 1.15, 0.85, 1.1];
           slotEl.dataset.speed = (speeds[index % speeds.length]).toString();
           slotEl.dataset.currentX = initialLeft.toString();
+          slotEl.dataset.minX = minX.toString();
+          slotEl.dataset.maxX = maxX.toString();
 
           targetArea.appendChild(slotEl);
         });
       } else {
-        // 일반 균등 배치 (1, 2단계)
         const maxSlotWidth = Math.floor((containerWidth - (count * 6)) / count);
         targetW = Math.min(Math.round(levelData.baseTargetSize.w * scaleRatio), maxSlotWidth);
         targetH = Math.round(targetW * (levelData.baseTargetSize.h / levelData.baseTargetSize.w));
@@ -742,7 +776,7 @@
 
           const initialLeft = index * step + (step - targetW) / 2;
           slotEl.style.left = `${initialLeft}px`;
-          slotEl.style.bottom = `10px`;
+          slotEl.style.bottom = `16px`;
 
           slotEl.innerHTML = `
             <div class="target-badge" style="width:${badgeSize}px; height:${badgeSize}px; background-color: ${item.badgeColor || '#f1f5f9'};">
@@ -803,26 +837,23 @@
     }
 
     function startMovingTargets() {
-      const container = document.getElementById('target-area');
-
       function update() {
         if (!isGameRunning) return;
         const slots = document.querySelectorAll('.target-slot');
-        const containerWidth = container.clientWidth;
 
         slots.forEach(slot => {
-          const slotWidth = slot.offsetWidth || 65;
-          const maxRight = containerWidth - slotWidth - 4;
           let x = parseFloat(slot.dataset.currentX || slot.offsetLeft);
           let dir = parseFloat(slot.dataset.direction || 1);
-          let speed = parseFloat(slot.dataset.speed || 1.1);
+          let speed = parseFloat(slot.dataset.speed || 1.0);
+          let minX = parseFloat(slot.dataset.minX || 4);
+          let maxX = parseFloat(slot.dataset.maxX || (document.getElementById('target-area').clientWidth - 70));
 
           x += dir * speed;
-          if (x > maxRight) {
-            x = maxRight;
+          if (x >= maxX) {
+            x = maxX;
             dir = -1;
-          } else if (x < 4) {
-            x = 4;
+          } else if (x <= minX) {
+            x = minX;
             dir = 1;
           }
 
@@ -884,11 +915,18 @@
       if (e.cancelable && e.type.startsWith('touch')) e.preventDefault();
     }
 
+    // 💡 호버 시에도 넉넉한 여유 판정 적용
     function checkHoveredSlot(x, y) {
+      const HIT_PADDING = 20;
       const slots = document.querySelectorAll('.target-slot:not(.completed)');
       slots.forEach(slot => {
         const rect = slot.getBoundingClientRect();
-        if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
+        if (
+          x >= (rect.left - HIT_PADDING) &&
+          x <= (rect.right + HIT_PADDING) &&
+          y >= (rect.top - HIT_PADDING) &&
+          y <= (rect.bottom + HIT_PADDING)
+        ) {
           slot.classList.add('hovered');
         } else {
           slot.classList.remove('hovered');
@@ -896,6 +934,7 @@
       });
     }
 
+    // 💡 모바일 터치 감도와 적중률을 대폭 높인 드롭 판정 (HIT_PADDING = 20px)
     function endDrag(e) {
       if (!dragClone) return;
 
@@ -905,14 +944,15 @@
       let matched = false;
       const targetId = activeDragEl.dataset.targetId;
       const slots = document.querySelectorAll('.target-slot:not(.completed)');
+      const HIT_PADDING = 20;
 
       slots.forEach(slot => {
         const rect = slot.getBoundingClientRect();
         if (
-          clientX >= rect.left &&
-          clientX <= rect.right &&
-          clientY >= rect.top &&
-          clientY <= rect.bottom
+          clientX >= (rect.left - HIT_PADDING) &&
+          clientX <= (rect.right + HIT_PADDING) &&
+          clientY >= (rect.top - HIT_PADDING) &&
+          clientY <= (rect.bottom + HIT_PADDING)
         ) {
           if (slot.dataset.matchId === targetId) {
             matched = true;
@@ -944,10 +984,23 @@
       const itemEmoji = itemEl.querySelector('span').innerText;
       itemEl.remove();
 
-      slotEl.innerHTML = `
-        <div style="font-size: 20px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));">${itemEmoji}</div>
-        <div style="color: #15803d; font-size: 10px; font-weight: 700;">성공!</div>
-      `;
+      if (currentLevelNum === 3) {
+        const hexBg = slotEl.querySelector('.hex-slot-bg polygon');
+        if (hexBg) {
+          hexBg.setAttribute('fill', '#dcfce7');
+          hexBg.setAttribute('stroke', '#22c55e');
+          hexBg.removeAttribute('stroke-dasharray');
+        }
+        slotEl.querySelector('.hex-slot-content').innerHTML = `
+          <div style="font-size: 22px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));">${itemEmoji}</div>
+          <div style="color: #15803d; font-size: 11px; font-weight: 700;">성공!</div>
+        `;
+      } else {
+        slotEl.innerHTML = `
+          <div style="font-size: 20px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));">${itemEmoji}</div>
+          <div style="color: #15803d; font-size: 10px; font-weight: 700;">성공!</div>
+        `;
+      }
 
       remainingItems--;
       document.getElementById('remaining-count').innerText = remainingItems;
