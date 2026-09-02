@@ -181,7 +181,7 @@
       line-height: 1.35;
       outline: none;
       transition: border-color 0.2s;
-      margin-bottom: 16px; /* 입력창과 변환창 사이 여백 충분히 확보 */
+      margin-bottom: 16px;
     }
     textarea:focus {
       border-color: #2563eb;
@@ -253,7 +253,7 @@
       filter: drop-shadow(0 0 2px rgba(37, 99, 235, 0.4));
     }
 
-    /* 컨트롤 영역 */
+    /* 컨트롤 영역 (PC 기본) */
     .controls {
       display: flex;
       flex-wrap: wrap;
@@ -422,10 +422,10 @@
     }
     .btn-backspace:active {
       transform: scale(0.98);
-      background: #fca5a5;
+      /background: #fca5a5;
     }
 
-    /* 모바일 반응형 */
+    /* 모바일 반응형 최적화 */
     @media (max-width: 900px) {
       body {
         padding: 8px 10px;
@@ -480,17 +480,21 @@
         margin-right: 12px;
         gap: 6px;
       }
+
+      /* 모바일 컨트롤 영역: 재생과 정지 버튼 크기를 1:1 대칭형으로 완벽 고정 */
       .controls {
         display: grid;
-        grid-template-columns: 1.1fr 0.8fr 1.6fr;
+        grid-template-columns: 1fr 1fr 1.6fr;
         gap: 6px;
         margin-top: 6px;
         align-items: center;
       }
       .controls button {
-        padding: 6px 4px;
+        width: 100%;
+        padding: 7px 4px;
         font-size: 0.78rem;
         justify-content: center;
+        text-align: center;
       }
       .setting-group {
         margin-left: 0;
@@ -507,6 +511,7 @@
         font-size: 0.72rem;
         min-width: 58px;
       }
+
       .dashboard > aside.panel {
         padding: 8px 10px;
         border-radius: 10px;
@@ -551,7 +556,6 @@
 
 <header>
   <div class="main-title-wrap">
-    <!-- 메인 타이틀 입체 모스 로고 아이콘 -->
     <svg width="46" height="22" viewBox="0 0 46 22" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="mainDot" x1="0" y1="0" x2="1" y2="1">
@@ -575,7 +579,6 @@
   <section class="panel">
     <div class="section-header">
       <div class="section-title">
-        <!-- 텍스트 입력 아이콘 (키보드 형태) -->
         <svg width="18" height="14" viewBox="0 0 18 14" fill="none" xmlns="http://www.w3.org/2000/svg">
           <rect x="1" y="1" width="16" height="12" rx="2" stroke="#2563eb" stroke-width="2"/>
           <line x1="4" y1="4" x2="6" y2="4" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round"/>
@@ -596,7 +599,6 @@
 
     <div class="section-header">
       <div class="section-title">
-        <!-- 변환된 부호 아이콘 (모스 부호 점·선 형태) -->
         <svg width="20" height="12" viewBox="0 0 20 12" fill="none" xmlns="http://www.w3.org/2000/svg">
           <circle cx="3" cy="6" r="3" fill="#10b981"/>
           <rect x="9" y="3" width="11" height="6" rx="3" fill="#10b981"/>
@@ -625,7 +627,6 @@
   <aside class="panel">
     <div class="panel-header">
       <div class="panel-title">
-        <!-- 참조표 아이콘 (문서/키패드 그리드 형태) -->
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
           <rect x="1" y="1" width="6" height="6" rx="1.5" fill="#0d9488"/>
           <rect x="9" y="1" width="6" height="6" rx="1.5" fill="#0d9488"/>
