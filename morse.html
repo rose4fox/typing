@@ -11,12 +11,12 @@
       background: #f1f5f9;
       color: #0f172a;
       height: 100vh;
-      height: 100dvh; /* 모바일 주소창 높이 변화 완벽 대응 */
+      height: 100dvh;
       display: flex;
       flex-direction: column;
       align-items: center;
       padding: 14px 20px;
-      overflow: hidden; /* 페이지 전체 스크롤 차단 */
+      overflow: hidden;
     }
 
     /* 메인 헤더 */
@@ -62,7 +62,7 @@
       display: inline-block;
     }
 
-    /* 대시보드 레이아웃 (데스크톱) */
+    /* 대시보드 레이아웃 */
     .dashboard {
       width: 100%;
       max-width: 1380px;
@@ -124,8 +124,8 @@
       white-space: nowrap;
     }
 
-    /* 입력값 모두 지우기 버튼 */
-    .btn-clear-all {
+    /* 입력값 지우기 / 복사 버튼 스타일 */
+    .btn-clear-all, .btn-action-sm {
       background: #f8fafc;
       color: #64748b;
       border: 1px solid #cbd5e1;
@@ -140,11 +140,18 @@
       white-space: nowrap;
       flex-shrink: 0;
       transition: all 0.15s ease;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
     }
     .btn-clear-all:hover {
       background: #fee2e2;
       color: #dc2626;
       border-color: #fca5a5;
+    }
+    .btn-copy-morse:hover {
+      background: #eff6ff;
+      color: #2563eb;
+      border-color: #93c5fd;
     }
 
     /* 우측 참조표 패널 헤더 */
@@ -435,7 +442,7 @@
     }
 
     /* ========================================================================== */
-    /* [모바일 및 폴드5 커버 화면 완벽 압축 - 100vh 뷰포트 고정형] */
+    /* 모바일 및 폴드5 커버 화면 대응 (100vh 뷰포트 고정) */
     /* ========================================================================== */
     @media (max-width: 900px) {
       body {
@@ -461,11 +468,10 @@
         height: 100%;
       }
 
-      /* 상단 패널 (입력 + 출력 + 컨트롤) 슬림화 */
       .dashboard > section.panel {
         padding: 10px 12px;
         border-radius: 10px;
-        flex: 0 0 auto; /* 필요한 만큼만 최소 차지 */
+        flex: 0 0 auto;
       }
 
       .section-header {
@@ -474,12 +480,11 @@
       .section-title {
         font-size: 0.8rem;
       }
-      .btn-clear-all {
+      .btn-clear-all, .btn-action-sm {
         font-size: 0.68rem;
         padding: 2px 5px;
       }
 
-      /* 입력창 1~2줄 크기로 축소 */
       textarea {
         min-height: 44px;
         height: 44px;
@@ -489,7 +494,6 @@
         margin-bottom: 6px;
       }
 
-      /* 모스 부호 출력창 축소 */
       .morse-display {
         min-height: 52px;
         max-height: 68px;
@@ -504,7 +508,6 @@
       .dot { width: 5.5px; height: 5.5px; }
       .dash { width: 15px; height: 5.5px; }
 
-      /* 컨트롤 버튼 가로 1열 컴팩트 인라인 배치 */
       .controls {
         display: grid;
         grid-template-columns: 1.1fr 0.8fr 1.6fr;
@@ -523,7 +526,7 @@
         justify-content: flex-end;
       }
       .setting-group label {
-        display: none; /* 모바일 폭 절약을 위해 텍스트 생략 */
+        display: none;
       }
       .setting-group input[type="range"] {
         width: 60px;
@@ -533,18 +536,17 @@
         min-width: 58px;
       }
 
-      /* 하단 키패드 패널이 남은 화면 전체를 차지 */
       .dashboard > aside.panel {
         padding: 8px 10px;
         border-radius: 10px;
-        flex: 1; /* 남은 화면 높이 전부 확장 */
+        flex: 1;
         min-height: 0;
         display: flex;
         flex-direction: column;
       }
 
       .panel-header {
-        display: none; /* 화면 절약을 위해 부가 설명 생략 */
+        display: none;
       }
 
       .table-tabs {
@@ -556,7 +558,6 @@
         font-size: 0.78rem;
       }
 
-      /* 그리드 셀 높이를 1fr로 주어 화면 하단에 꽉 차게 조절 */
       .ref-grid {
         gap: 4px;
         flex: 1;
@@ -605,7 +606,11 @@
 
     <div class="section-header">
       <span class="section-title">⚡ 변환된 부호</span>
-      <span class="section-tag">OUTPUT</span>
+      <div class="section-header-right">
+        <!-- 모스 부호 복사 버튼 추가 -->
+        <button id="btnCopyMorse" class="btn-action-sm btn-copy-morse" title="변환된 모스 부호 텍스트 복사">📋 복사</button>
+        <span class="section-tag">OUTPUT</span>
+      </div>
     </div>
     <div id="morseContainer" class="morse-display"></div>
 
@@ -620,7 +625,7 @@
     </div>
   </section>
 
-  <!-- 하단 패널: 모바일 화면에서 바로 터치할 수 있는 풀사이즈 가상 키패드 -->
+  <!-- 하단 패널: 터치 가상 키패드 -->
   <aside class="panel">
     <div class="panel-header">
       <div class="panel-title">
@@ -875,6 +880,7 @@
   const btnSpaceKey = document.getElementById('btnSpaceKey');
   const btnBackspaceKey = document.getElementById('btnBackspaceKey');
   const btnClearAll = document.getElementById('btnClearAll');
+  const btnCopyMorse = document.getElementById('btnCopyMorse');
 
   let playableSequence = [];
 
@@ -924,12 +930,54 @@
 
   inputEl.addEventListener('input', renderMorse);
 
+  // 전체 지우기
   btnClearAll.addEventListener('click', (e) => {
     e.preventDefault();
     ensureEngineWarm();
     if (isPlaying) btnStop.click();
     inputEl.value = '';
     renderMorse();
+  });
+
+  // 모스 부호 텍스트 클립보드 복사
+  btnCopyMorse.addEventListener('click', async (e) => {
+    e.preventDefault();
+    ensureEngineWarm();
+    const wordList = parseTextToWords(inputEl.value);
+    
+    // 유효한 부호 단어 추출
+    const morseText = wordList
+      .filter(words => words.length > 0)
+      .map(words => words.join(' '))
+      .join(' / ');
+
+    if (!morseText.trim()) {
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(morseText);
+      const originalText = btnCopyMorse.innerHTML;
+      btnCopyMorse.innerHTML = '✅ 복사됨!';
+      btnCopyMorse.style.color = '#16a34a';
+      btnCopyMorse.style.borderColor = '#86efac';
+      btnCopyMorse.style.background = '#f0fdf4';
+
+      setTimeout(() => {
+        btnCopyMorse.innerHTML = originalText;
+        btnCopyMorse.style.color = '';
+        btnCopyMorse.style.borderColor = '';
+        btnCopyMorse.style.background = '';
+      }, 1300);
+    } catch (err) {
+      // 구형 브라우저 대체 폴백
+      const tempInput = document.createElement('textarea');
+      tempInput.value = morseText;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand('copy');
+      document.body.removeChild(tempInput);
+    }
   });
 
   btnSpaceKey.addEventListener('click', (e) => {
