@@ -15,15 +15,15 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 10px 14px;
+      padding: 14px 20px;
       overflow: hidden;
     }
 
-    /* 메인 헤더 & 화려한 컬러 그라데이션 타이틀 */
+    /* 메인 헤더 */
     header {
       width: 100%;
       max-width: 1380px;
-      margin-bottom: 8px;
+      margin-bottom: 12px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -32,11 +32,11 @@
     .main-title-wrap {
       display: inline-flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       text-decoration: none;
     }
     .header-title-text {
-      font-size: 1.5rem;
+      font-size: 1.65rem;
       font-weight: 800;
       letter-spacing: -0.5px;
       background: linear-gradient(135deg, #2563eb 0%, #0d9488 50%, #16a34a 100%);
@@ -44,13 +44,13 @@
       -webkit-text-fill-color: transparent;
     }
 
-    /* 대시보드 레이아웃 */
+    /* 대시보드 레이아웃 (PC 기본: 시원한 여백과 넉넉한 간격) */
     .dashboard {
       width: 100%;
       max-width: 1380px;
       display: grid;
       grid-template-columns: 1.12fr 0.88fr;
-      gap: 14px;
+      gap: 20px;
       align-items: stretch;
       flex: 1;
       min-height: 0;
@@ -59,8 +59,8 @@
     .panel {
       background: #ffffff;
       border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      padding: 14px 16px;
+      border-radius: 14px;
+      padding: 20px 22px;
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
       display: flex;
       flex-direction: column;
@@ -73,7 +73,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 6px;
+      margin-bottom: 10px;
       flex-shrink: 0;
       gap: 6px;
     }
@@ -81,7 +81,7 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 0.95rem;
+      font-size: 1.02rem;
       font-weight: 800;
       letter-spacing: -0.3px;
       color: #1e293b;
@@ -97,29 +97,29 @@
       flex-shrink: 0;
     }
     .section-tag {
-      font-size: 0.65rem;
+      font-size: 0.7rem;
       font-weight: 800;
       letter-spacing: 0.5px;
-      padding: 2px 6px;
+      padding: 3px 7px;
       border-radius: 4px;
       background: #f1f5f9;
       color: #64748b;
       white-space: nowrap;
     }
 
-    /* 버튼 스타일 */
+    /* 버튼 스타일 (PC에서 큼직하게 클릭하기 좋도록 조정) */
     .btn-clear-all, .btn-action-sm {
       background: #f8fafc;
       color: #64748b;
       border: 1px solid #cbd5e1;
-      padding: 2px 7px;
-      border-radius: 5px;
-      font-size: 0.72rem;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.78rem;
       font-weight: 700;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 3px;
+      gap: 4px;
       white-space: nowrap;
       flex-shrink: 0;
       transition: all 0.15s ease;
@@ -139,13 +139,13 @@
 
     /* 우측 참조표 패널 헤더 */
     .panel-header {
-      margin-bottom: 8px;
+      margin-bottom: 12px;
       flex-shrink: 0;
       border-bottom: 1px solid #f1f5f9;
-      padding-bottom: 6px;
+      padding-bottom: 10px;
     }
     .panel-title {
-      font-size: 1rem;
+      font-size: 1.08rem;
       font-weight: 800;
       letter-spacing: -0.3px;
       color: #1e293b;
@@ -156,32 +156,32 @@
     .title-chip {
       background: #eff6ff;
       color: #2563eb;
-      font-size: 0.65rem;
+      font-size: 0.7rem;
       font-weight: 800;
-      padding: 1px 6px;
+      padding: 2px 7px;
       border-radius: 4px;
       letter-spacing: 0.5px;
       border: 1px solid #bfdbfe;
     }
 
-    /* 텍스트 입력창 */
+    /* 텍스트 입력창 (PC 기본 넉넉한 높이와 간격) */
     textarea {
       width: 100%;
-      flex: 3;
-      min-height: 55px;
-      padding: 10px 12px;
+      flex: 2.8;
+      min-height: 85px;
+      padding: 14px 16px;
       border: 2px solid #cbd5e1;
-      border-radius: 8px;
-      font-size: 1.15rem;
+      border-radius: 10px;
+      font-size: 1.2rem;
       font-weight: 700;
       color: #000000;
       letter-spacing: 0.06em;
       word-spacing: 0.12em;
       resize: none;
-      line-height: 1.35;
+      line-height: 1.4;
       outline: none;
       transition: border-color 0.2s;
-      margin-bottom: 12px;
+      margin-bottom: 18px;
     }
     textarea:focus {
       border-color: #2563eb;
@@ -190,20 +190,21 @@
     /* 모스 부호 출력창 */
     .morse-display {
       width: 100%;
-      flex: 5;
-      min-height: 90px;
+      flex: 4.2;
+      min-height: 110px;
       overflow-y: auto;
       overflow-x: hidden;
       background: #ffffff;
       border: 2px solid #cbd5e1;
-      border-radius: 8px;
-      padding: 12px 14px;
+      border-radius: 10px;
+      padding: 14px 16px;
       display: flex;
       flex-wrap: wrap;
       align-items: flex-start;
       align-content: flex-start;
       row-gap: 12px;
       column-gap: 0;
+      margin-bottom: 14px;
     }
 
     .morse-word {
@@ -253,32 +254,31 @@
       filter: drop-shadow(0 0 2px rgba(37, 99, 235, 0.4));
     }
 
-    /* 컨트롤 영역 및 주석 설명 스타일 */
+    /* 컨트롤 영역 및 WPM 주석 래퍼 */
     .controls-wrapper {
       display: flex;
       flex-direction: column;
-      gap: 4px;
-      margin-top: 10px;
+      gap: 6px;
       flex-shrink: 0;
     }
     .controls {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 10px;
       align-items: center;
     }
     button {
       background: #2563eb;
       color: #fff;
       border: none;
-      padding: 8px 16px;
-      border-radius: 7px;
-      font-size: 0.85rem;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 0.92rem;
       font-weight: 600;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 5px;
+      gap: 6px;
       transition: background 0.15s;
     }
     button:hover { background: #1d4ed8; }
@@ -289,24 +289,23 @@
     .setting-group {
       display: flex;
       align-items: center;
-      gap: 6px;
-      font-size: 0.8rem;
+      gap: 8px;
+      font-size: 0.88rem;
       color: #475569;
       margin-left: auto;
     }
     .setting-group input[type="range"] {
       cursor: pointer;
-      width: 90px;
+      width: 110px;
     }
     #speedVal {
       font-weight: 700;
       color: #1e293b;
-      min-width: 90px;
+      min-width: 95px;
       text-align: right;
     }
-    /* WPM 안내 주석 텍스트 */
     .speed-hint {
-      font-size: 0.72rem;
+      font-size: 0.76rem;
       color: #64748b;
       text-align: right;
       letter-spacing: -0.2px;
@@ -316,18 +315,18 @@
     /* 키패드 탭 버튼 */
     .table-tabs {
       display: flex;
-      gap: 4px;
-      margin-bottom: 6px;
+      gap: 6px;
+      margin-bottom: 10px;
       border-bottom: 2px solid #e2e8f0;
-      padding-bottom: 4px;
+      padding-bottom: 6px;
       flex-shrink: 0;
     }
     .tab-btn {
       background: none;
       color: #64748b;
       border: none;
-      padding: 4px 10px;
-      font-size: 0.82rem;
+      padding: 6px 14px;
+      font-size: 0.88rem;
       font-weight: 700;
       border-radius: 6px;
       cursor: pointer;
@@ -347,7 +346,7 @@
       display: grid;
       grid-template-columns: repeat(6, 1fr);
       grid-template-rows: repeat(7, 1fr);
-      gap: 4px;
+      gap: 8px;
       width: 100%;
       flex: 1;
       min-height: 0;
@@ -360,7 +359,7 @@
       height: 100%;
       background: #f8fafc;
       border: 1px solid #e2e8f0;
-      border-radius: 5px;
+      border-radius: 8px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -371,9 +370,12 @@
       touch-action: manipulation;
       -webkit-tap-highlight-color: transparent;
     }
+    .ref-item:hover {
+      background: #eff6ff;
+      border-color: #bfdbfe;
+    }
     .ref-item:active {
       transform: scale(0.96);
-      background: #eff6ff;
     }
     .ref-item.empty-cell {
       visibility: hidden;
@@ -381,15 +383,15 @@
     }
 
     .ref-char {
-      font-size: 1rem;
+      font-size: 1.1rem;
       font-weight: 700;
       color: #0f172a;
       line-height: 1.1;
-      margin-bottom: 1px;
+      margin-bottom: 2px;
     }
     .ref-code {
       font-family: monospace;
-      font-size: 0.65rem;
+      font-size: 0.72rem;
       font-weight: 700;
       color: #475569;
       letter-spacing: 0.5px;
@@ -400,16 +402,16 @@
     .special-keys-bar {
       display: grid;
       grid-template-columns: 2.8fr 1.2fr;
-      gap: 6px;
-      margin-top: 6px;
+      gap: 10px;
+      margin-top: 12px;
       flex-shrink: 0;
     }
     .special-key-btn {
-      height: 32px;
-      border-radius: 6px;
+      height: 44px;
+      border-radius: 8px;
       border: 1px solid #cbd5e1;
       font-weight: 800;
-      font-size: 0.82rem;
+      font-size: 0.92rem;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -424,89 +426,85 @@
       color: #1e293b;
       border-color: #94a3b8;
     }
-    .btn-space:active {
-      transform: scale(0.98);
-      background: #cbd5e1;
-    }
+    .btn-space:hover { background: #e2e8f0; }
+    .btn-space:active { transform: scale(0.98); }
     .btn-backspace {
       background: #fee2e2;
       color: #991b1b;
       border-color: #fca5a5;
     }
-    .btn-backspace:active {
-      transform: scale(0.98);
-      background: #fca5a5;
-    }
+    .btn-backspace:hover { background: #fecaca; }
+    .btn-backspace:active { transform: scale(0.98); }
 
-    /* 모바일 반응형 */
+    /* 모바일 반응형 (화면 폭 900px 이하일 때만 적용) */
     @media (max-width: 900px) {
       body {
-        padding: 6px 8px;
+        padding: 8px 10px;
         height: 100dvh;
         overflow: hidden;
       }
       header {
-        margin-bottom: 4px;
+        margin-bottom: 6px;
       }
       .header-title-text {
-        font-size: 1.15rem;
+        font-size: 1.2rem;
       }
       .dashboard {
         display: flex;
         flex-direction: column;
-        gap: 6px;
+        gap: 8px;
         flex: 1;
         min-height: 0;
         height: 100%;
       }
       .dashboard > section.panel {
-        padding: 8px 10px;
-        border-radius: 8px;
+        padding: 10px 12px;
+        border-radius: 10px;
         flex: 0 0 auto;
       }
       .section-header {
-        margin-bottom: 4px;
+        margin-bottom: 6px;
       }
       .section-title {
-        font-size: 0.82rem;
+        font-size: 0.84rem;
       }
       .btn-clear-all, .btn-action-sm {
-        font-size: 0.65rem;
+        font-size: 0.68rem;
         padding: 2px 5px;
       }
       textarea {
-        min-height: 64px;
-        height: 64px;
+        min-height: 52px;
+        height: 52px;
         flex: none;
         padding: 6px 10px;
         font-size: 1.05rem;
-        margin-bottom: 8px;
+        margin-bottom: 10px;
       }
       .morse-display {
-        min-height: 78px;
-        max-height: 95px;
+        min-height: 64px;
+        max-height: 80px;
         flex: none;
-        padding: 6px 10px;
-        row-gap: 6px;
+        padding: 8px 10px;
+        row-gap: 8px;
+        margin-bottom: 8px;
       }
       .morse-word {
-        margin-right: 14px;
-        gap: 8px;
+        margin-right: 16px;
+        gap: 10px;
       }
       .controls-wrapper {
-        margin-top: 5px;
         gap: 3px;
       }
       .controls {
         display: grid;
         grid-template-columns: 1fr 1fr 1.6fr;
-        gap: 5px;
+        gap: 6px;
         align-items: center;
       }
       .controls button {
         width: 100%;
-        padding: 5px 4px;
-        font-size: 0.74rem;
+        padding: 7px 4px;
+        font-size: 0.78rem;
         justify-content: center;
         text-align: center;
       }
@@ -519,18 +517,18 @@
         display: none;
       }
       .setting-group input[type="range"] {
-        width: 55px;
+        width: 60px;
       }
       #speedVal {
-        font-size: 0.68rem;
-        min-width: 52px;
+        font-size: 0.72rem;
+        min-width: 58px;
       }
       .speed-hint {
         font-size: 0.62rem;
       }
       .dashboard > aside.panel {
-        padding: 6px 8px;
-        border-radius: 8px;
+        padding: 8px 10px;
+        border-radius: 10px;
         flex: 1;
         min-height: 0;
         display: flex;
@@ -540,31 +538,31 @@
         display: none;
       }
       .table-tabs {
-        margin-bottom: 4px;
+        margin-bottom: 6px;
         padding-bottom: 2px;
       }
       .tab-btn {
-        padding: 3px 6px;
-        font-size: 0.75rem;
+        padding: 4px 8px;
+        font-size: 0.78rem;
       }
       .ref-grid {
-        gap: 3px;
+        gap: 4px;
         flex: 1;
         min-height: 0;
       }
       .ref-char {
-        font-size: 0.9rem;
+        font-size: 0.95rem;
       }
       .ref-code {
-        font-size: 0.6rem;
+        font-size: 0.65rem;
       }
       .special-keys-bar {
-        margin-top: 4px;
-        gap: 5px;
+        margin-top: 6px;
+        gap: 6px;
       }
       .special-key-btn {
-        height: 30px;
-        font-size: 0.78rem;
+        height: 36px;
+        font-size: 0.82rem;
       }
     }
   </style>
@@ -573,7 +571,7 @@
 
 <header>
   <div class="main-title-wrap">
-    <svg width="42" height="20" viewBox="0 0 46 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width="46" height="22" viewBox="0 0 46 22" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="mainDot" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stop-color="#60a5fa"/>
@@ -592,10 +590,11 @@
 </header>
 
 <main class="dashboard">
+  <!-- 상단 패널 -->
   <section class="panel">
     <div class="section-header">
       <div class="section-title">
-        <svg width="16" height="12" viewBox="0 0 18 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg width="18" height="14" viewBox="0 0 18 14" fill="none" xmlns="http://www.w3.org/2000/svg">
           <rect x="1" y="1" width="16" height="12" rx="2" stroke="#2563eb" stroke-width="2"/>
           <line x1="4" y1="4" x2="6" y2="4" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round"/>
           <line x1="8" y1="4" x2="10" y2="4" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round"/>
@@ -615,7 +614,7 @@
 
     <div class="section-header">
       <div class="section-title">
-        <svg width="18" height="10" viewBox="0 0 20 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg width="20" height="12" viewBox="0 0 20 12" fill="none" xmlns="http://www.w3.org/2000/svg">
           <circle cx="3" cy="6" r="3" fill="#10b981"/>
           <rect x="9" y="3" width="11" height="6" rx="3" fill="#10b981"/>
         </svg>
@@ -633,7 +632,7 @@
         <button id="btnPlay">🔊 재생</button>
         <button id="btnStop" class="btn-stop" disabled>■ 정지</button>
         <div class="setting-group">
-          <label for="speedRange">속도:</label>
+          <label for="speedRange">재생속도:</label>
           <input type="range" id="speedRange" min="35" max="120" value="60" />
           <span id="speedVal">20 WPM</span>
         </div>
@@ -642,6 +641,7 @@
     </div>
   </section>
 
+  <!-- 하단 패널 -->
   <aside class="panel">
     <div class="panel-header">
       <div class="panel-title">
