@@ -446,138 +446,124 @@
     .btn-backspace:hover { background: #fecaca; }
     .btn-backspace:active { transform: scale(0.98); }
 
-    /* 폴드 펼침 화면 및 태블릿 구간 (600px ~ 900px): 좌우 2단 유지 및 잘림 방지 */
+    /* 모바일 및 폴드 기기 대응 (900px 이하: 원래의 위아래 2단 배치 원복 + 폴드 펼침 시 버튼 잘림 방지) */
     @media (max-width: 900px) {
       body {
-        padding: 10px 12px;
-        height: auto;
-        min-height: 100dvh;
-        overflow: auto;
+        padding: 1vh 2vw;
+        height: 100dvh;
+        overflow: hidden;
       }
       header {
-        margin-bottom: 10px;
+        margin-bottom: 1vh;
       }
       .header-title-text {
-        font-size: 1.3rem;
+        font-size: clamp(1.1rem, 2.2vw, 1.35rem);
       }
       .dashboard {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 1vh;
       }
       .dashboard > section.panel,
       .dashboard > aside.panel {
-        padding: 14px 16px;
+        padding: 1.2vh 2.5vw;
         border-radius: 10px;
-        height: auto;
-        min-height: 480px;
+        flex: 1;
+        min-height: 0;
       }
       .section-header {
-        margin-bottom: 8px;
+        margin-bottom: 0.6vh;
       }
       .section-title {
-        font-size: 0.9rem;
+        font-size: clamp(0.8rem, 1.1vw, 0.9rem);
       }
       .btn-clear-all, .btn-action-sm {
-        font-size: 0.72rem;
-        padding: 3px 8px;
+        font-size: 0.65rem;
+        padding: 2px 6px;
       }
       textarea {
-        min-height: 70px;
-        flex: none;
-        padding: 10px;
-        font-size: 1.1rem;
-        margin-bottom: 12px;
+        min-height: 42px;
+        flex: 1;
+        padding: 0.8vh 1vw;
+        font-size: 1rem;
+        margin-bottom: 0.8vh;
       }
       .morse-display {
-        min-height: 90px;
-        flex: none;
-        padding: 10px;
-        row-gap: 8px;
-        margin-bottom: 12px;
+        min-height: 52px;
+        flex: 1.5;
+        padding: 0.8vh 1vw;
+        row-gap: 6px;
+        margin-bottom: 0.8vh;
       }
       .morse-word {
-        margin-right: 16px;
-        gap: 10px;
+        margin-right: 14px;
+        gap: 8px;
       }
       .controls-wrapper {
-        gap: 6px;
+        gap: 0.4vh;
       }
       .controls {
-        display: flex;
-        flex-wrap: wrap;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1.6fr;
         gap: 6px;
         align-items: center;
       }
       .controls button {
-        padding: 8px 12px;
-        font-size: 0.82rem;
+        width: 100%;
+        padding: 0.6vh 4px;
+        font-size: 0.75rem;
+        justify-content: center;
+        text-align: center;
       }
       .setting-group {
-        margin-left: auto;
-        gap: 6px;
+        margin-left: 0;
+        gap: 4px;
+        justify-content: flex-end;
       }
       .setting-group label {
-        display: inline;
+        display: none;
       }
       .setting-group input[type="range"] {
-        width: 80px;
+        width: 60px;
       }
       #speedVal {
-        font-size: 0.8rem;
-        min-width: 75px;
+        font-size: 0.7rem;
+        min-width: 55px;
       }
       .speed-hint {
-        font-size: 0.7rem;
-        margin-top: 2px;
+        font-size: 0.58rem;
+        margin-top: 1px;
       }
       .panel-header {
-        display: flex;
-        margin-bottom: 8px;
-        padding-bottom: 6px;
-      }
-      .panel-title {
-        font-size: 0.95rem;
+        display: none;
       }
       .table-tabs {
-        margin-bottom: 8px;
-        padding-bottom: 6px;
+        margin-bottom: 0.6vh;
+        padding-bottom: 0.4vh;
       }
       .tab-btn {
-        padding: 5px 10px;
-        font-size: 0.82rem;
+        padding: 0.4vh 1vw;
+        font-size: 0.75rem;
       }
       .ref-grid {
-        gap: 6px;
-        flex: none;
-        height: 280px;
+        gap: 4px;
+        flex: 1;
+        min-height: 0;
       }
       .ref-char {
-        font-size: 1rem;
+        font-size: clamp(0.85rem, 1.2vw, 0.98rem);
+        margin-bottom: 0px;
       }
       .ref-code {
-        font-size: 0.65rem;
+        font-size: clamp(0.58rem, 0.85vw, 0.65rem);
       }
       .special-keys-bar {
-        margin-top: 10px;
-        gap: 8px;
+        margin-top: 0.6vh;
+        gap: 6px;
       }
       .special-key-btn {
-        height: 40px;
-        font-size: 0.85rem;
-      }
-    }
-
-    /* 초소형 스마트폰 세로 모드 (550px 미만): 기존처럼 상하 2단 전환 */
-    @media (max-width: 550px) {
-      .dashboard {
-        display: flex;
-        flex-direction: column;
-      }
-      .dashboard > section.panel,
-      .dashboard > aside.panel {
-        min-height: auto;
+        height: clamp(30px, 4.2vh, 36px);
+        font-size: 0.78rem;
       }
     }
   </style>
