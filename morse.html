@@ -44,7 +44,7 @@
       -webkit-text-fill-color: transparent;
     }
 
-    /* 대시보드 레이아웃 (PC 기본: 넉넉하고 시원한 간격 확보) */
+    /* 대시보드 레이아웃 (PC 기본) */
     .dashboard {
       width: 100%;
       max-width: 1380px;
@@ -224,7 +224,6 @@
       flex-shrink: 0;
     }
 
-    /* 쌍자음 내부의 두 자음 그룹을 위한 밀착 스타일 */
     .morse-double-cluster {
       display: inline-flex;
       align-items: center;
@@ -263,7 +262,6 @@
       filter: drop-shadow(0 0 2px rgba(37, 99, 235, 0.4));
     }
 
-    /* 컨트롤 영역 및 WPM 주석 래퍼 */
     .controls-wrapper {
       display: flex;
       flex-direction: column;
@@ -322,7 +320,6 @@
       margin-top: 4px;
     }
 
-    /* 키패드 탭 버튼 */
     .table-tabs {
       display: flex;
       gap: 6px;
@@ -351,7 +348,7 @@
       color: #2563eb;
     }
 
-    /* 6열 그리드 키패드 */
+    /* PC 기본 그리드 (원래 소스 유지) */
     .ref-grid {
       display: grid;
       grid-template-columns: repeat(6, 1fr);
@@ -379,7 +376,6 @@
       transition: all 0.15s ease;
       touch-action: manipulation;
       -webkit-tap-highlight-color: transparent;
-      padding: 2px;
     }
     .ref-item:hover {
       background: #eff6ff;
@@ -410,7 +406,6 @@
       white-space: nowrap;
     }
 
-    /* 하단 스페이스 / 삭제 바 */
     .special-keys-bar {
       display: grid;
       grid-template-columns: 2.8fr 1.2fr;
@@ -448,7 +443,7 @@
     .btn-backspace:hover { background: #fecaca; }
     .btn-backspace:active { transform: scale(0.98); }
 
-    /* 모바일 및 폴드 기기 대응 (900px 이하) */
+    /* 모바일 및 폴드 기기 대응 (900px 이하에서만 한글 탭 크기 통일을 위해 6행 고정 적용) */
     @media (max-width: 900px) {
       body {
         padding: 1vh 2vw;
@@ -546,15 +541,20 @@
         font-size: 0.78rem;
       }
       .ref-grid {
-        gap: 6px;
+        grid-template-rows: repeat(6, 1fr) !important; /* 모바일에서만 행 개수를 6행으로 고정하여 탭별 크기 일치 */
+        gap: 4px;
         flex: 1;
         min-height: 0;
       }
+      .ref-item {
+        padding: 2px;
+      }
       .ref-char {
-        font-size: clamp(0.85rem, 1.2vw, 0.95rem);
+        font-size: clamp(0.75rem, 1.05vw, 0.85rem);
       }
       .ref-code {
-        font-size: clamp(0.55rem, 0.85vw, 0.62rem);
+        font-size: clamp(0.48rem, 0.68vw, 0.55rem);
+        letter-spacing: 0px;
         white-space: nowrap;
       }
       .special-keys-bar {
