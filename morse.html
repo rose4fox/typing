@@ -164,7 +164,7 @@
       border: 1px solid #bfdbfe;
     }
 
-    /* 텍스트 입력창 (PC 기본 넉넉한 높이) */
+    /* 텍스트 입력창 */
     textarea {
       width: 100%;
       flex: 2.8;
@@ -220,6 +220,15 @@
       display: inline-flex;
       align-items: center;
       gap: 3.5px;
+      height: 18px;
+      flex-shrink: 0;
+    }
+
+    /* 쌍자음 내부의 두 자음 그룹을 위한 밀착 스타일 */
+    .morse-double-cluster {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px; /* 일반 글자 간격보다 훨씬 좁게 붙임 */
       height: 18px;
       flex-shrink: 0;
     }
@@ -437,7 +446,7 @@
     .btn-backspace:hover { background: #fecaca; }
     .btn-backspace:active { transform: scale(0.98); }
 
-    /* 모바일 및 폴드 기기 대응 (900px 이하) - 뷰포트 비율(vh/vw)로 유연하게 대응 */
+    /* 모바일 및 폴드 기기 대응 (900px 이하) */
     @media (max-width: 900px) {
       body {
         padding: 1vh 2vw;
@@ -579,7 +588,6 @@
 </header>
 
 <main class="dashboard">
-  <!-- 상단 패널 -->
   <section class="panel">
     <div class="section-header">
       <div class="section-title">
@@ -630,7 +638,6 @@
     </div>
   </section>
 
-  <!-- 하단 패널 -->
   <aside class="panel">
     <div class="panel-header">
       <div class="panel-title">
@@ -860,20 +867,30 @@
 
     rawWords.forEach((wordStr) => {
       const charTokens = [];
-      for (const char of wordStr) {
+      let i = 0;
+      while (i < wordStr.length) {
+        const char = wordStr[i];
         if (/[가-힣ㄱ-ㅎㅏ-ㅣ]/.test(char)) {
           const jamos = decomposeHangul(char);
-          jamos.forEach(jamo => {
-            if (MORSE_MAP[jamo]) {
-              charTokens.push(MORSE_MAP[jamo]);
+          // 쌍자음인 경우 (원래 2개의 자모로 쪼개지는 경우) 첫 번째와 두 번째를 하나의 클러스터(밀착 간격)로 묶음
+          if (DOUBLE_CONSONANTS[char]) {
+            if (jamos.length === 2 && MORSE_MAP[jamos[0]] && MORSE_MAP[jamos[1]]) {
+              charTokens.push({ type: 'double', codes: [MORSE_MAP[jamos[0]], MORSE_MAP[jamos[1]]] });
             }
-          });
+          } else {
+            jamos.forEach(jamo => {
+              if (MORSE_MAP[jamo]) {
+                charTokens.push({ type: 'single', code: MORSE_MAP[jamo] });
+              }
+            });
+          }
         } else {
           const upper = char.toUpperCase();
           if (MORSE_MAP[upper]) {
-            charTokens.push(MORSE_MAP[upper]);
+            charTokens.push({ type: 'single', code: MORSE_MAP[upper] });
           }
         }
+        i++;
       }
       wordList.push(charTokens);
     });
@@ -906,29 +923,55 @@
       const wordWrap = document.createElement('div');
       wordWrap.className = 'morse-word';
 
-      charTokens.forEach((codeStr, cIdx) => {
-        const parts = codeStr.split(' ');
-        parts.forEach(codePart => {
+      charTokens.forEach((token, cIdx) => {
+        if (token.type === 'single') {
           const letterSpan = document.createElement('div');
           letterSpan.className = 'morse-letter';
 
-          for (const char of codePart) {
-            const symWrap = document.createElement('span');
-            symWrap.className = 'symbol';
-
-            const shape = document.createElement('span');
-            if (char === '.') shape.className = 'dot';
-            else if (char === '-') shape.className = 'dash';
-
-            symWrap.appendChild(shape);
-            letterSpan.appendChild(symWrap);
-
-            playableSequence.push({ type: 'symbol', char: char, el: symWrap });
-          }
-
+          token.code.split(' ').forEach(codePart => {
+            for (const char of codePart) {
+              const symWrap = document.createElement('span');
+              symWrap.className = 'symbol';
+              const shape = document.createElement('span');
+              if (char === '.') shape.className = 'dot';
+              else if (char === '-') shape.className = 'dash';
+              symWrap.appendChild(shape);
+              letterSpan.appendChild(symWrap);
+              playableSequence.push({ type: 'symbol', char: char, el: symWrap });
+            }
+          });
           wordWrap.appendChild(letterSpan);
           playableSequence.push({ type: 'letter-gap' });
-        });
+        } 
+        else if (token.type === 'double') {
+          // 쌍자음 내부의 두 자음은 좁은 밀착 간격으로 묶어줌
+          const doubleCluster = document.createElement('div');
+          doubleCluster.className = 'morse-double-cluster';
+
+          token.codes.forEach((codeStr, subIdx) => {
+            const letterSpan = document.createElement('div');
+            letterSpan.className = 'morse-letter';
+
+            codeStr.split(' ').forEach(codePart => {
+              for (const char of codePart) {
+                const symWrap = document.createElement('span');
+                symWrap.className = 'symbol';
+                const shape = document.createElement('span');
+                if (char === '.') shape.className = 'dot';
+                else if (char === '-') shape.className = 'dash';
+                symWrap.appendChild(shape);
+                letterSpan.appendChild(symWrap);
+                playableSequence.push({ type: 'symbol', char: char, el: symWrap });
+              }
+            });
+            doubleCluster.appendChild(letterSpan);
+            if (subIdx === 0) {
+              playableSequence.push({ type: 'double-internal-gap' });
+            }
+          });
+          wordWrap.appendChild(doubleCluster);
+          playableSequence.push({ type: 'letter-gap' });
+        }
       });
 
       morseContainer.appendChild(wordWrap);
@@ -954,8 +997,13 @@
     ensureEngineWarm();
     const wordList = parseTextToWords(inputEl.value);
     const morseText = wordList
-      .filter(words => words.length > 0)
-      .map(words => words.join(' '))
+      .filter(tokens => tokens.length > 0)
+      .map(tokens => {
+        return tokens.map(t => {
+          if (t.type === 'single') return t.code;
+          if (t.type === 'double') return t.codes.join(' ');
+        }).join(' ');
+      })
       .join(' / ');
 
     if (!morseText.trim()) return;
@@ -1053,7 +1101,7 @@
   switchTab('eng');
 
   // ==========================================================================
-  // [영구 구동 오디오 엔진]
+  // [영구 구동 오디오 엔진 - 0.5초 딜레이 적용]
   // ==========================================================================
   let audioCtx = null;
   let masterOsc = null;
@@ -1095,7 +1143,7 @@
 
   function playTone(durationMs) {
     return new Promise(resolve => {
-      if (stopRequested || !masterGain) return resolve();
+      if (stopRequested || !masterGain || !audioCtx) return resolve();
 
       const startTime = audioCtx.currentTime;
       const durSec = durationMs / 1000;
@@ -1121,6 +1169,12 @@
     btnPlay.disabled = true;
     btnStop.disabled = false;
 
+    if (audioCtx && audioCtx.state === 'suspended') {
+      await audioCtx.resume();
+    }
+
+    await sleep(500);
+
     const dotDuration = parseInt(speedRange.value, 10);
     const dashDuration = dotDuration * 3;
 
@@ -1141,10 +1195,12 @@
           item.el.classList.remove('active');
           await sleep(dotDuration);
         }
+      } else if (item.type === 'double-internal-gap') {
+        await sleep(dotDuration); // 쌍자음 내부의 짧은 밀착 간격
       } else if (item.type === 'letter-gap') {
-        await sleep(dotDuration * 2);
+        await sleep(dotDuration * 2); // 일반 글자(자음) 사이 표준 간격
       } else if (item.type === 'space') {
-        await sleep(dotDuration * 5);
+        await sleep(dotDuration * 5); // 단어 사이 간격
       }
     }
 
@@ -1152,7 +1208,7 @@
       if (item.el) item.el.classList.remove('active');
     });
 
-    if (masterGain) {
+    if (masterGain && audioCtx) {
       masterGain.gain.cancelScheduledValues(audioCtx.currentTime);
       masterGain.gain.setValueAtTime(0, audioCtx.currentTime);
     }
@@ -1163,7 +1219,7 @@
 
   btnStop.addEventListener('click', () => {
     stopRequested = true;
-    if (masterGain) {
+    if (masterGain && audioCtx) {
       masterGain.gain.cancelScheduledValues(audioCtx.currentTime);
       masterGain.gain.setValueAtTime(0, audioCtx.currentTime);
     }
